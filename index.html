@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Holi 2026 — Festival of Colors</title>
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:    #ff4da6;
+      --yellow:  #ffd600;
+      --green:   #00c853;
+      --blue:    #00b0ff;
+      --orange:  #ff6d00;
+      --purple:  #aa00ff;
+      --red:     #ff1744;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0d0015;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ─── Canvas Particles ──────────────────────────────────────── */
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Navbar ────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2.5rem;
+      background: rgba(13, 0, 21, 0.75);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--pink), var(--yellow), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.25s;
+    }
+
+    .nav-links a:hover { color: var(--yellow); }
+
+    /* ─── Hero Section ──────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 1.5rem 4rem;
+      overflow: hidden;
+    }
+
+    /* decorative color blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.35;
+      animation: float 8s ease-in-out infinite alternate;
+    }
+    .blob-1 { width:520px; height:520px; background:var(--pink);   top:-120px; left:-100px; animation-delay:0s; }
+    .blob-2 { width:480px; height:480px; background:var(--blue);   top:-80px;  right:-80px; animation-delay:2s; }
+    .blob-3 { width:400px; height:400px; background:var(--yellow); bottom:0;   left:10%;    animation-delay:4s; }
+    .blob-4 { width:360px; height:360px; background:var(--purple); bottom:60px;right:5%;    animation-delay:1s; }
+
+    @keyframes float {
+      from { transform: translateY(0) scale(1); }
+      to   { transform: translateY(-40px) scale(1.08); }
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 0.4rem 1.2rem;
+      border-radius: 50px;
+      border: 1.5px solid var(--yellow);
+      color: var(--yellow);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--pink) 0%, var(--yellow) 35%, var(--green) 65%, var(--blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 40px rgba(255,77,166,0.4));
+    }
+
+    .hero h1 span {
+      display: block;
+      font-size: clamp(1.8rem, 4vw, 3.5rem);
+      background: linear-gradient(90deg, var(--orange), var(--red));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-top: 0.25rem;
+    }
+
+    .hero-sub {
+      max-width: 600px;
+      font-size: 1.15rem;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.7;
+      margin: 1.5rem auto 2.5rem;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2.2rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover { transform: translateY(-3px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink), var(--orange));
+      color: #fff;
+      box-shadow: 0 8px 30px rgba(255,77,166,0.5);
+    }
+    .btn-primary:hover { box-shadow: 0 12px 40px rgba(255,77,166,0.7); }
+
+    .btn-outline {
+      background: transparent;
+      color: #fff;
+      border: 2px solid rgba(255,255,255,0.35);
+      backdrop-filter: blur(6px);
+    }
+    .btn-outline:hover { border-color: var(--yellow); color: var(--yellow); }
+
+    /* ─── Countdown ─────────────────────────────────────────────── */
+    .countdown-wrap {
+      position: relative;
+      z-index: 1;
+      margin-top: 4rem;
+      padding: 2.5rem 2rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      max-width: 660px;
+      width: 100%;
+    }
+
+    .countdown-label {
+      font-size: 0.85rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 1.2rem;
+    }
+
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .cd-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .cd-num {
+      font-size: 3.2rem;
+      font-weight: 900;
+      line-height: 1;
+      min-width: 80px;
+      text-align: center;
+      padding: 0.5rem;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: color 0.4s;
+    }
+
+    .cd-unit {
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .cd-sep {
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1;
+      padding-top: 0.3rem;
+      color: rgba(255,255,255,0.25);
+    }
+
+    /* ─── About / Info Section ──────────────────────────────────── */
+    section { position: relative; z-index: 1; }
+
+    .about {
+      padding: 5rem 1.5rem;
+      text-align: center;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 0.78rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1.2rem;
+    }
+
+    .section-desc {
+      max-width: 680px;
+      margin: 0 auto 3.5rem;
+      color: rgba(255,255,255,0.65);
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    /* card grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    }
+
+    .card-icon {
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .card p {
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+    }
+
+    /* color accent borders */
+    .card:nth-child(1) { border-top: 3px solid var(--pink); }
+    .card:nth-child(2) { border-top: 3px solid var(--yellow); }
+    .card:nth-child(3) { border-top: 3px solid var(--green); }
+    .card:nth-child(4) { border-top: 3px solid var(--blue); }
+
+    /* ─── Colors Section ────────────────────────────────────────── */
+    .colors-section {
+      padding: 5rem 1.5rem;
+      background: rgba(255,255,255,0.02);
+      text-align: center;
+    }
+
+    .palette {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.2rem;
+      max-width: 900px;
+      margin: 2.5rem auto 0;
+    }
+
+    .swatch {
+      width: 130px;
+      height: 160px;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 1.1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: default;
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .swatch::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      filter: blur(20px);
+      opacity: 0;
+      transition: opacity 0.3s;
+      transform: scale(1.3);
+    }
+
+    .swatch:hover { transform: scale(1.08) translateY(-6px); }
+    .swatch:hover::before { opacity: 0.6; }
+
+    .swatch span { position: relative; z-index: 1; color: rgba(255,255,255,0.9); text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+
+    /* ─── Gallery / Traditions ──────────────────────────────────── */
+    .traditions {
+      padding: 5rem 1.5rem;
+      text-align: center;
+    }
+
+    .trad-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 2.5rem auto 0;
+    }
+
+    .trad-card {
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      height: 300px;
+      cursor: default;
+    }
+
+    .trad-card-bg {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 6rem;
+      transition: transform 0.5s;
+    }
+
+    .trad-card:hover .trad-card-bg { transform: scale(1.08); }
+
+    .trad-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 55%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.5rem;
+      text-align: left;
+    }
+
+    .trad-card-overlay h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .trad-card-overlay p  { font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.5; }
+
+    /* ─── Wishes / CTA Section ──────────────────────────────────── */
+    .wishes {
+      padding: 6rem 1.5rem;
+      text-align: center;
+    }
+
+    .wishes-box {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 3.5rem 2.5rem;
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(255,77,166,0.15), rgba(0,176,255,0.12), rgba(255,214,0,0.10));
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    .wishes-box h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 900;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--pink), var(--yellow));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .wishes-box p {
+      color: rgba(255,255,255,0.7);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    /* ─── Footer ────────────────────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.35);
+      font-size: 0.88rem;
+    }
+
+    footer span { color: var(--pink); }
+
+    /* ─── Responsive tweaks ─────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .cd-num { font-size: 2.2rem; min-width: 64px; }
+      .swatch { width: 100px; height: 130px; }
+    }
+
+    /* ─── Scroll reveal ─────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<!-- ── Nav ───────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-logo">🎨 Holi 2026</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#colors">Colors</a></li>
+    <li><a href="#traditions">Traditions</a></li>
+    <li><a href="#wishes">Celebrate</a></li>
+  </ul>
+</nav>
+
+<!-- ── Hero ──────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+
+  <div class="hero-badge">🌸 Festival of Colors 2026</div>
+
+  <h1>
+    Happy Holi
+    <span>Play • Love • Celebrate</span>
+  </h1>
+
+  <p class="hero-sub">
+    Immerse yourself in a riot of colors, music, and joy as we welcome the most vibrant festival of the year — Holi 2026!
+  </p>
+
+  <div class="hero-cta">
+    <a href="#wishes" class="btn btn-primary">🎉 Celebrate Now</a>
+    <a href="#about" class="btn btn-outline">Learn More</a>
+  </div>
+
+  <!-- Countdown -->
+  <div class="countdown-wrap">
+    <div class="countdown-label">Holi Countdown — March 14, 2026</div>
+    <div class="countdown">
+      <div class="cd-box">
+        <div class="cd-num" id="cd-days" style="color:var(--pink)">00</div>
+        <div class="cd-unit">Days</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-box">
+        <div class="cd-num" id="cd-hours" style="color:var(--yellow)">00</div>
+        <div class="cd-unit">Hours</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-box">
+        <div class="cd-num" id="cd-mins" style="color:var(--green)">00</div>
+        <div class="cd-unit">Minutes</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-box">
+        <div class="cd-num" id="cd-secs" style="color:var(--blue)">00</div>
+        <div class="cd-unit">Seconds</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── About ─────────────────────────────────────────────────────── -->
+<section class="about" id="about">
+  <div class="reveal">
+    <div class="section-tag">About the Festival</div>
+    <h2 class="section-title">What is <span style="color:var(--pink)">Holi</span>?</h2>
+    <p class="section-desc">
+      Holi is the ancient Hindu festival of colors, celebrated on the full moon of Phalguna (February–March).
+      It heralds the arrival of spring, the triumph of good over evil, and the joy of togetherness — with vibrant
+      powdered colors, water guns, music, and sweets.
+    </p>
+  </div>
+
+  <div class="card-grid reveal">
+    <div class="card">
+      <span class="card-icon">🌸</span>
+      <h3>Spring Welcome</h3>
+      <p>Holi marks the end of winter and the glorious arrival of spring — a season of bloom and renewal.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔥</span>
+      <h3>Holika Dahan</h3>
+      <p>The night before, bonfires are lit celebrating the victory of devotion over arrogance — Holika Dahan.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🎨</span>
+      <h3>Festival of Colors</h3>
+      <p>People smear each other with gulal (colored powder) and drench one another with colored water.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🍬</span>
+      <h3>Food &amp; Sweets</h3>
+      <p>Gujiya, thandai, puran poli — Holi is incomplete without its iconic festive delicacies.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Colors ─────────────────────────────────────────────────────── -->
+<section class="colors-section" id="colors">
+  <div class="reveal">
+    <div class="section-tag">Holi Palette</div>
+    <h2 class="section-title">The <span style="color:var(--yellow)">Colors</span> of Holi</h2>
+    <p class="section-desc">Each color in Holi carries a deep symbolic meaning rooted in Indian tradition.</p>
+  </div>
+
+  <div class="palette reveal">
+    <div class="swatch" style="background:linear-gradient(160deg,#ff4da6,#c2185b)">
+      <span>Pink — Love</span>
+    </div>
+    <div class="swatch" style="background:linear-gradient(160deg,#ffd600,#ff6f00)">
+      <span>Yellow — Prosperity</span>
+    </div>
+    <div class="swatch" style="background:linear-gradient(160deg,#00c853,#1b5e20)">
+      <span>Green — Harmony</span>
+    </div>
+    <div class="swatch" style="background:linear-gradient(160deg,#00b0ff,#0d47a1)">
+      <span>Blue — Divinity</span>
+    </div>
+    <div class="swatch" style="background:linear-gradient(160deg,#ff6d00,#b71c1c)">
+      <span>Orange — Energy</span>
+    </div>
+    <div class="swatch" style="background:linear-gradient(160deg,#aa00ff,#4a148c)">
+      <span>Purple — Magic</span>
+    </div>
+    <div class="swatch" style="background:linear-gradient(160deg,#ff1744,#880e4f)">
+      <span>Red — Passion</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Traditions ─────────────────────────────────────────────────── -->
+<section class="traditions" id="traditions">
+  <div class="reveal">
+    <div class="section-tag">How We Celebrate</div>
+    <h2 class="section-title">Holi <span style="color:var(--green)">Traditions</span></h2>
+    <p class="section-desc">From ancient rituals to modern street parties, discover the heart of Holi.</p>
+  </div>
+
+  <div class="trad-grid reveal">
+    <div class="trad-card">
+      <div class="trad-card-bg" style="background:linear-gradient(135deg,#1a0030,#3d0070)">🔥</div>
+      <div class="trad-card-overlay">
+        <h3>Holika Dahan</h3>
+        <p>Communities gather around sacred bonfires the night before to pray and celebrate good's victory over evil.</p>
+      </div>
+    </div>
+
+    <div class="trad-card">
+      <div class="trad-card-bg" style="background:linear-gradient(135deg,#1a0020,#60003a)">🎨</div>
+      <div class="trad-card-overlay">
+        <h3>Rang Panchami</h3>
+        <p>On the main day, streets turn into rivers of color as people chase each other with gulal and pichkaris.</p>
+      </div>
+    </div>
+
+    <div class="trad-card">
+      <div class="trad-card-bg" style="background:linear-gradient(135deg,#001a10,#004d30)">🎵</div>
+      <div class="trad-card-overlay">
+        <h3>Music &amp; Dance</h3>
+        <p>Dhol beats and folk songs fill the air as communities dance together in colorful euphoria.</p>
+      </div>
+    </div>
+
+    <div class="trad-card">
+      <div class="trad-card-bg" style="background:linear-gradient(135deg,#1a1000,#4d3200)">🍹</div>
+      <div class="trad-card-overlay">
+        <h3>Thandai &amp; Sweets</h3>
+        <p>Spiced thandai milk, gujiya dumplings, and puran poli complete the festive feast with loved ones.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Wishes ─────────────────────────────────────────────────────── -->
+<section class="wishes" id="wishes">
+  <div class="wishes-box reveal">
+    <h2>Spread the Colors of Joy! 🎊</h2>
+    <p>
+      May this Holi fill your life with the vibrant hues of happiness, the warmth of love, and the fragrance of friendship.
+      Wishing you and your family a colorful and joyous Holi 2026!
+    </p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="triggerColorBurst()">🎨 Burst Colors!</button>
+      <button class="btn btn-outline" onclick="shareWish()">💌 Share Wishes</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────────────── -->
+<footer>
+  <p>Made with <span>♥</span> to celebrate Holi 2026 — Festival of Colors &amp; Joy</p>
+</footer>
+
+<!-- ────────────────────────── JavaScript ────────────────────────── -->
+<script>
+/* ── Particle System ─────────────────────────────────────────────── */
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+
+const COLORS = ['#ff4da6','#ffd600','#00c853','#00b0ff','#ff6d00','#aa00ff','#ff1744'];
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+class Particle {
+  constructor(x, y, burst) {
+    this.x = x ?? Math.random() * canvas.width;
+    this.y = y ?? Math.random() * canvas.height;
+    this.r = burst ? Math.random() * 10 + 4 : Math.random() * 4 + 1;
+    this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const speed = burst ? Math.random() * 8 + 3 : Math.random() * 0.6 + 0.2;
+    const angle = burst ? Math.random() * Math.PI * 2 : Math.random() * Math.PI * 2;
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed;
+    this.alpha = 1;
+    this.decay = burst ? Math.random() * 0.015 + 0.008 : Math.random() * 0.003 + 0.001;
+    this.gravity = burst ? 0.12 : 0;
+    this.burst = burst ?? false;
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += this.gravity;
+    this.alpha -= this.decay;
+    if (!this.burst) {
+      if (this.x < 0) this.x = canvas.width;
+      if (this.x > canvas.width) this.x = 0;
+      if (this.y < 0) this.y = canvas.height;
+      if (this.y > canvas.height) this.y = 0;
+    }
+  }
+
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.alpha);
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  isDead() { return this.alpha <= 0; }
+}
+
+let particles = Array.from({ length: 80 }, () => new Particle());
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles = particles.filter(p => !p.isDead());
+  // keep ambient particles topped up
+  while (particles.filter(p => !p.burst).length < 80) {
+    particles.push(new Particle());
+  }
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* ── Color Burst Button ──────────────────────────────────────────── */
+function triggerColorBurst() {
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  for (let i = 0; i < 220; i++) {
+    particles.push(new Particle(cx, cy, true));
+  }
+}
+
+/* ── Share Wish ──────────────────────────────────────────────────── */
+function shareWish() {
+  const msg = '🎨 Happy Holi 2026! May this festival fill your life with vibrant colors, joy, and love! 🌸🔴🟡🟢🔵💜';
+  if (navigator.share) {
+    navigator.share({ title: 'Happy Holi 2026!', text: msg })
+      .catch(() => copyToClipboard(msg));
+  } else {
+    copyToClipboard(msg);
+  }
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Holi wish copied to clipboard! 🎉');
+  }).catch(() => {
+    alert('Happy Holi 2026! 🎨');
+  });
+}
+
+/* ── Countdown Timer ─────────────────────────────────────────────── */
+function updateCountdown() {
+  const target = new Date('2026-03-14T06:00:00');
+  const now    = new Date();
+  let diff = target - now;
+
+  if (diff <= 0) {
+    document.getElementById('cd-days').textContent  = '00';
+    document.getElementById('cd-hours').textContent = '00';
+    document.getElementById('cd-mins').textContent  = '00';
+    document.getElementById('cd-secs').textContent  = '00';
+    // start burst loop on Holi day
+    setInterval(triggerColorBurst, 3000);
+    return;
+  }
+
+  const days  = Math.floor(diff / 86400000);       diff %= 86400000;
+  const hours = Math.floor(diff / 3600000);        diff %= 3600000;
+  const mins  = Math.floor(diff / 60000);          diff %= 60000;
+  const secs  = Math.floor(diff / 1000);
+
+  document.getElementById('cd-days').textContent  = String(days).padStart(2,'0');
+  document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+  document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+  document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+/* ── Scroll Reveal ───────────────────────────────────────────────── */
+const revealEls = document.querySelectorAll('.reveal');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+revealEls.forEach(el => observer.observe(el));
+
+/* ── Mouse-trail splashes ────────────────────────────────────────── */
+document.addEventListener('mousemove', (e) => {
+  if (Math.random() > 0.85) {
+    const p = new Particle(e.clientX, e.clientY, true);
+    p.r = Math.random() * 5 + 2;
+    p.vx = (Math.random() - 0.5) * 4;
+    p.vy = (Math.random() - 0.5) * 4;
+    p.decay = 0.03;
+    p.gravity = 0.05;
+    particles.push(p);
+  }
+});
+</script>
+</body>
+</html>
