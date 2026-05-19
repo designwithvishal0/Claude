@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Leadflow — AI Lead Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+        colors: {
+          ink: { 900: '#0B1220', 700: '#1F2937', 500: '#4B5563', 300: '#9CA3AF' },
+          surface: { DEFAULT: '#FFFFFF', muted: '#F7F8FA', border: '#E5E7EB' },
+          brand:  { 50:'#EEF2FF', 100:'#E0E7FF', 500:'#6366F1', 600:'#4F46E5', 700:'#4338CA' },
+          hot:    { 50:'#FEF2F2', 500:'#EF4444', 700:'#B91C1C' },
+          warm:   { 50:'#FFFBEB', 500:'#F59E0B', 700:'#B45309' },
+          cold:   { 50:'#EFF6FF', 500:'#3B82F6', 700:'#1D4ED8' }
+        }
+      }
+    }
+  };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 8px; }
+  [data-view] { display: none; }
+  [data-view].is-active { display: block; }
+  .row-hover:hover { background: #F7F8FA; }
+  .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; padding: 1px 6px; border: 1px solid #E5E7EB; border-bottom-width: 2px; border-radius: 4px; color: #4B5563; background: #fff; }
+</style>
+</head>
+<body class="bg-surface-muted text-ink-900 antialiased">
+
+<!-- App shell -->
+<div class="min-h-screen flex">
+  <!-- Sidebar -->
+  <aside class="w-60 shrink-0 bg-white border-r border-surface-border hidden md:flex md:flex-col">
+    <div class="h-14 flex items-center gap-2 px-5 border-b border-surface-border">
+      <div class="w-7 h-7 rounded-md bg-brand-600 text-white grid place-items-center font-bold">L</div>
+      <span class="font-semibold">Leadflow</span>
+    </div>
+    <nav class="p-3 text-sm">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md bg-brand-50 text-brand-700 font-medium">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+        Leads
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        Pipeline
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
+        Inbox
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+        Insights
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1A2 2 0 1 1 4.4 17l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1A2 2 0 1 1 7 4.4l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1A2 2 0 1 1 19.6 7l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        Settings
+      </a>
+    </nav>
+    <div class="mt-auto p-3 border-t border-surface-border">
+      <div class="flex items-center gap-3 px-2 py-2">
+        <div class="w-8 h-8 rounded-full bg-ink-700 text-white grid place-items-center text-xs font-semibold">VR</div>
+        <div class="text-sm">
+          <div class="font-medium">Vishal R.</div>
+          <div class="text-ink-300 text-xs">Acme · Free trial</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 min-w-0 flex flex-col">
+
+    <!-- Top bar -->
+    <header class="h-14 bg-white border-b border-surface-border flex items-center gap-3 px-4 md:px-6">
+      <button id="backBtn" class="hidden items-center gap-2 text-sm text-ink-500 hover:text-ink-900">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        Back to leads
+      </button>
+      <h1 id="pageTitle" class="text-base font-semibold">Leads</h1>
+
+      <div class="ml-auto flex items-center gap-2">
+        <div class="hidden md:flex items-center gap-2 px-3 h-9 rounded-md border border-surface-border bg-white w-72">
+          <svg class="w-4 h-4 text-ink-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="searchInput" placeholder="Search leads, companies…" class="bg-transparent text-sm w-full outline-none placeholder:text-ink-300" />
+          <span class="kbd">/</span>
+        </div>
+        <button class="h-9 px-3 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 flex items-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Add lead
+        </button>
+      </div>
+    </header>
+
+    <!-- =================== DASHBOARD VIEW =================== -->
+    <section data-view="dashboard" class="is-active flex-1 overflow-y-auto">
+      <div class="p-4 md:p-6 max-w-[1400px] mx-auto">
+
+        <!-- Summary cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-5">
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">New leads today</div>
+            <div class="mt-1 flex items-end gap-2">
+              <div class="text-2xl font-semibold">24</div>
+              <div class="text-xs text-emerald-600 mb-1">+18%</div>
+            </div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-hot-500"></span> Hot leads
+            </div>
+            <div class="mt-1 flex items-end gap-2">
+              <div class="text-2xl font-semibold">7</div>
+              <div class="text-xs text-ink-300 mb-1">need reply</div>
+            </div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Avg. response time</div>
+            <div class="mt-1 flex items-end gap-2">
+              <div class="text-2xl font-semibold">42m</div>
+              <div class="text-xs text-emerald-600 mb-1">-12m</div>
+            </div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Conversion (30d)</div>
+            <div class="mt-1 flex items-end gap-2">
+              <div class="text-2xl font-semibold">18.4%</div>
+              <div class="text-xs text-emerald-600 mb-1">+2.1pp</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="bg-white border border-surface-border rounded-lg">
+          <div class="flex flex-wrap items-center gap-2 p-3 border-b border-surface-border">
+            <div class="flex items-center gap-1 bg-surface-muted p-1 rounded-md text-sm" role="tablist">
+              <button data-filter="all"  class="filter-tab px-3 py-1.5 rounded-md bg-white shadow-sm font-medium">All <span class="text-ink-300 ml-1" data-count="all"></span></button>
+              <button data-filter="hot"  class="filter-tab px-3 py-1.5 rounded-md text-ink-500">Hot <span class="text-ink-300 ml-1" data-count="hot"></span></button>
+              <button data-filter="warm" class="filter-tab px-3 py-1.5 rounded-md text-ink-500">Warm <span class="text-ink-300 ml-1" data-count="warm"></span></button>
+              <button data-filter="cold" class="filter-tab px-3 py-1.5 rounded-md text-ink-500">Cold <span class="text-ink-300 ml-1" data-count="cold"></span></button>
+            </div>
+
+            <div class="h-6 w-px bg-surface-border mx-1 hidden md:block"></div>
+
+            <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
+              <option>All sources</option>
+              <option>Website form</option>
+              <option>LinkedIn</option>
+              <option>Cold outbound</option>
+              <option>Referral</option>
+            </select>
+            <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
+              <option>All owners</option>
+              <option>Me</option>
+              <option>Unassigned</option>
+            </select>
+            <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
+              <option>Last 7 days</option>
+              <option>Today</option>
+              <option>Last 30 days</option>
+              <option>All time</option>
+            </select>
+
+            <div class="ml-auto text-sm text-ink-500">
+              Sorted by <button class="font-medium text-ink-900 hover:underline">AI score ↓</button>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="overflow-x-auto scrollbar-thin">
+            <table class="min-w-full text-sm">
+              <thead class="text-left text-ink-500 bg-surface-muted">
+                <tr class="border-b border-surface-border">
+                  <th class="font-medium px-4 py-2.5 w-10"><input type="checkbox" class="rounded border-surface-border"/></th>
+                  <th class="font-medium px-2 py-2.5">Lead</th>
+                  <th class="font-medium px-2 py-2.5">Company</th>
+                  <th class="font-medium px-2 py-2.5">AI insight</th>
+                  <th class="font-medium px-2 py-2.5">Source</th>
+                  <th class="font-medium px-2 py-2.5">Last activity</th>
+                  <th class="font-medium px-2 py-2.5 text-right pr-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="leadRows"></tbody>
+            </table>
+          </div>
+
+          <!-- Footer -->
+          <div class="flex items-center justify-between px-4 py-3 border-t border-surface-border text-xs text-ink-500">
+            <div><span id="visibleCount">0</span> of <span id="totalCount">0</span> leads</div>
+            <div class="flex items-center gap-1">
+              <button class="px-2 py-1 rounded hover:bg-surface-muted">‹</button>
+              <span>Page 1 of 1</span>
+              <button class="px-2 py-1 rounded hover:bg-surface-muted">›</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-ink-300 mt-4">Tip: press <span class="kbd">/</span> to search, click any row to open the lead.</p>
+      </div>
+    </section>
+
+    <!-- =================== LEAD DETAIL VIEW =================== -->
+    <section data-view="detail" class="flex-1 overflow-y-auto">
+      <div class="max-w-[1400px] mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+        <!-- Left: lead + AI insights + activity -->
+        <div class="lg:col-span-2 space-y-5">
+
+          <!-- Lead header card -->
+          <div class="bg-white border border-surface-border rounded-lg p-5">
+            <div class="flex flex-wrap items-start gap-4">
+              <div id="detailAvatar" class="w-12 h-12 rounded-full bg-brand-100 text-brand-700 grid place-items-center font-semibold">—</div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h2 id="detailName" class="text-lg font-semibold">—</h2>
+                  <span id="detailTempBadge" class="text-xs font-medium px-2 py-0.5 rounded-full">—</span>
+                </div>
+                <div id="detailMeta" class="text-sm text-ink-500 mt-0.5">—</div>
+                <div id="detailContacts" class="text-sm text-ink-500 mt-1 flex flex-wrap gap-x-4 gap-y-0.5"></div>
+              </div>
+
+              <div class="ml-auto flex items-center gap-2">
+                <button class="h-9 px-3 rounded-md border border-surface-border bg-white text-sm font-medium hover:bg-surface-muted flex items-center gap-2">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92V21a1 1 0 0 1-1.1 1A19.86 19.86 0 0 1 2 3.1 1 1 0 0 1 3 2h4.09a1 1 0 0 1 1 .75l1 4a1 1 0 0 1-.27 1L7.21 9.21a16 16 0 0 0 7.58 7.58l1.46-1.61a1 1 0 0 1 1-.27l4 1a1 1 0 0 1 .75 1z"/></svg>
+                  Call
+                </button>
+                <button class="h-9 px-3 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 flex items-center gap-2">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+                  Reply
+                </button>
+                <button class="h-9 w-9 rounded-md border border-surface-border bg-white grid place-items-center hover:bg-surface-muted" aria-label="More">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI insights -->
+          <div class="bg-white border border-surface-border rounded-lg">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-surface-border">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full">
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2 5 5 1-3.5 3.5L17 17l-5-3-5 3 1.5-5.5L5 8l5-1z"/></svg>
+                  AI insight
+                </span>
+                <h3 class="text-sm font-semibold">Why this lead is <span id="insightWhy">—</span></h3>
+              </div>
+              <div class="text-xs text-ink-300">Updated 4 min ago</div>
+            </div>
+            <div class="p-5 grid md:grid-cols-3 gap-5">
+              <div class="md:col-span-2">
+                <div class="text-sm text-ink-700 leading-relaxed" id="insightSummary">—</div>
+
+                <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3" id="signals"></div>
+              </div>
+              <div>
+                <div class="text-xs text-ink-500 mb-2">Suggested next actions</div>
+                <div class="space-y-2" id="suggestedActions"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Conversation / activity -->
+          <div class="bg-white border border-surface-border rounded-lg">
+            <div class="flex items-center gap-4 border-b border-surface-border px-5">
+              <button class="py-3 text-sm font-medium border-b-2 border-brand-600 text-ink-900">Activity</button>
+              <button class="py-3 text-sm text-ink-500 hover:text-ink-900">Notes</button>
+              <button class="py-3 text-sm text-ink-500 hover:text-ink-900">Files</button>
+              <button class="py-3 text-sm text-ink-500 hover:text-ink-900">Tasks</button>
+            </div>
+            <div class="p-5">
+              <ol class="relative border-s border-surface-border ms-2 space-y-5" id="activityList"></ol>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: meta + AI score + reply composer -->
+        <aside class="space-y-5">
+
+          <!-- Score -->
+          <div class="bg-white border border-surface-border rounded-lg p-5">
+            <div class="flex items-center justify-between">
+              <div class="text-sm font-semibold">AI lead score</div>
+              <span id="detailScorePill" class="text-xs font-medium px-2 py-0.5 rounded-full">—</span>
+            </div>
+            <div class="mt-3">
+              <div class="flex items-end gap-2">
+                <div id="scoreNumber" class="text-3xl font-semibold">—</div>
+                <div class="text-xs text-ink-300 mb-1.5">/ 100</div>
+              </div>
+              <div class="h-2 mt-2 rounded-full bg-surface-muted overflow-hidden">
+                <div id="scoreBar" class="h-full bg-brand-600 transition-all" style="width: 0%"></div>
+              </div>
+              <div class="mt-3 text-xs text-ink-500" id="scoreReason">—</div>
+            </div>
+          </div>
+
+          <!-- Lead facts -->
+          <div class="bg-white border border-surface-border rounded-lg p-5">
+            <div class="text-sm font-semibold mb-3">Details</div>
+            <dl class="text-sm space-y-2.5" id="detailFacts"></dl>
+          </div>
+
+          <!-- AI reply composer -->
+          <div class="bg-white border border-surface-border rounded-lg">
+            <div class="px-5 py-3 border-b border-surface-border flex items-center justify-between">
+              <div class="text-sm font-semibold">Quick reply</div>
+              <span class="inline-flex items-center gap-1.5 text-xs font-medium text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2 5 5 1-3.5 3.5L17 17l-5-3-5 3 1.5-5.5L5 8l5-1z"/></svg>
+                AI draft
+              </span>
+            </div>
+            <div class="p-5 space-y-3">
+              <div class="flex flex-wrap gap-2 text-xs">
+                <button data-tone="friendly" class="tone-btn px-2.5 py-1 rounded-full border border-surface-border bg-white hover:bg-surface-muted">Friendly</button>
+                <button data-tone="direct"   class="tone-btn px-2.5 py-1 rounded-full border border-brand-600 text-brand-700 bg-brand-50">Direct</button>
+                <button data-tone="formal"   class="tone-btn px-2.5 py-1 rounded-full border border-surface-border bg-white hover:bg-surface-muted">Formal</button>
+              </div>
+              <textarea id="replyBox" rows="6" class="w-full text-sm border border-surface-border rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"></textarea>
+              <div class="flex items-center justify-between">
+                <button id="regenBtn" class="text-xs text-ink-500 hover:text-ink-900 flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+                  Regenerate
+                </button>
+                <div class="flex items-center gap-2">
+                  <button class="h-8 px-3 rounded-md border border-surface-border text-sm hover:bg-surface-muted">Save draft</button>
+                  <button class="h-8 px-3 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // ---------- mock data ----------
+  const LEADS = [
+    {
+      id: 'l1', name: 'Priya Sharma', initials: 'PS', title: 'Head of Growth', company: 'Acme Robotics',
+      email: 'priya@acmerobotics.io', phone: '+1 415 555 0142', location: 'San Francisco, CA',
+      source: 'Website form', owner: 'Vishal R.', lastActivity: '2 min ago',
+      temp: 'hot', score: 92,
+      insightWhy: 'hot',
+      summary: "Replied within 4 min of demo email, viewed pricing page 3× this week, and asked about API access. Decision-maker at a 250-person company that fits ICP.",
+      signals: [
+        { label: 'Pricing views', value: '3 this week', tone: 'good' },
+        { label: 'Reply latency', value: '4 min', tone: 'good' },
+        { label: 'Seniority', value: 'Director+', tone: 'good' },
+        { label: 'ICP fit', value: '94%', tone: 'good' }
+      ],
+      suggested: [
+        { title: 'Book a 20-min call', desc: 'High intent — schedule today' },
+        { title: 'Send pricing PDF', desc: 'They viewed pricing 3×' },
+        { title: 'Loop in solutions eng', desc: 'API integration question' }
+      ],
+      scoreReason: '+22 fit · +35 intent · +18 engagement · +17 timing',
+      activity: [
+        { t: '2 min ago',  type: 'reply',  text: 'Priya replied: "Can we hop on a call Thursday?"' },
+        { t: '1 h ago',    type: 'ai',     text: 'AI flagged this lead as HOT (intent spike + pricing visits).' },
+        { t: 'Yesterday',  type: 'email',  text: 'You sent: "Quick intro + a Loom walkthrough"' },
+        { t: '2 days ago', type: 'visit',  text: 'Visited /pricing 3× and /api-docs once.' }
+      ]
+    },
+    {
+      id: 'l2', name: 'Daniel Okonkwo', initials: 'DO', title: 'VP Sales', company: 'NorthWind SaaS',
+      email: 'daniel@northwind.com', phone: '+1 212 555 0188', location: 'New York, NY',
+      source: 'LinkedIn', owner: 'Vishal R.', lastActivity: '38 min ago',
+      temp: 'hot', score: 87,
+      insightWhy: 'hot',
+      summary: 'Engaged with two outbound emails, downloaded the ROI calculator, and mentioned a Q3 budget cycle.',
+      signals: [
+        { label: 'ROI calc', value: 'Downloaded', tone: 'good' },
+        { label: 'Replies', value: '2', tone: 'good' },
+        { label: 'Seniority', value: 'VP', tone: 'good' },
+        { label: 'Company size', value: '500–1k', tone: 'good' }
+      ],
+      suggested: [
+        { title: 'Send case study', desc: 'Match: mid-market SaaS' },
+        { title: 'Propose discovery call', desc: 'Q3 budget window' }
+      ],
+      scoreReason: '+25 fit · +28 intent · +20 engagement · +14 timing',
+      activity: [
+        { t: '38 min ago', type: 'visit', text: 'Downloaded ROI calculator.' },
+        { t: '3 h ago',    type: 'email', text: 'You sent: "ROI breakdown for NorthWind"' },
+        { t: 'Yesterday',  type: 'ai',    text: 'AI suggested re-engagement based on LinkedIn activity.' }
+      ]
+    },
+    {
+      id: 'l3', name: 'Mei Tanaka', initials: 'MT', title: 'Product Manager', company: 'Lumen Labs',
+      email: 'mei@lumenlabs.co', phone: '+81 3 5555 0119', location: 'Tokyo, JP',
+      source: 'Referral', owner: 'Unassigned', lastActivity: '1 h ago',
+      temp: 'warm', score: 68,
+      insightWhy: 'warm',
+      summary: 'Came in through a referral from an existing customer. Strong fit, but no urgency signals yet.',
+      signals: [
+        { label: 'Referral', value: 'Yes', tone: 'good' },
+        { label: 'Pricing views', value: '1', tone: 'neutral' },
+        { label: 'Seniority', value: 'IC+', tone: 'neutral' },
+        { label: 'ICP fit', value: '78%', tone: 'good' }
+      ],
+      suggested: [
+        { title: 'Send intro email', desc: 'Reference the referrer' },
+        { title: 'Add to nurture sequence', desc: 'No urgency yet' }
+      ],
+      scoreReason: '+20 fit · +15 intent · +18 engagement · +15 timing',
+      activity: [
+        { t: '1 h ago', type: 'ai',    text: 'AI matched referral source to existing customer.' },
+        { t: 'Today',   type: 'form',  text: 'Filled out "Request a demo" form.' }
+      ]
+    },
+    {
+      id: 'l4', name: 'Carlos Mendes', initials: 'CM', title: 'Founder', company: 'Brava Studio',
+      email: 'carlos@brava.studio', phone: '+55 11 5555 0173', location: 'São Paulo, BR',
+      source: 'Cold outbound', owner: 'Vishal R.', lastActivity: '3 h ago',
+      temp: 'warm', score: 61,
+      insightWhy: 'warm',
+      summary: 'Founder of a small studio — opened 4 of last 5 emails but has not replied. Possibly evaluating quietly.',
+      signals: [
+        { label: 'Open rate', value: '80%', tone: 'good' },
+        { label: 'Replies', value: '0', tone: 'neutral' },
+        { label: 'Seniority', value: 'Founder', tone: 'good' },
+        { label: 'Company size', value: '<20', tone: 'neutral' }
+      ],
+      suggested: [
+        { title: 'Send short value email', desc: '2–3 lines, single CTA' },
+        { title: 'Try LinkedIn touch', desc: 'Multi-channel sequence' }
+      ],
+      scoreReason: '+15 fit · +18 intent · +20 engagement · +8 timing',
+      activity: [
+        { t: '3 h ago', type: 'email', text: 'Opened "How studios use Leadflow"' },
+        { t: 'Mon',     type: 'email', text: 'Opened "Quick intro"' }
+      ]
+    },
+    {
+      id: 'l5', name: 'Aisha Khan', initials: 'AK', title: 'Marketing Lead', company: 'Verdant Foods',
+      email: 'aisha@verdant.com', phone: '+44 20 5555 0166', location: 'London, UK',
+      source: 'Website form', owner: 'Vishal R.', lastActivity: 'Yesterday',
+      temp: 'cold', score: 34,
+      insightWhy: 'cold',
+      summary: 'Downloaded a guide 3 weeks ago, but no engagement since. Mid-market fit, low urgency.',
+      signals: [
+        { label: 'Last activity', value: '21 days', tone: 'bad' },
+        { label: 'Open rate', value: '20%', tone: 'bad' },
+        { label: 'ICP fit', value: '62%', tone: 'neutral' },
+        { label: 'Replies', value: '0', tone: 'bad' }
+      ],
+      suggested: [
+        { title: 'Add to nurture sequence', desc: 'Re-warm over 4 weeks' },
+        { title: 'Move to "Watch later"', desc: 'Low priority right now' }
+      ],
+      scoreReason: '+12 fit · +6 intent · +8 engagement · +8 timing',
+      activity: [
+        { t: 'Yesterday',  type: 'ai',    text: 'AI re-classified as COLD (no activity in 21d).' },
+        { t: '3 weeks ago', type: 'form', text: 'Downloaded "Marketer\'s playbook".' }
+      ]
+    },
+    {
+      id: 'l6', name: 'Jonas Weber', initials: 'JW', title: 'Ops Director', company: 'Ridgeline Logistics',
+      email: 'jonas@ridgeline.co', phone: '+49 30 5555 0157', location: 'Berlin, DE',
+      source: 'Cold outbound', owner: 'Unassigned', lastActivity: '2 d ago',
+      temp: 'cold', score: 28,
+      insightWhy: 'cold',
+      summary: 'Outbound recipient. Hasn\'t opened the last 3 emails. Low intent.',
+      signals: [
+        { label: 'Open rate', value: '0%', tone: 'bad' },
+        { label: 'Replies', value: '0', tone: 'bad' },
+        { label: 'ICP fit', value: '55%', tone: 'neutral' },
+        { label: 'Seniority', value: 'Director', tone: 'good' }
+      ],
+      suggested: [
+        { title: 'Pause sequence', desc: 'Avoid spam risk' },
+        { title: 'Try different angle', desc: 'A/B subject line' }
+      ],
+      scoreReason: '+10 fit · +4 intent · +6 engagement · +8 timing',
+      activity: [
+        { t: '2 d ago', type: 'email', text: 'Sent: "Quick question about Ridgeline"' }
+      ]
+    },
+    {
+      id: 'l7', name: 'Sofia Romano', initials: 'SR', title: 'CTO', company: 'Pinecrest Health',
+      email: 'sofia@pinecrest.health', phone: '+1 617 555 0199', location: 'Boston, MA',
+      source: 'Referral', owner: 'Vishal R.', lastActivity: '12 min ago',
+      temp: 'hot', score: 95,
+      insightWhy: 'hot',
+      summary: 'CTO at a strong-fit healthcare company, referred by a current customer. Asked about HIPAA + SSO in her first reply.',
+      signals: [
+        { label: 'Referral', value: 'Yes', tone: 'good' },
+        { label: 'Seniority', value: 'C-level', tone: 'good' },
+        { label: 'ICP fit', value: '97%', tone: 'good' },
+        { label: 'Reply latency', value: '8 min', tone: 'good' }
+      ],
+      suggested: [
+        { title: 'Send security one-pager', desc: 'HIPAA + SSO covered' },
+        { title: 'Book exec intro', desc: 'CTO + your CEO' }
+      ],
+      scoreReason: '+25 fit · +32 intent · +20 engagement · +18 timing',
+      activity: [
+        { t: '12 min ago', type: 'reply', text: 'Sofia asked: "Do you support SSO via Okta?"' },
+        { t: '1 h ago',    type: 'ai',    text: 'AI auto-tagged "Security review" topic.' }
+      ]
+    }
+  ];
+
+  // ---------- helpers ----------
+  const tempStyles = {
+    hot:  { dot: 'bg-hot-500',  pill: 'bg-hot-50 text-hot-700',   label: 'Hot' },
+    warm: { dot: 'bg-warm-500', pill: 'bg-warm-50 text-warm-700', label: 'Warm' },
+    cold: { dot: 'bg-cold-500', pill: 'bg-cold-50 text-cold-700', label: 'Cold' }
+  };
+  const toneStyles = {
+    good:    'text-emerald-700 bg-emerald-50',
+    neutral: 'text-ink-700 bg-surface-muted',
+    bad:     'text-rose-700 bg-rose-50'
+  };
+  const activityIcon = {
+    reply: '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>',
+    email: '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>',
+    visit: '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
+    form:  '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+    ai:    '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2 5 5 1-3.5 3.5L17 17l-5-3-5 3 1.5-5.5L5 8l5-1z"/></svg>'
+  };
+
+  // ---------- dashboard rendering ----------
+  let activeFilter = 'all';
+  let searchQuery = '';
+
+  function filteredLeads() {
+    const q = searchQuery.trim().toLowerCase();
+    return LEADS.filter(l => {
+      if (activeFilter !== 'all' && l.temp !== activeFilter) return false;
+      if (!q) return true;
+      return [l.name, l.company, l.email, l.title].some(v => v.toLowerCase().includes(q));
+    });
+  }
+
+  function renderCounts() {
+    const counts = { all: LEADS.length, hot: 0, warm: 0, cold: 0 };
+    LEADS.forEach(l => counts[l.temp]++);
+    document.querySelectorAll('[data-count]').forEach(el => {
+      el.textContent = counts[el.dataset.count];
+    });
+  }
+
+  function renderRows() {
+    const tbody = document.getElementById('leadRows');
+    const rows = filteredLeads();
+    document.getElementById('visibleCount').textContent = rows.length;
+    document.getElementById('totalCount').textContent = LEADS.length;
+
+    if (rows.length === 0) {
+      tbody.innerHTML = `
+        <tr><td colspan="7" class="px-4 py-12 text-center text-ink-500">
+          <div class="font-medium mb-1">No leads match your filters</div>
+          <div class="text-xs">Try clearing search or switching to "All".</div>
+        </td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rows.map(l => {
+      const t = tempStyles[l.temp];
+      return `
+      <tr class="row-hover border-b border-surface-border cursor-pointer" data-id="${l.id}">
+        <td class="px-4 py-3" onclick="event.stopPropagation()">
+          <input type="checkbox" class="rounded border-surface-border" />
+        </td>
+        <td class="px-2 py-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-8 h-8 shrink-0 rounded-full bg-brand-100 text-brand-700 grid place-items-center text-xs font-semibold">${l.initials}</div>
+            <div class="min-w-0">
+              <div class="font-medium truncate">${l.name}</div>
+              <div class="text-xs text-ink-500 truncate">${l.title}</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-2 py-3">
+          <div class="truncate">${l.company}</div>
+          <div class="text-xs text-ink-500 truncate">${l.location}</div>
+        </td>
+        <td class="px-2 py-3">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full ${t.pill}">
+              <span class="w-1.5 h-1.5 rounded-full ${t.dot}"></span> ${t.label}
+            </span>
+            <div class="flex items-center gap-1.5">
+              <div class="h-1.5 w-16 rounded-full bg-surface-muted overflow-hidden">
+                <div class="h-full bg-brand-600" style="width:${l.score}%"></div>
+              </div>
+              <span class="text-xs text-ink-500 tabular-nums">${l.score}</span>
+            </div>
+          </div>
+        </td>
+        <td class="px-2 py-3 text-ink-500">${l.source}</td>
+        <td class="px-2 py-3 text-ink-500">${l.lastActivity}</td>
+        <td class="px-2 py-3 pr-4">
+          <div class="flex items-center gap-1 justify-end" onclick="event.stopPropagation()">
+            <button title="Reply" class="h-8 w-8 grid place-items-center rounded-md hover:bg-surface-muted text-ink-500" onclick="openLead('${l.id}')">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+            </button>
+            <button title="Qualify" class="h-8 w-8 grid place-items-center rounded-md hover:bg-surface-muted text-ink-500">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4L19 7"/></svg>
+            </button>
+            <button title="More" class="h-8 w-8 grid place-items-center rounded-md hover:bg-surface-muted text-ink-500">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('tr[data-id]').forEach(tr => {
+      tr.addEventListener('click', () => openLead(tr.dataset.id));
+    });
+  }
+
+  // ---------- detail rendering ----------
+  function openLead(id) {
+    const l = LEADS.find(x => x.id === id);
+    if (!l) return;
+
+    const t = tempStyles[l.temp];
+    document.getElementById('detailAvatar').textContent = l.initials;
+    document.getElementById('detailName').textContent = l.name;
+    const tempBadge = document.getElementById('detailTempBadge');
+    tempBadge.className = `text-xs font-medium px-2 py-0.5 rounded-full ${t.pill}`;
+    tempBadge.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full ${t.dot} mr-1.5 align-middle"></span>${t.label}`;
+    document.getElementById('detailMeta').textContent = `${l.title} · ${l.company}`;
+    document.getElementById('detailContacts').innerHTML = `
+      <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>${l.email}</span>
+      <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92V21a1 1 0 0 1-1.1 1A19.86 19.86 0 0 1 2 3.1 1 1 0 0 1 3 2h4.09a1 1 0 0 1 1 .75l1 4a1 1 0 0 1-.27 1L7.21 9.21a16 16 0 0 0 7.58 7.58l1.46-1.61a1 1 0 0 1 1-.27l4 1a1 1 0 0 1 .75 1z"/></svg>${l.phone}</span>
+      <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${l.location}</span>
+    `;
+
+    document.getElementById('insightWhy').textContent = l.insightWhy;
+    document.getElementById('insightSummary').textContent = l.summary;
+    document.getElementById('signals').innerHTML = l.signals.map(s => `
+      <div class="rounded-md border border-surface-border p-3">
+        <div class="text-[11px] uppercase tracking-wide text-ink-300">${s.label}</div>
+        <div class="text-sm font-medium mt-0.5 inline-flex px-1.5 py-0.5 rounded ${toneStyles[s.tone]}">${s.value}</div>
+      </div>
+    `).join('');
+
+    document.getElementById('suggestedActions').innerHTML = l.suggested.map(s => `
+      <button class="w-full text-left p-3 rounded-md border border-surface-border hover:border-brand-500 hover:bg-brand-50 transition">
+        <div class="text-sm font-medium">${s.title}</div>
+        <div class="text-xs text-ink-500 mt-0.5">${s.desc}</div>
+      </button>
+    `).join('');
+
+    document.getElementById('activityList').innerHTML = l.activity.map(a => `
+      <li class="ms-4">
+        <span class="absolute -start-1.5 mt-1 flex h-3 w-3 items-center justify-center rounded-full bg-white border border-brand-500">
+          <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
+        </span>
+        <div class="text-xs text-ink-300">${a.t}</div>
+        <div class="text-sm mt-0.5 flex items-start gap-2">
+          <span class="text-ink-500 mt-0.5">${activityIcon[a.type] || ''}</span>
+          <span>${a.text}</span>
+        </div>
+      </li>
+    `).join('');
+
+    // score
+    const pill = document.getElementById('detailScorePill');
+    pill.className = `text-xs font-medium px-2 py-0.5 rounded-full ${t.pill}`;
+    pill.textContent = t.label;
+    document.getElementById('scoreNumber').textContent = l.score;
+    document.getElementById('scoreBar').style.width = l.score + '%';
+    document.getElementById('scoreReason').textContent = l.scoreReason;
+
+    // facts
+    document.getElementById('detailFacts').innerHTML = `
+      ${fact('Company', l.company)}
+      ${fact('Title', l.title)}
+      ${fact('Source', l.source)}
+      ${fact('Owner', l.owner)}
+      ${fact('Location', l.location)}
+      ${fact('Last activity', l.lastActivity)}
+    `;
+
+    // reply draft
+    document.getElementById('replyBox').value = draftReply(l, currentTone);
+
+    // switch view
+    switchView('detail');
+    document.getElementById('pageTitle').textContent = l.name;
+  }
+
+  function fact(k, v) {
+    return `<div class="flex items-start justify-between gap-3">
+      <dt class="text-ink-500">${k}</dt><dd class="font-medium text-right">${v}</dd>
+    </div>`;
+  }
+
+  // ---------- view switching ----------
+  function switchView(view) {
+    document.querySelectorAll('[data-view]').forEach(el => el.classList.toggle('is-active', el.dataset.view === view));
+    document.getElementById('backBtn').classList.toggle('hidden', view === 'dashboard');
+    document.getElementById('backBtn').classList.toggle('flex', view === 'detail');
+    if (view === 'dashboard') document.getElementById('pageTitle').textContent = 'Leads';
+    window.scrollTo({ top: 0 });
+  }
+
+  document.getElementById('backBtn').addEventListener('click', () => switchView('dashboard'));
+
+  // ---------- filters ----------
+  document.querySelectorAll('.filter-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFilter = btn.dataset.filter;
+      document.querySelectorAll('.filter-tab').forEach(b => {
+        b.classList.remove('bg-white', 'shadow-sm', 'font-medium', 'text-ink-900');
+        b.classList.add('text-ink-500');
+      });
+      btn.classList.remove('text-ink-500');
+      btn.classList.add('bg-white', 'shadow-sm', 'font-medium', 'text-ink-900');
+      renderRows();
+    });
+  });
+
+  // ---------- search ----------
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', (e) => { searchQuery = e.target.value; renderRows(); });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement !== searchInput) { e.preventDefault(); searchInput.focus(); }
+    if (e.key === 'Escape') {
+      if (document.querySelector('[data-view="detail"]').classList.contains('is-active')) switchView('dashboard');
+    }
+  });
+
+  // ---------- reply tones ----------
+  let currentTone = 'direct';
+  document.querySelectorAll('.tone-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentTone = btn.dataset.tone;
+      document.querySelectorAll('.tone-btn').forEach(b => {
+        b.classList.remove('border-brand-600', 'text-brand-700', 'bg-brand-50');
+        b.classList.add('border-surface-border', 'bg-white');
+      });
+      btn.classList.add('border-brand-600', 'text-brand-700', 'bg-brand-50');
+      btn.classList.remove('border-surface-border', 'bg-white');
+      const id = document.getElementById('detailName').dataset.id;
+      // find lead by name
+      const name = document.getElementById('detailName').textContent;
+      const l = LEADS.find(x => x.name === name);
+      if (l) document.getElementById('replyBox').value = draftReply(l, currentTone);
+    });
+  });
+  document.getElementById('regenBtn').addEventListener('click', () => {
+    const name = document.getElementById('detailName').textContent;
+    const l = LEADS.find(x => x.name === name);
+    if (l) document.getElementById('replyBox').value = draftReply(l, currentTone, true);
+  });
+
+  function draftReply(l, tone, regen=false) {
+    const first = l.name.split(' ')[0];
+    const variants = {
+      friendly: [
+        `Hi ${first} — thanks so much for getting back to me! Happy to walk you through how teams at ${l.company}'s size typically use Leadflow. Does Thursday at 2pm PT work for a 20-min call?`,
+        `Hey ${first}! Really appreciate the quick reply. I'd love to show you a few things specific to ${l.company} — does later this week suit you?`
+      ],
+      direct: [
+        `Hi ${first}, thanks for the reply. Based on what you've shared, I think a 20-min call would be the fastest way to see if we're a fit. Thursday 2pm PT — does that work?`,
+        `Hi ${first}, appreciate the reply. The fastest path forward is a short call. Pick a time here: leadflow.app/v/priya`
+      ],
+      formal: [
+        `Hello ${first}, thank you for your response. I would welcome the opportunity to walk you through how Leadflow can support ${l.company}. Could we schedule a brief 20-minute call on Thursday?`,
+        `Dear ${first}, thank you for the prompt reply. I'd be glad to set up a 20-minute introduction. Please let me know a time that works best for you this week.`
+      ]
+    };
+    const list = variants[tone];
+    return list[regen ? 1 : 0];
+  }
+
+  // ---------- init ----------
+  renderCounts();
+  renderRows();
+</script>
+</body>
+</html>
