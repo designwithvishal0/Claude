@@ -1,0 +1,63 @@
+[
+  {
+    "tweet_id": "1234567890001",
+    "author": "TechCorp Careers",
+    "author_handle": "techcorpcareers",
+    "created_at": "2026-05-26T03:41:00.751792+00:00",
+    "text": "We're #hiring a Senior Python Engineer! Remote-friendly, $130K-$160K/yr. Join our team! #remotejobs #techjobs",
+    "url": "https://x.com/techcorpcareers/status/1234567890001",
+    "likes": 45,
+    "retweets": 12,
+    "replies": 3,
+    "hashtags": [
+      "hiring",
+      "remotejobs",
+      "techjobs"
+    ],
+    "job_title": "Senior Python Engineer",
+    "company": "TechCorp",
+    "location": "",
+    "remote": true,
+    "salary": "$130K-$160K/yr"
+  },
+  {
+    "tweet_id": "1234567890002",
+    "author": "DesignStudio",
+    "author_handle": "designstudiohq",
+    "created_at": "2026-05-26T03:41:00.751825+00:00",
+    "text": "Open role: Product Designer. Based in New York or remote. We are hiring! #designjobs #nowhiring",
+    "url": "https://x.com/designstudiohq/status/1234567890002",
+    "likes": 30,
+    "retweets": 8,
+    "replies": 5,
+    "hashtags": [
+      "designjobs",
+      "nowhiring"
+    ],
+    "job_title": "Product Designer",
+    "company": "DesignStudio",
+    "location": "New York",
+    "remote": true,
+    "salary": ""
+  },
+  {
+    "tweet_id": "1234567890003",
+    "author": "StartupXYZ",
+    "author_handle": "startupxyz",
+    "created_at": "2026-05-26T03:41:00.751828+00:00",
+    "text": "Join our team as a Marketing Manager! Location: San Francisco. Salary: $90K-$110K. #hiring #jobs",
+    "url": "https://x.com/startupxyz/status/1234567890003",
+    "likes": 22,
+    "retweets": 5,
+    "replies": 2,
+    "hashtags": [
+      "hiring",
+      "jobs"
+    ],
+    "job_title": "Marketing Manager",
+    "company": "StartupXYZ",
+    "location": "San Francisco",
+    "remote": false,
+    "salary": "$90K-$110K"
+  }
+]
