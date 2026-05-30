@@ -95,6 +95,11 @@
           <input id="searchInput" placeholder="Search leads, companies…" class="bg-transparent text-sm w-full outline-none placeholder:text-ink-300" />
           <span class="kbd">/</span>
         </div>
+        <button id="scrapeXBtn" class="h-9 px-3 rounded-md border border-surface-border bg-white text-sm font-medium hover:bg-surface-muted flex items-center gap-2">
+          <!-- X logo -->
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Scrape X
+        </button>
         <button class="h-9 px-3 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 flex items-center gap-2">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           Add lead
@@ -152,12 +157,13 @@
 
             <div class="h-6 w-px bg-surface-border mx-1 hidden md:block"></div>
 
-            <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
-              <option>All sources</option>
-              <option>Website form</option>
-              <option>LinkedIn</option>
-              <option>Cold outbound</option>
-              <option>Referral</option>
+            <select id="sourceFilter" class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
+              <option value="">All sources</option>
+              <option value="Website form">Website form</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Cold outbound">Cold outbound</option>
+              <option value="Referral">Referral</option>
+              <option value="X (Twitter)">X (Twitter)</option>
             </select>
             <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
               <option>All owners</option>
@@ -491,6 +497,104 @@
         { t: '2 d ago', type: 'email', text: 'Sent: "Quick question about Ridgeline"' }
       ]
     },
+    // ---- X (Twitter) scraped leads ----
+    {
+      id: 'x1', name: 'Arjun Mehta', initials: 'AM', title: 'Co-founder & CEO', company: 'Synthos AI',
+      email: '@arjunmehta_ai', phone: 'x.com/arjunmehta_ai/status/1796000000000000001', location: 'Remote',
+      source: 'X (Twitter)', owner: 'Unassigned', lastActivity: '22 min ago',
+      temp: 'hot', score: 84,
+      insightWhy: 'hot',
+      summary: "Synthos AI is hiring aggressively — CEO personally tweeted a 6-role hiring thread that got 340 likes. Series A stage startup scaling GTM. Roles include Head of Growth and 2 AEs, which signals serious revenue investment.",
+      signals: [
+        { label: 'Roles detected', value: 'Head of Growth, AE', tone: 'good' },
+        { label: 'Post engagement', value: '340 likes', tone: 'good' },
+        { label: 'Seniority', value: 'Founder / CEO', tone: 'good' },
+        { label: 'Growth signal', value: 'Series A', tone: 'good' }
+      ],
+      suggested: [
+        { title: 'Reply to hiring thread', desc: 'Engage authentically on X' },
+        { title: 'Send cold DM', desc: 'CEO is active — 8h reply window' },
+        { title: 'Find email via Hunter.io', desc: 'Move to email outreach' }
+      ],
+      scoreReason: '+22 fit · +28 intent · +20 engagement · +14 timing',
+      activity: [
+        { t: '22 min ago', type: 'ai',    text: 'AI detected hiring thread by CEO @arjunmehta_ai (340 likes, 6 roles).' },
+        { t: '1 h ago',    type: 'visit', text: 'X post: "🚀 Synthos AI is hiring! We\'re looking for a Head of Growth, 2 AEs, and 3 engineers. Series A, remote-first. Thread 👇"' },
+        { t: '3 h ago',    type: 'visit', text: 'Company pinned a jobs page to their X bio.' }
+      ]
+    },
+    {
+      id: 'x2', name: 'Leila Nouri', initials: 'LN', title: 'VP Marketing at BuildStream', company: 'BuildStream',
+      email: '@leilanouri', phone: 'x.com/leilanouri/status/1796000000000000002', location: 'San Francisco, CA',
+      source: 'X (Twitter)', owner: 'Unassigned', lastActivity: '3 h ago',
+      temp: 'warm', score: 67,
+      insightWhy: 'warm',
+      summary: "VP Marketing at BuildStream tweeted about hiring a Demand Gen Manager and SDRs. Mid-market B2B SaaS — classic ICP. Post had moderate engagement. No funding signal but steady hiring pace suggests organic growth.",
+      signals: [
+        { label: 'Roles detected', value: 'Demand Gen, SDR', tone: 'good' },
+        { label: 'Post engagement', value: '58 likes', tone: 'neutral' },
+        { label: 'Seniority', value: 'VP', tone: 'good' },
+        { label: 'Growth signal', value: 'Steady hiring', tone: 'neutral' }
+      ],
+      suggested: [
+        { title: 'DM on X', desc: 'Reference their SDR search' },
+        { title: 'Email cold outreach', desc: 'VP Marketing = likely buyer' },
+        { title: 'Add to nurture', desc: 'Follow hiring pace over 2 weeks' }
+      ],
+      scoreReason: '+18 fit · +20 intent · +16 engagement · +13 timing',
+      activity: [
+        { t: '3 h ago',    type: 'ai',    text: 'AI detected SDR + Demand Gen hiring post by VP Marketing.' },
+        { t: '3 h ago',    type: 'visit', text: 'X post: "We\'re growing the demand gen team at BuildStream! Looking for a sharp SDR and a DG Manager. DMs open 💬"' },
+        { t: 'Yesterday',  type: 'visit', text: 'BuildStream posted about Q3 pipeline goals on X.' }
+      ]
+    },
+    {
+      id: 'x3', name: 'Tomás Reyes', initials: 'TR', title: 'Founder, Pixelcraft Studio', company: 'Pixelcraft Studio',
+      email: '@tomasreyes_dev', phone: 'x.com/tomasreyes_dev/status/1796000000000000003', location: 'Austin, TX',
+      source: 'X (Twitter)', owner: 'Unassigned', lastActivity: '1 d ago',
+      temp: 'warm', score: 55,
+      insightWhy: 'warm',
+      summary: "Solo founder posting about first hires — designer and a marketing generalist. Early-stage but strong founder signal (6k followers, active poster). Small company but founder is the buyer, which accelerates sales cycles.",
+      signals: [
+        { label: 'Roles detected', value: 'Designer, Marketing', tone: 'neutral' },
+        { label: 'Post engagement', value: '24 likes', tone: 'neutral' },
+        { label: 'Seniority', value: 'Founder', tone: 'good' },
+        { label: 'Growth signal', value: 'First hires', tone: 'neutral' }
+      ],
+      suggested: [
+        { title: 'Send short cold DM', desc: 'Founder = fast decision-maker' },
+        { title: 'Add to watch list', desc: 'Monitor next hires as growth signal' }
+      ],
+      scoreReason: '+15 fit · +16 intent · +14 engagement · +10 timing',
+      activity: [
+        { t: '1 d ago', type: 'ai',    text: 'AI flagged first-hire announcement as early growth signal.' },
+        { t: '1 d ago', type: 'visit', text: 'X post: "Making our first 2 hires at Pixelcraft! Looking for a designer and a marketing generalist. Excited 🎨"' }
+      ]
+    },
+    {
+      id: 'x4', name: 'Dana Park', initials: 'DP', title: 'Head of Revenue, Clearpath Analytics', company: 'Clearpath Analytics',
+      email: '@danapark_rev', phone: 'x.com/danapark_rev/status/1796000000000000004', location: 'New York, NY',
+      source: 'X (Twitter)', owner: 'Unassigned', lastActivity: '2 d ago',
+      temp: 'cold', score: 41,
+      insightWhy: 'cold',
+      summary: "Head of Revenue posted a generic engineering job 2 days ago. Low engagement and no GTM role signal. Clearpath is growing but the post doesn't indicate they're investing in sales tooling yet.",
+      signals: [
+        { label: 'Roles detected', value: 'Backend Engineer', tone: 'neutral' },
+        { label: 'Post engagement', value: '8 likes', tone: 'bad' },
+        { label: 'Seniority', value: 'Head of Revenue', tone: 'good' },
+        { label: 'Growth signal', value: 'Technical hire', tone: 'neutral' }
+      ],
+      suggested: [
+        { title: 'Add to nurture sequence', desc: 'Re-check in 3 weeks' },
+        { title: 'Monitor X activity', desc: 'Wait for GTM hiring signal' }
+      ],
+      scoreReason: '+10 fit · +12 intent · +10 engagement · +9 timing',
+      activity: [
+        { t: '2 d ago', type: 'ai',    text: 'AI scored this lead LOW — only technical hire detected, no GTM signal.' },
+        { t: '2 d ago', type: 'visit', text: 'X post: "Clearpath is hiring a senior backend engineer. Link in bio! #hiring #python"' }
+      ]
+    },
+    // ---- original leads below ----
     {
       id: 'l7', name: 'Sofia Romano', initials: 'SR', title: 'CTO', company: 'Pinecrest Health',
       email: 'sofia@pinecrest.health', phone: '+1 617 555 0199', location: 'Boston, MA',
@@ -538,11 +642,13 @@
   // ---------- dashboard rendering ----------
   let activeFilter = 'all';
   let searchQuery = '';
+  let activeSource = '';
 
   function filteredLeads() {
     const q = searchQuery.trim().toLowerCase();
     return LEADS.filter(l => {
       if (activeFilter !== 'all' && l.temp !== activeFilter) return false;
+      if (activeSource && l.source !== activeSource) return false;
       if (!q) return true;
       return [l.name, l.company, l.email, l.title].some(v => v.toLowerCase().includes(q));
     });
@@ -604,7 +710,11 @@
             </div>
           </div>
         </td>
-        <td class="px-2 py-3 text-ink-500">${l.source}</td>
+        <td class="px-2 py-3 text-ink-500">
+          ${l.source === 'X (Twitter)'
+            ? `<span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-ink-900 text-white"><svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>X</span>`
+            : l.source}
+        </td>
         <td class="px-2 py-3 text-ink-500">${l.lastActivity}</td>
         <td class="px-2 py-3 pr-4">
           <div class="flex items-center gap-1 justify-end" onclick="event.stopPropagation()">
@@ -639,7 +749,14 @@
     tempBadge.className = `text-xs font-medium px-2 py-0.5 rounded-full ${t.pill}`;
     tempBadge.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full ${t.dot} mr-1.5 align-middle"></span>${t.label}`;
     document.getElementById('detailMeta').textContent = `${l.title} · ${l.company}`;
-    document.getElementById('detailContacts').innerHTML = `
+    const isXLead = l.source === 'X (Twitter)';
+    document.getElementById('detailContacts').innerHTML = isXLead ? `
+      <span class="inline-flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        <a href="${l.phone}" target="_blank" rel="noopener" class="hover:underline text-brand-700">View hiring post on X</a>
+      </span>
+      <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${l.location}</span>
+    ` : `
       <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>${l.email}</span>
       <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92V21a1 1 0 0 1-1.1 1A19.86 19.86 0 0 1 2 3.1 1 1 0 0 1 3 2h4.09a1 1 0 0 1 1 .75l1 4a1 1 0 0 1-.27 1L7.21 9.21a16 16 0 0 0 7.58 7.58l1.46-1.61a1 1 0 0 1 1-.27l4 1a1 1 0 0 1 .75 1z"/></svg>${l.phone}</span>
       <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${l.location}</span>
@@ -683,10 +800,13 @@
     document.getElementById('scoreReason').textContent = l.scoreReason;
 
     // facts
+    const sourceDisplay = l.source === 'X (Twitter)'
+      ? `<span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-ink-900 text-white"><svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>X (Twitter)</span>`
+      : l.source;
     document.getElementById('detailFacts').innerHTML = `
       ${fact('Company', l.company)}
       ${fact('Title', l.title)}
-      ${fact('Source', l.source)}
+      ${fact('Source', sourceDisplay)}
       ${fact('Owner', l.owner)}
       ${fact('Location', l.location)}
       ${fact('Last activity', l.lastActivity)}
@@ -784,6 +904,225 @@
     const list = variants[tone];
     return list[regen ? 1 : 0];
   }
+
+  // ---------- source filter ----------
+  document.getElementById('sourceFilter').addEventListener('change', (e) => {
+    activeSource = e.target.value;
+    renderRows();
+  });
+
+  // ---------- X scrape modal ----------
+  const scrapeModal = document.createElement('div');
+  scrapeModal.id = 'scrapeModal';
+  scrapeModal.className = 'fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm';
+  scrapeModal.innerHTML = `
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-surface-border">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-ink-900 text-white grid place-items-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold text-sm">Scrape jobs from X</div>
+            <div class="text-xs text-ink-500">Find companies hiring on X — strong growth signal</div>
+          </div>
+        </div>
+        <button id="closeModal" class="w-8 h-8 rounded-md hover:bg-surface-muted grid place-items-center text-ink-500">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4" id="scrapeFormWrap">
+        <div>
+          <label class="text-xs font-medium text-ink-700 block mb-1">X Bearer Token</label>
+          <input id="bearerInput" type="password" placeholder="Enter your X API Bearer Token…"
+            class="w-full text-sm border border-surface-border rounded-md h-9 px-3 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <p class="text-xs text-ink-300 mt-1">Get a free token at developer.twitter.com · used only in your browser</p>
+        </div>
+        <div>
+          <label class="text-xs font-medium text-ink-700 block mb-1">Search queries</label>
+          <textarea id="queryInput" rows="3"
+            class="w-full text-sm border border-surface-border rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            placeholder='One query per line, e.g.&#10;#hiring #SaaS remote -is:retweet lang:en&#10;"head of growth" hiring -is:retweet lang:en'
+          >#hiring (#SaaS OR #startup OR #tech) -is:retweet lang:en
+"we're hiring" (#growth OR #marketing OR #sales) -is:retweet lang:en</textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-medium text-ink-700 block mb-1">Max results / query</label>
+            <select id="maxResults" class="w-full text-sm border border-surface-border rounded-md h-9 px-2 bg-white">
+              <option value="10">10</option>
+              <option value="25" selected>25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-medium text-ink-700 block mb-1">Min AI score</label>
+            <select id="minScore" class="w-full text-sm border border-surface-border rounded-md h-9 px-2 bg-white">
+              <option value="0">All leads</option>
+              <option value="40">≥ 40 (warm+)</option>
+              <option value="70" selected>≥ 70 (hot only)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="bg-brand-50 border border-brand-100 rounded-lg p-3 text-xs text-brand-700 flex gap-2">
+          <svg class="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2 5 5 1-3.5 3.5L17 17l-5-3-5 3 1.5-5.5L5 8l5-1z"/></svg>
+          <span>Leadflow AI will score each hiring tweet and surface companies most likely to need sales tooling. Only GTM and growth signals are counted.</span>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-1">
+          <button id="demoScrapeBtn" class="h-9 px-4 rounded-md border border-surface-border text-sm hover:bg-surface-muted">
+            Preview demo data
+          </button>
+          <button id="runScrapeBtn" class="h-9 px-4 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 flex items-center gap-2">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            Scrape X now
+          </button>
+        </div>
+      </div>
+
+      <div id="scrapeProgress" class="hidden p-6 space-y-4">
+        <div class="flex flex-col items-center gap-3 py-4">
+          <div id="spinnerIcon" class="w-10 h-10 rounded-full border-4 border-brand-100 border-t-brand-600 animate-spin"></div>
+          <div class="text-sm font-medium" id="progressLabel">Connecting to X API…</div>
+          <div class="text-xs text-ink-500" id="progressSub">Searching for hiring tweets</div>
+        </div>
+        <div class="bg-surface-muted rounded-lg p-3 text-xs font-mono text-ink-700 space-y-1 max-h-32 overflow-y-auto" id="progressLog"></div>
+      </div>
+
+      <div id="scrapeResults" class="hidden p-6 space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 grid place-items-center">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4L19 7"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold text-sm" id="resultsHeadline">Scraped 4 leads from X</div>
+            <div class="text-xs text-ink-500">All added to your lead table · sorted by AI score</div>
+          </div>
+        </div>
+        <div class="space-y-2" id="resultsList"></div>
+        <div class="flex justify-end gap-2">
+          <button id="closeResultsBtn" class="h-9 px-4 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700">
+            View in dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(scrapeModal);
+
+  // add CSS for spin animation if not already present
+  const spinStyle = document.createElement('style');
+  spinStyle.textContent = '@keyframes spin{to{transform:rotate(360deg)}}.animate-spin{animation:spin 1s linear infinite}';
+  document.head.appendChild(spinStyle);
+
+  function openScrapeModal() {
+    scrapeModal.classList.remove('hidden');
+    scrapeModal.classList.add('flex');
+    document.getElementById('scrapeFormWrap').classList.remove('hidden');
+    document.getElementById('scrapeProgress').classList.add('hidden');
+    document.getElementById('scrapeResults').classList.add('hidden');
+  }
+
+  function closeScrapeModal() {
+    scrapeModal.classList.add('hidden');
+    scrapeModal.classList.remove('flex');
+  }
+
+  document.getElementById('scrapeXBtn').addEventListener('click', openScrapeModal);
+  document.getElementById('closeModal').addEventListener('click', closeScrapeModal);
+  scrapeModal.addEventListener('click', (e) => { if (e.target === scrapeModal) closeScrapeModal(); });
+
+  // X leads already in LEADS array — the demo run just highlights them
+  const X_LEAD_IDS = ['x1', 'x2', 'x3', 'x4'];
+
+  function showProgress(lines, delay = 400) {
+    return new Promise(resolve => {
+      const log = document.getElementById('progressLog');
+      let i = 0;
+      const tick = () => {
+        if (i >= lines.length) { resolve(); return; }
+        const div = document.createElement('div');
+        div.textContent = lines[i++];
+        log.appendChild(div);
+        log.scrollTop = log.scrollHeight;
+        setTimeout(tick, delay);
+      };
+      tick();
+    });
+  }
+
+  async function runDemoScrape() {
+    document.getElementById('scrapeFormWrap').classList.add('hidden');
+    document.getElementById('scrapeProgress').classList.remove('hidden');
+    document.getElementById('progressLog').innerHTML = '';
+
+    const progressLines = [
+      '> Connecting to X API v2…',
+      '> Query 1: #hiring (#SaaS OR #startup OR #tech) -is:retweet lang:en',
+      '  → Found 25 tweets, 8 job signals detected',
+      '> Query 2: "we\'re hiring" (#growth OR #marketing OR #sales) -is:retweet lang:en',
+      '  → Found 18 tweets, 6 job signals detected',
+      '> Running Leadflow AI scorer…',
+      '  x1 Synthos AI (CEO hiring thread) → score 84 🔥 HOT',
+      '  x2 BuildStream (VP Mktg, SDR + DG) → score 67 🌡 WARM',
+      '  x3 Pixelcraft Studio (first hires) → score 55 🌡 WARM',
+      '  x4 Clearpath Analytics (eng hire)  → score 41 🧊 COLD',
+      '> Deduplication complete. 4 unique leads.',
+      '> Import ready ✓',
+    ];
+
+    document.getElementById('progressLabel').textContent = 'Scanning X for hiring signals…';
+    document.getElementById('progressSub').textContent = 'Running Leadflow AI scorer on each tweet';
+    await showProgress(progressLines, 350);
+
+    document.getElementById('progressLabel').textContent = 'Done!';
+    document.getElementById('spinnerIcon').className = 'w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 grid place-items-center';
+    document.getElementById('spinnerIcon').innerHTML = '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4L19 7"/></svg>';
+
+    await new Promise(r => setTimeout(r, 600));
+
+    // show results panel
+    document.getElementById('scrapeProgress').classList.add('hidden');
+    document.getElementById('scrapeResults').classList.remove('hidden');
+
+    const xLeads = LEADS.filter(l => X_LEAD_IDS.includes(l.id));
+    document.getElementById('resultsHeadline').textContent = `Scraped ${xLeads.length} leads from X`;
+    document.getElementById('resultsList').innerHTML = xLeads.map(l => {
+      const t = tempStyles[l.temp];
+      return `<div class="flex items-center gap-3 p-3 rounded-lg border border-surface-border">
+        <div class="w-8 h-8 shrink-0 rounded-full bg-brand-100 text-brand-700 grid place-items-center text-xs font-semibold">${l.initials}</div>
+        <div class="min-w-0 flex-1">
+          <div class="text-sm font-medium">${l.name} · ${l.company}</div>
+          <div class="text-xs text-ink-500 truncate">${l.tweet_text ? l.tweet_text.substring(0, 80) + '…' : l.summary.substring(0, 80) + '…'}</div>
+        </div>
+        <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${t.pill}">${l.score}</span>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('demoScrapeBtn').addEventListener('click', runDemoScrape);
+  document.getElementById('runScrapeBtn').addEventListener('click', () => {
+    const token = document.getElementById('bearerInput').value.trim();
+    if (!token) {
+      document.getElementById('bearerInput').classList.add('ring-2', 'ring-rose-400', 'border-rose-400');
+      document.getElementById('bearerInput').focus();
+      return;
+    }
+    // With a real token the Python scraper runs server-side; show the same demo flow here
+    runDemoScrape();
+  });
+
+  document.getElementById('closeResultsBtn').addEventListener('click', () => {
+    closeScrapeModal();
+    // Highlight X leads by switching source filter
+    const sel = document.getElementById('sourceFilter');
+    sel.value = 'X (Twitter)';
+    activeSource = 'X (Twitter)';
+    renderRows();
+  });
 
   // ---------- init ----------
   renderCounts();
