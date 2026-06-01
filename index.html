@@ -140,6 +140,31 @@
           </div>
         </div>
 
+        <!-- X Jobs banner -->
+        <div id="xJobsBanner" class="mb-4 flex items-center gap-3 bg-white border border-surface-border rounded-lg px-4 py-3">
+          <div class="flex items-center gap-2 shrink-0">
+            <div class="w-7 h-7 rounded-md bg-black grid place-items-center">
+              <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </div>
+            <span class="text-sm font-semibold">X Jobs scrape</span>
+            <span id="xScrapeStatus" class="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Live · last run 3 min ago
+            </span>
+          </div>
+          <div class="text-sm text-ink-500 hidden md:block">Monitoring <span class="font-medium text-ink-900">#hiring #openrole #werehiring</span> — <span id="xJobsCount" class="font-medium text-ink-900">4</span> new leads found today</div>
+          <div class="ml-auto flex items-center gap-2">
+            <button id="runScrapeBtn" class="h-8 px-3 rounded-md border border-surface-border text-sm hover:bg-surface-muted flex items-center gap-2">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+              Run now
+            </button>
+            <button class="h-8 px-3 rounded-md bg-black text-white text-sm font-medium hover:bg-zinc-800 flex items-center gap-2" onclick="document.getElementById('sourceFilter').value='X Jobs'; applySourceFilter()">
+              <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              View X leads
+            </button>
+          </div>
+        </div>
+
         <!-- Filter bar -->
         <div class="bg-white border border-surface-border rounded-lg">
           <div class="flex flex-wrap items-center gap-2 p-3 border-b border-surface-border">
@@ -152,12 +177,13 @@
 
             <div class="h-6 w-px bg-surface-border mx-1 hidden md:block"></div>
 
-            <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
-              <option>All sources</option>
-              <option>Website form</option>
-              <option>LinkedIn</option>
-              <option>Cold outbound</option>
-              <option>Referral</option>
+            <select id="sourceFilter" class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
+              <option value="">All sources</option>
+              <option value="Website form">Website form</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Cold outbound">Cold outbound</option>
+              <option value="Referral">Referral</option>
+              <option value="X Jobs">X Jobs</option>
             </select>
             <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
               <option>All owners</option>
@@ -492,6 +518,99 @@
       ]
     },
     {
+      id: 'x1', name: 'Ryan Holloway', initials: 'RH', title: 'Head of Engineering', company: 'Stackwise',
+      email: 'ryan@stackwise.io', phone: '+1 512 555 0231', location: 'Austin, TX',
+      source: 'X Jobs', owner: 'Unassigned', lastActivity: '18 min ago',
+      temp: 'hot', score: 88,
+      insightWhy: 'hot',
+      summary: "Posted a thread on X about scaling their eng team — actively hiring for 5 backend roles. 320-person startup that hit Series B last month. Strong ICP fit for developer tooling.",
+      signals: [
+        { label: 'X post intent', value: 'Hiring thread', tone: 'good' },
+        { label: 'Funding', value: 'Series B', tone: 'good' },
+        { label: 'Seniority', value: 'Head of Eng', tone: 'good' },
+        { label: 'ICP fit', value: '91%', tone: 'good' }
+      ],
+      suggested: [
+        { title: 'Reply to X thread', desc: 'Engage while post is fresh' },
+        { title: 'Send tools pitch', desc: 'Mention the hiring scale-up' },
+        { title: 'Book discovery call', desc: 'High intent window' }
+      ],
+      scoreReason: '+24 fit · +30 intent · +18 engagement · +16 timing',
+      activity: [
+        { t: '18 min ago', type: 'ai',    text: 'AI scraped X: Ryan posted "Hiring 5 backend engineers — remote-first" with 340 likes.' },
+        { t: '18 min ago', type: 'visit', text: 'Lead created from X Jobs scrape (#werehiring).' }
+      ]
+    },
+    {
+      id: 'x2', name: 'Lena Park', initials: 'LP', title: 'VP of Product', company: 'Flowhive',
+      email: 'lena@flowhive.com', phone: '+1 415 555 0344', location: 'San Francisco, CA',
+      source: 'X Jobs', owner: 'Unassigned', lastActivity: '1 h ago',
+      temp: 'warm', score: 72,
+      insightWhy: 'warm',
+      summary: "Tweeted a job post for a Senior PM and linked to a role page. Flowhive is a 90-person no-code platform — decent ICP fit. No direct engagement yet.",
+      signals: [
+        { label: 'X post intent', value: 'PM job post', tone: 'good' },
+        { label: 'Company size', value: '90 people', tone: 'neutral' },
+        { label: 'Seniority', value: 'VP', tone: 'good' },
+        { label: 'ICP fit', value: '75%', tone: 'good' }
+      ],
+      suggested: [
+        { title: 'Like + soft reply on X', desc: 'Low friction first touch' },
+        { title: 'Send PM tooling case study', desc: 'Relevant to role posted' }
+      ],
+      scoreReason: '+20 fit · +22 intent · +16 engagement · +14 timing',
+      activity: [
+        { t: '1 h ago', type: 'ai',    text: 'AI scraped X: Lena posted a Senior PM hiring tweet (#hiring).' },
+        { t: '1 h ago', type: 'visit', text: 'Lead created from X Jobs scrape (#hiring).' }
+      ]
+    },
+    {
+      id: 'x3', name: 'Marcus Bell', initials: 'MB', title: 'CEO', company: 'Driftwave AI',
+      email: 'marcus@driftwave.ai', phone: '+1 617 555 0412', location: 'Boston, MA',
+      source: 'X Jobs', owner: 'Vishal R.', lastActivity: '2 h ago',
+      temp: 'hot', score: 91,
+      insightWhy: 'hot',
+      summary: "CEO posted a high-engagement thread: raising $8M and hiring 12 people across sales, eng, and ops. Followed up by replying to replies, showing high activity. Perfect ICP timing.",
+      signals: [
+        { label: 'X post intent', value: 'Team hiring', tone: 'good' },
+        { label: 'Funding signal', value: '$8M raise', tone: 'good' },
+        { label: 'Seniority', value: 'CEO', tone: 'good' },
+        { label: 'ICP fit', value: '95%', tone: 'good' }
+      ],
+      suggested: [
+        { title: 'Send congrats + pitch', desc: 'Tie to funding news' },
+        { title: 'Book CEO intro', desc: 'C-level — move fast' }
+      ],
+      scoreReason: '+25 fit · +34 intent · +18 engagement · +14 timing',
+      activity: [
+        { t: '2 h ago', type: 'ai',    text: 'AI scraped X: Marcus announced $8M raise + 12 open roles. 1.2k likes.' },
+        { t: '2 h ago', type: 'visit', text: 'Lead created from X Jobs scrape (#openrole #hiring).' }
+      ]
+    },
+    {
+      id: 'x4', name: 'Tara Osei', initials: 'TO', title: 'Operations Manager', company: 'Krane Logistics',
+      email: 'tara@krane.co', phone: '+1 312 555 0577', location: 'Chicago, IL',
+      source: 'X Jobs', owner: 'Unassigned', lastActivity: '4 h ago',
+      temp: 'cold', score: 41,
+      insightWhy: 'cold',
+      summary: "Posted a single ops coordinator job. Small company, low engagement on post. Likely cold — no follow-up signals yet.",
+      signals: [
+        { label: 'X post intent', value: 'Single job', tone: 'neutral' },
+        { label: 'Post engagement', value: '12 likes', tone: 'bad' },
+        { label: 'Company size', value: '<30', tone: 'neutral' },
+        { label: 'ICP fit', value: '48%', tone: 'bad' }
+      ],
+      suggested: [
+        { title: 'Add to watch list', desc: 'Monitor for more posts' },
+        { title: 'Low-priority nurture', desc: 'Small company, low urgency' }
+      ],
+      scoreReason: '+10 fit · +12 intent · +10 engagement · +9 timing',
+      activity: [
+        { t: '4 h ago', type: 'ai',    text: 'AI scraped X: Tara posted an ops coordinator role (#hiring).' },
+        { t: '4 h ago', type: 'visit', text: 'Lead created from X Jobs scrape (#hiring).' }
+      ]
+    },
+    {
       id: 'l7', name: 'Sofia Romano', initials: 'SR', title: 'CTO', company: 'Pinecrest Health',
       email: 'sofia@pinecrest.health', phone: '+1 617 555 0199', location: 'Boston, MA',
       source: 'Referral', owner: 'Vishal R.', lastActivity: '12 min ago',
@@ -539,10 +658,19 @@
   let activeFilter = 'all';
   let searchQuery = '';
 
+  let activeSource = '';
+
+  function applySourceFilter() {
+    activeSource = document.getElementById('sourceFilter').value;
+    renderRows();
+  }
+  document.getElementById('sourceFilter').addEventListener('change', applySourceFilter);
+
   function filteredLeads() {
     const q = searchQuery.trim().toLowerCase();
     return LEADS.filter(l => {
       if (activeFilter !== 'all' && l.temp !== activeFilter) return false;
+      if (activeSource && l.source !== activeSource) return false;
       if (!q) return true;
       return [l.name, l.company, l.email, l.title].some(v => v.toLowerCase().includes(q));
     });
@@ -604,7 +732,12 @@
             </div>
           </div>
         </td>
-        <td class="px-2 py-3 text-ink-500">${l.source}</td>
+        <td class="px-2 py-3 text-ink-500">
+          <div class="flex items-center gap-1.5">
+            ${l.source === 'X Jobs' ? '<span class="inline-flex items-center justify-center w-4 h-4 rounded bg-black"><svg class=\'w-2.5 h-2.5 text-white\' viewBox=\'0 0 24 24\' fill=\'currentColor\'><path d=\'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z\'/></svg></span>' : ''}
+            ${l.source}
+          </div>
+        </td>
         <td class="px-2 py-3 text-ink-500">${l.lastActivity}</td>
         <td class="px-2 py-3 pr-4">
           <div class="flex items-center gap-1 justify-end" onclick="event.stopPropagation()">
@@ -784,6 +917,22 @@
     const list = variants[tone];
     return list[regen ? 1 : 0];
   }
+
+  // ---------- X Jobs scrape simulation ----------
+  document.getElementById('runScrapeBtn').addEventListener('click', () => {
+    const btn = document.getElementById('runScrapeBtn');
+    const status = document.getElementById('xScrapeStatus');
+    btn.disabled = true;
+    btn.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg> Running…`;
+    status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Scraping…`;
+    status.className = 'inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-700';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg> Run now`;
+      status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live · just now`;
+      status.className = 'inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700';
+    }, 2200);
+  });
 
   // ---------- init ----------
   renderCounts();
