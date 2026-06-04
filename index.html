@@ -95,6 +95,10 @@
           <input id="searchInput" placeholder="Search leads, companies…" class="bg-transparent text-sm w-full outline-none placeholder:text-ink-300" />
           <span class="kbd">/</span>
         </div>
+        <button id="scrapeXBtn" class="h-9 px-3 rounded-md border border-surface-border bg-white text-sm font-medium hover:bg-surface-muted flex items-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.851L1.254 2.25H8.08l4.26 5.631 5.905-5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Scrape X Jobs
+        </button>
         <button class="h-9 px-3 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 flex items-center gap-2">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           Add lead
@@ -158,6 +162,7 @@
               <option>LinkedIn</option>
               <option>Cold outbound</option>
               <option>Referral</option>
+              <option>X Jobs</option>
             </select>
             <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
               <option>All owners</option>
@@ -788,6 +793,327 @@
   // ---------- init ----------
   renderCounts();
   renderRows();
+</script>
+
+<!-- =================== X JOBS SCRAPER MODAL =================== -->
+<div id="xModal" class="fixed inset-0 z-50 hidden">
+  <!-- backdrop -->
+  <div class="absolute inset-0 bg-ink-900/40 backdrop-blur-sm" id="xModalBackdrop"></div>
+
+  <!-- panel -->
+  <div class="absolute inset-x-4 top-10 bottom-10 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-[680px] md:top-12 md:bottom-12 bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
+
+    <!-- header -->
+    <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-border">
+      <div class="w-8 h-8 rounded-lg bg-black text-white grid place-items-center">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.851L1.254 2.25H8.08l4.26 5.631 5.905-5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </div>
+      <div>
+        <div class="font-semibold text-sm">Scrape X Jobs</div>
+        <div class="text-xs text-ink-500">Find companies hiring on X and import them as leads</div>
+      </div>
+      <button id="xModalClose" class="ml-auto h-8 w-8 grid place-items-center rounded-md hover:bg-surface-muted text-ink-500">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- search bar -->
+    <div id="xSearchPane" class="px-5 py-4 border-b border-surface-border space-y-3">
+      <div class="flex items-center gap-2">
+        <div class="flex-1 flex items-center gap-2 px-3 h-9 rounded-md border border-surface-border bg-white">
+          <svg class="w-4 h-4 text-ink-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="xQueryInput" value="hiring" placeholder="Keywords: hiring, we're hiring, job opening…" class="bg-transparent text-sm w-full outline-none placeholder:text-ink-300"/>
+        </div>
+        <button id="xScrapeBtn" class="h-9 px-4 rounded-md bg-black text-white text-sm font-medium hover:opacity-80 flex items-center gap-2 shrink-0">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+          Scrape
+        </button>
+      </div>
+      <div class="flex flex-wrap gap-2 text-xs">
+        <span class="text-ink-500">Suggested:</span>
+        <button class="x-suggest px-2.5 py-1 rounded-full border border-surface-border hover:bg-surface-muted">#hiring</button>
+        <button class="x-suggest px-2.5 py-1 rounded-full border border-surface-border hover:bg-surface-muted">we're hiring engineers</button>
+        <button class="x-suggest px-2.5 py-1 rounded-full border border-surface-border hover:bg-surface-muted">join our team</button>
+        <button class="x-suggest px-2.5 py-1 rounded-full border border-surface-border hover:bg-surface-muted">VP of Sales opening</button>
+        <button class="x-suggest px-2.5 py-1 rounded-full border border-surface-border hover:bg-surface-muted">now hiring remote</button>
+      </div>
+    </div>
+
+    <!-- results area -->
+    <div class="flex-1 overflow-y-auto scrollbar-thin">
+
+      <!-- idle state -->
+      <div id="xIdle" class="flex flex-col items-center justify-center h-full text-center p-8">
+        <div class="w-14 h-14 rounded-2xl bg-black/5 text-black grid place-items-center mb-4">
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.851L1.254 2.25H8.08l4.26 5.631 5.905-5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </div>
+        <div class="font-medium mb-1">Search job posts on X</div>
+        <div class="text-sm text-ink-500 max-w-xs">Enter keywords above to find companies actively hiring. Leadflow will score and rank each one.</div>
+      </div>
+
+      <!-- loading state -->
+      <div id="xLoading" class="hidden flex flex-col items-center justify-center h-full text-center p-8">
+        <div class="w-10 h-10 border-2 border-brand-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <div id="xLoadingMsg" class="text-sm text-ink-500">Scanning X for job posts…</div>
+      </div>
+
+      <!-- results list -->
+      <div id="xResults" class="hidden divide-y divide-surface-border" aria-live="polite"></div>
+
+      <!-- empty state -->
+      <div id="xEmpty" class="hidden flex flex-col items-center justify-center h-full text-center p-8">
+        <div class="font-medium mb-1">No results found</div>
+        <div class="text-sm text-ink-500">Try different keywords or broaden your search.</div>
+      </div>
+    </div>
+
+    <!-- footer action bar -->
+    <div id="xFooter" class="hidden items-center justify-between px-5 py-3 border-t border-surface-border bg-surface-muted">
+      <div class="text-xs text-ink-500"><span id="xSelectedCount">0</span> selected</div>
+      <div class="flex items-center gap-2">
+        <button id="xSelectAll" class="text-xs text-brand-600 hover:underline">Select all</button>
+        <button id="xImportBtn" class="h-8 px-4 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+          Import as leads
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .animate-spin { animation: spin 0.8s linear infinite; }
+  .x-result-check:checked ~ label { background: #EEF2FF; }
+</style>
+
+<script>
+// =================== X JOBS SCRAPER ===================
+
+const X_MOCK_POSTS = [
+  {
+    handle: '@stripe', displayName: 'Stripe', verified: true,
+    avatar: 'ST', avatarBg: 'bg-indigo-100', avatarText: 'text-indigo-700',
+    timeAgo: '14 min ago', followers: '382K',
+    text: "🚀 We're hiring a VP of Sales to lead our global revenue team. 5+ yrs enterprise SaaS exp required. DMs open or apply at stripe.com/jobs. #hiring",
+    role: 'VP of Sales', company: 'Stripe', industry: 'Fintech', size: '5,000+',
+    score: 91, temp: 'hot',
+    lead: { name: 'Stripe Recruiting', initials: 'ST', title: 'VP of Sales · Open Role', company: 'Stripe', email: 'recruiting@stripe.com', phone: '', location: 'San Francisco, CA', source: 'X Jobs', owner: 'Vishal R.', lastActivity: '14 min ago', temp: 'hot', score: 91, insightWhy: 'hot', summary: 'Stripe posted a VP of Sales opening on X. Actively hiring at scale — strong ICP for Leadflow's enterprise tier.', signals: [{label:'Role',value:'VP of Sales',tone:'good'},{label:'Company size',value:'5,000+',tone:'good'},{label:'Industry',value:'Fintech',tone:'good'},{label:'Signal',value:'X post',tone:'good'}], suggested:[{title:'Send outreach email',desc:'Reference X job post'},{title:'Book discovery call',desc:'VP hire = budget exists'}], scoreReason:'+28 fit · +30 intent · +20 engagement · +13 timing', activity:[{t:'14 min ago',type:'visit',text:'Stripe posted VP of Sales opening on X.'},{t:'Just now',type:'ai',text:'AI classified lead as HOT — senior hire signals budget.'}] }
+  },
+  {
+    handle: '@notion', displayName: 'Notion', verified: true,
+    avatar: 'NO', avatarBg: 'bg-gray-100', avatarText: 'text-gray-700',
+    timeAgo: '31 min ago', followers: '210K',
+    text: "Join our team! We're looking for a Head of Growth to own our PLG motion. Remote-first, Series C. Details 🧵👇 #hiring #growth",
+    role: 'Head of Growth', company: 'Notion', industry: 'Productivity SaaS', size: '500–1k',
+    score: 85, temp: 'hot',
+    lead: { name: 'Notion Hiring', initials: 'NO', title: 'Head of Growth · Open Role', company: 'Notion', email: 'jobs@notion.so', phone: '', location: 'Remote', source: 'X Jobs', owner: 'Unassigned', lastActivity: '31 min ago', temp: 'hot', score: 85, insightWhy: 'hot', summary: 'Notion is searching for a Head of Growth. PLG model + Series C = strong budget signal and ICP fit.', signals: [{label:'Role',value:'Head of Growth',tone:'good'},{label:'Company size',value:'500–1k',tone:'good'},{label:'Stage',value:'Series C',tone:'good'},{label:'Signal',value:'X post',tone:'good'}], suggested:[{title:'DM Notion talent team',desc:'They\'re actively posting'},{title:'Send PLG case study',desc:'Match to their motion'}], scoreReason:'+24 fit · +27 intent · +20 engagement · +14 timing', activity:[{t:'31 min ago',type:'visit',text:'Notion tweeted Head of Growth opening.'},{t:'Just now',type:'ai',text:'AI classified lead as HOT — growth hire at funded co.'}] }
+  },
+  {
+    handle: '@linear_app', displayName: 'Linear', verified: false,
+    avatar: 'LN', avatarBg: 'bg-violet-100', avatarText: 'text-violet-700',
+    timeAgo: '1 h ago', followers: '89K',
+    text: "We're hiring senior backend engineers (Go/Rust). Small team, big impact. Fully remote. No recruiters — reach out directly. linear.app/careers #hiring",
+    role: 'Senior Engineer (×3)', company: 'Linear', industry: 'Dev Tools', size: '50–200',
+    score: 73, temp: 'warm',
+    lead: { name: 'Linear Careers', initials: 'LN', title: 'Senior Eng (×3) · Open Roles', company: 'Linear', email: 'careers@linear.app', phone: '', location: 'Remote', source: 'X Jobs', owner: 'Unassigned', lastActivity: '1 h ago', temp: 'warm', score: 73, insightWhy: 'warm', summary: 'Linear is hiring three senior engineers. High-quality dev-tools company; growing engineering headcount.', signals: [{label:'Roles open',value:'3 engineers',tone:'good'},{label:'Company size',value:'50–200',tone:'neutral'},{label:'Industry',value:'Dev Tools',tone:'good'},{label:'Signal',value:'X post',tone:'neutral'}], suggested:[{title:'Send product overview',desc:'Dev tools use case'},{title:'Add to nurture sequence',desc:'Not senior buyer yet'}], scoreReason:'+20 fit · +22 intent · +18 engagement · +13 timing', activity:[{t:'1 h ago',type:'visit',text:'Linear posted 3 engineer openings on X.'},{t:'Just now',type:'ai',text:'AI classified lead as WARM — team growing but no budget decision-maker yet.'}] }
+  },
+  {
+    handle: '@rampHQ', displayName: 'Ramp', verified: true,
+    avatar: 'RA', avatarBg: 'bg-yellow-100', avatarText: 'text-yellow-700',
+    timeAgo: '2 h ago', followers: '145K',
+    text: "Ramp is hiring an Enterprise Account Executive. You'll close $1M+ deals with CFOs at 500+ employee cos. Comp: $200k OTE. Apply ↓ #salesjobs #hiring",
+    role: 'Enterprise AE', company: 'Ramp', industry: 'Fintech / Spend Management', size: '1,000–5,000',
+    score: 88, temp: 'hot',
+    lead: { name: 'Ramp Talent', initials: 'RA', title: 'Enterprise AE · Open Role', company: 'Ramp', email: 'talent@ramp.com', phone: '', location: 'New York, NY', source: 'X Jobs', owner: 'Vishal R.', lastActivity: '2 h ago', temp: 'hot', score: 88, insightWhy: 'hot', summary: 'Ramp is hiring an Enterprise AE with $1M+ quota. High-growth fintech scaling its enterprise sales motion — excellent ICP fit.', signals: [{label:'Role',value:'Enterprise AE',tone:'good'},{label:'Quota',value:'$1M+ deals',tone:'good'},{label:'Company size',value:'1,000–5,000',tone:'good'},{label:'Signal',value:'X post',tone:'good'}], suggested:[{title:'Reach out to sales leadership',desc:'Building out enterprise team'},{title:'Send SDR workflow case study',desc:'They\'re scaling AE headcount'}], scoreReason:'+26 fit · +30 intent · +18 engagement · +14 timing', activity:[{t:'2 h ago',type:'visit',text:'Ramp posted Enterprise AE role on X.'},{t:'Just now',type:'ai',text:'AI classified lead as HOT — enterprise sales scaling = Leadflow use case.'}] }
+  },
+  {
+    handle: '@mercury_hq', displayName: 'Mercury', verified: false,
+    avatar: 'ME', avatarBg: 'bg-teal-100', avatarText: 'text-teal-700',
+    timeAgo: '3 h ago', followers: '62K',
+    text: "We're building the team! Looking for a Product Marketing Manager who loves startups + fintech. Remote. Come build with us → mercury.com/jobs #PMM #hiring",
+    role: 'Product Marketing Manager', company: 'Mercury', industry: 'Fintech / Banking', size: '200–500',
+    score: 66, temp: 'warm',
+    lead: { name: 'Mercury Jobs', initials: 'ME', title: 'PMM · Open Role', company: 'Mercury', email: 'jobs@mercury.com', phone: '', location: 'Remote', source: 'X Jobs', owner: 'Unassigned', lastActivity: '3 h ago', temp: 'warm', score: 66, insightWhy: 'warm', summary: 'Mercury is hiring a PMM. Growing startup-focused fintech — team expansion signals budget availability.', signals: [{label:'Role',value:'PMM',tone:'neutral'},{label:'Company size',value:'200–500',tone:'neutral'},{label:'Industry',value:'Fintech',tone:'good'},{label:'Signal',value:'X post',tone:'neutral'}], suggested:[{title:'Send intro email',desc:'Reference fintech angle'},{title:'Add to nurture',desc:'Marketing hire, not exec'}], scoreReason:'+18 fit · +20 intent · +16 engagement · +12 timing', activity:[{t:'3 h ago',type:'visit',text:'Mercury posted PMM opening on X.'},{t:'Just now',type:'ai',text:'AI classified lead as WARM — marketing hire, not a primary buyer.'}] }
+  },
+  {
+    handle: '@vercel', displayName: 'Vercel', verified: true,
+    avatar: 'VE', avatarBg: 'bg-black/5', avatarText: 'text-black',
+    timeAgo: '4 h ago', followers: '303K',
+    text: "Vercel is hiring a Director of Revenue Operations. Help us scale from $100M to $1B ARR. Remote-first. Big comp package. vercel.com/careers #RevOps #hiring",
+    role: 'Director of RevOps', company: 'Vercel', industry: 'Developer Infrastructure', size: '500–1,000',
+    score: 94, temp: 'hot',
+    lead: { name: 'Vercel Recruiting', initials: 'VE', title: 'Director of RevOps · Open Role', company: 'Vercel', email: 'recruiting@vercel.com', phone: '', location: 'Remote', source: 'X Jobs', owner: 'Vishal R.', lastActivity: '4 h ago', temp: 'hot', score: 94, insightWhy: 'hot', summary: 'Vercel is hiring a Director of RevOps to scale from $100M to $1B ARR. Highest-intent signal — they\'re building out the GTM stack.', signals: [{label:'Role',value:'Dir. RevOps',tone:'good'},{label:'ARR stage',value:'$100M→$1B',tone:'good'},{label:'Company size',value:'500–1,000',tone:'good'},{label:'Signal',value:'X post',tone:'good'}], suggested:[{title:'Contact VP Sales immediately',desc:'RevOps hire = GTM investment'},{title:'Book exec demo',desc:'$1B ARR target = budget'}], scoreReason:'+28 fit · +34 intent · +20 engagement · +12 timing', activity:[{t:'4 h ago',type:'visit',text:'Vercel posted Director of RevOps on X.'},{t:'Just now',type:'ai',text:'AI classified as HOT — RevOps hire signals Leadflow is exact fit.'}] }
+  }
+];
+
+let xSelected = new Set();
+let xResultsVisible = false;
+
+function openXModal() {
+  document.getElementById('xModal').classList.remove('hidden');
+  document.getElementById('xQueryInput').focus();
+  xSelected.clear();
+  updateXFooter();
+}
+function closeXModal() {
+  document.getElementById('xModal').classList.add('hidden');
+  showXState('idle');
+  xResultsVisible = false;
+  xSelected.clear();
+}
+
+function showXState(state) {
+  ['xIdle','xLoading','xResults','xEmpty'].forEach(id => {
+    document.getElementById(id).classList.add('hidden');
+    document.getElementById(id).classList.remove('flex');
+  });
+  const el = document.getElementById(state === 'idle' ? 'xIdle' : state === 'loading' ? 'xLoading' : state === 'results' ? 'xResults' : 'xEmpty');
+  if (state === 'idle' || state === 'loading' || state === 'empty') {
+    el.classList.remove('hidden');
+    el.classList.add('flex');
+  } else {
+    el.classList.remove('hidden');
+  }
+  document.getElementById('xFooter').classList.toggle('hidden', state !== 'results');
+  document.getElementById('xFooter').classList.toggle('flex', state === 'results');
+}
+
+function updateXFooter() {
+  const count = xSelected.size;
+  document.getElementById('xSelectedCount').textContent = count;
+  document.getElementById('xImportBtn').disabled = count === 0;
+}
+
+function renderXResults(posts) {
+  const container = document.getElementById('xResults');
+  container.innerHTML = posts.map((p, i) => {
+    const t = tempStyles[p.temp];
+    return `
+    <label for="xCheck${i}" class="flex items-start gap-3 px-5 py-4 cursor-pointer hover:bg-surface-muted transition group">
+      <input type="checkbox" id="xCheck${i}" data-idx="${i}" class="x-job-check mt-1 shrink-0 rounded border-surface-border accent-brand-600"/>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-2 min-w-0">
+            <div class="w-8 h-8 shrink-0 rounded-full ${p.avatarBg} ${p.avatarText} grid place-items-center text-xs font-semibold">${p.avatar}</div>
+            <div class="min-w-0">
+              <span class="font-medium text-sm">${p.displayName}</span>
+              ${p.verified ? '<svg class="inline w-3.5 h-3.5 text-blue-500 ml-0.5 align-text-top" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9S3 16.97 3 12 7.03 3 12 3s9 4.03 9 9z"/></svg>' : ''}
+              <span class="text-ink-300 text-xs ml-1">${p.handle}</span>
+            </div>
+          </div>
+          <div class="shrink-0 flex items-center gap-2">
+            <span class="text-xs font-medium px-2 py-0.5 rounded-full ${t.pill}">${t.label}</span>
+            <span class="text-xs text-ink-300">${p.timeAgo}</span>
+          </div>
+        </div>
+        <p class="text-sm text-ink-700 mt-2 leading-relaxed">${p.text}</p>
+        <div class="mt-2 flex flex-wrap items-center gap-3 text-xs text-ink-500">
+          <span class="font-medium text-ink-700">📋 ${p.role}</span>
+          <span>·</span>
+          <span>${p.industry}</span>
+          <span>·</span>
+          <span>${p.size} employees</span>
+          <span>·</span>
+          <span>${p.followers} followers</span>
+          <span class="ml-auto flex items-center gap-1 font-medium text-brand-700">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2 5 5 1-3.5 3.5L17 17l-5-3-5 3 1.5-5.5L5 8l5-1z"/></svg>
+            AI score ${p.score}
+          </span>
+        </div>
+      </div>
+    </label>`;
+  }).join('');
+
+  container.querySelectorAll('.x-job-check').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const idx = parseInt(cb.dataset.idx);
+      if (cb.checked) xSelected.add(idx); else xSelected.delete(idx);
+      updateXFooter();
+    });
+  });
+}
+
+async function runXScrape() {
+  const query = document.getElementById('xQueryInput').value.trim() || 'hiring';
+  showXState('loading');
+  xSelected.clear();
+  updateXFooter();
+
+  const msgs = [
+    `Scanning X for "${query}"…`,
+    'Fetching recent job posts…',
+    'Filtering signal posts…',
+    'Scoring companies with AI…',
+    'Ranking by lead potential…'
+  ];
+  let step = 0;
+  const msgEl = document.getElementById('xLoadingMsg');
+  const ticker = setInterval(() => {
+    if (step < msgs.length) { msgEl.textContent = msgs[step++]; }
+  }, 480);
+
+  await new Promise(r => setTimeout(r, 2600));
+  clearInterval(ticker);
+
+  const filtered = X_MOCK_POSTS.filter(p =>
+    query === 'hiring' ||
+    p.text.toLowerCase().includes(query.toLowerCase()) ||
+    p.role.toLowerCase().includes(query.toLowerCase()) ||
+    p.handle.toLowerCase().includes(query.replace(/^#/,'').toLowerCase())
+  );
+
+  if (filtered.length === 0) {
+    showXState('empty');
+  } else {
+    renderXResults(filtered);
+    showXState('results');
+    xResultsVisible = true;
+  }
+}
+
+function importXLeads() {
+  const toImport = [...xSelected].map(i => X_MOCK_POSTS[i].lead);
+  toImport.forEach(l => {
+    const id = 'x_' + Math.random().toString(36).slice(2, 8);
+    LEADS.unshift({ ...l, id });
+  });
+  renderCounts();
+  renderRows();
+
+  const count = toImport.length;
+  closeXModal();
+
+  // brief toast
+  const toast = document.createElement('div');
+  toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-ink-900 text-white text-sm font-medium px-4 py-2.5 rounded-lg shadow-lg z-50 flex items-center gap-2';
+  toast.innerHTML = `<svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4L19 7"/></svg>${count} lead${count > 1 ? 's' : ''} imported from X Jobs`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// wiring
+document.getElementById('scrapeXBtn').addEventListener('click', openXModal);
+document.getElementById('xModalClose').addEventListener('click', closeXModal);
+document.getElementById('xModalBackdrop').addEventListener('click', closeXModal);
+document.getElementById('xScrapeBtn').addEventListener('click', runXScrape);
+document.getElementById('xQueryInput').addEventListener('keydown', e => { if (e.key === 'Enter') runXScrape(); });
+document.getElementById('xImportBtn').addEventListener('click', importXLeads);
+document.getElementById('xSelectAll').addEventListener('click', () => {
+  const posts = document.querySelectorAll('.x-job-check');
+  const allChecked = [...posts].every(c => c.checked);
+  posts.forEach((cb, i) => {
+    cb.checked = !allChecked;
+    if (!allChecked) xSelected.add(parseInt(cb.dataset.idx));
+    else xSelected.delete(parseInt(cb.dataset.idx));
+  });
+  updateXFooter();
+});
+document.querySelectorAll('.x-suggest').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.getElementById('xQueryInput').value = btn.textContent.trim();
+    runXScrape();
+  });
+});
 </script>
 </body>
 </html>
