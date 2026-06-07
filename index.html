@@ -45,24 +45,29 @@
       <div class="w-7 h-7 rounded-md bg-brand-600 text-white grid place-items-center font-bold">L</div>
       <span class="font-semibold">Leadflow</span>
     </div>
-    <nav class="p-3 text-sm">
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md bg-brand-50 text-brand-700 font-medium">
+    <nav class="p-3 text-sm" id="sideNav">
+      <a data-nav="dashboard" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md bg-brand-50 text-brand-700 font-medium cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
         Leads
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a data-nav="jobs" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        X Jobs
+        <span class="ml-auto text-[10px] font-semibold bg-brand-600 text-white px-1.5 py-0.5 rounded-full">20</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
         Pipeline
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
         Inbox
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
         Insights
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1A2 2 0 1 1 4.4 17l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1A2 2 0 1 1 7 4.4l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1A2 2 0 1 1 19.6 7l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
         Settings
       </a>
@@ -206,6 +211,90 @@
         </div>
 
         <p class="text-xs text-ink-300 mt-4">Tip: press <span class="kbd">/</span> to search, click any row to open the lead.</p>
+      </div>
+    </section>
+
+    <!-- =================== JOBS VIEW =================== -->
+    <section data-view="jobs" class="flex-1 overflow-y-auto">
+      <div class="p-4 md:p-6 max-w-[1400px] mx-auto">
+
+        <!-- Header -->
+        <div class="flex flex-wrap items-center gap-3 mb-5">
+          <div class="flex items-center gap-2">
+            <!-- X logo -->
+            <div class="w-8 h-8 rounded-lg bg-black text-white grid place-items-center">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.848L2.018 2.25H8.08l4.258 5.63 5.906-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </div>
+            <div>
+              <div class="font-semibold text-sm">X Jobs Scraper</div>
+              <div class="text-xs text-ink-300">Live job postings · sourced via X hiring signals</div>
+            </div>
+          </div>
+
+          <div class="ml-auto flex items-center gap-2">
+            <span id="jobsLastSync" class="text-xs text-ink-300">Synced just now</span>
+            <button id="syncJobsBtn" class="h-9 px-3 rounded-md border border-surface-border bg-white text-sm font-medium hover:bg-surface-muted flex items-center gap-2">
+              <svg id="syncIcon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+              Refresh
+            </button>
+            <button id="exportJobsBtn" class="h-9 px-3 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 flex items-center gap-2">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Jobs found</div>
+            <div class="mt-1 text-2xl font-semibold">20</div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Avg. salary</div>
+            <div class="mt-1 text-2xl font-semibold">$112k</div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Remote roles</div>
+            <div class="mt-1 text-2xl font-semibold">9</div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Imported as leads</div>
+            <div class="mt-1 text-2xl font-semibold" id="importedCount">0</div>
+          </div>
+        </div>
+
+        <!-- Filter + search bar -->
+        <div class="bg-white border border-surface-border rounded-lg mb-4 p-3 flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-1 bg-surface-muted p-1 rounded-md text-sm" role="tablist">
+            <button data-jf="all"         class="job-filter-tab px-3 py-1.5 rounded-md bg-white shadow-sm font-medium">All</button>
+            <button data-jf="engineering" class="job-filter-tab px-3 py-1.5 rounded-md text-ink-500">Engineering</button>
+            <button data-jf="marketing"   class="job-filter-tab px-3 py-1.5 rounded-md text-ink-500">Marketing</button>
+            <button data-jf="sales"       class="job-filter-tab px-3 py-1.5 rounded-md text-ink-500">Sales</button>
+          </div>
+
+          <select id="jobTypeFilter" class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
+            <option value="">All types</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+          </select>
+          <select id="jobRemoteFilter" class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
+            <option value="">All locations</option>
+            <option value="remote">Remote only</option>
+            <option value="onsite">On-site only</option>
+          </select>
+
+          <div class="flex items-center gap-2 px-3 h-8 rounded-md border border-surface-border bg-white w-56 ml-auto">
+            <svg class="w-3.5 h-3.5 text-ink-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="jobSearch" placeholder="Search jobs…" class="bg-transparent text-sm w-full outline-none placeholder:text-ink-300" />
+          </div>
+        </div>
+
+        <!-- Job cards grid -->
+        <div id="jobsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+
+        <p class="text-xs text-ink-300 mt-4 text-center" id="jobsEmpty" style="display:none">No jobs match your filters.</p>
       </div>
     </section>
 
@@ -788,6 +877,341 @@
   // ---------- init ----------
   renderCounts();
   renderRows();
+
+  // ================================================================
+  // JOBS SCRAPER
+  // ================================================================
+  const JOBS = [
+    {
+      id:'j1', title:'Engineer, iOS Consumer Apps', company:'Abercrombie & Fitch', initials:'AF',
+      location:'Columbus, OH', remote:false, salary:'$87,000 – $97,000 /yr', type:'Full-time',
+      posted:'Jun 01, 2026', category:'engineering', url:'https://to.indeed.com/aa4nnrvnqhsc',
+      xHandle:'@AbercrombieJobs', followers:'42.1k', imported:false
+    },
+    {
+      id:'j2', title:'AI Development & Support Engineer', company:'Starfish Storage Corp', initials:'SS',
+      location:'Waltham, MA', remote:false, salary:'$140,000 – $210,000 /yr', type:'Full-time',
+      posted:'May 21, 2026', category:'engineering', url:'https://to.indeed.com/aazzmqdwcg2m',
+      xHandle:'@StarfishStorage', followers:'8.3k', imported:false
+    },
+    {
+      id:'j3', title:'Senior CAM Software Engineer', company:'Concepts NREC', initials:'CN',
+      location:'White River Junction, VT', remote:false, salary:'$100,000 – $130,000 /yr', type:'Full-time',
+      posted:'Apr 21, 2026', category:'engineering', url:'https://to.indeed.com/aakpc4jc4z47',
+      xHandle:'@ConceptsNREC', followers:'5.1k', imported:false
+    },
+    {
+      id:'j4', title:'.Net Azure Developer', company:'LTIMindtree', initials:'LT',
+      location:'Remote', remote:true, salary:'$120,000 – $125,000 /yr', type:'Full-time',
+      posted:'Jun 02, 2026', category:'engineering', url:'https://to.indeed.com/aavz667sz4nd',
+      xHandle:'@LTIMindtree', followers:'130k', imported:false
+    },
+    {
+      id:'j5', title:'Software Engineering Manager', company:'Gravity Payments', initials:'GP',
+      location:'Boise, ID', remote:false, salary:'$165,000 – $185,000 /yr', type:'Full-time',
+      posted:'May 28, 2026', category:'engineering', url:'https://to.indeed.com/aa4ft6xfj2tl',
+      xHandle:'@GravityPayments', followers:'28.4k', imported:false
+    },
+    {
+      id:'j6', title:'Development Team Lead – AI Team', company:'Qode', initials:'QD',
+      location:'Remote', remote:true, salary:'$44,795 – $68,177 /yr', type:'Full-time',
+      posted:'Jun 03, 2026', category:'engineering', url:'https://to.indeed.com/aanqbb78mghn',
+      xHandle:'@QodeAI', followers:'3.9k', imported:false
+    },
+    {
+      id:'j7', title:'Automation Development Engineer', company:'Everforth ECS', initials:'EV',
+      location:'Sierra Vista, AZ', remote:false, salary:'$170,000 – $200,000 /yr', type:'Full-time',
+      posted:'May 13, 2026', category:'engineering', url:'https://to.indeed.com/aawsbmbrgvpl',
+      xHandle:'@EverforthECS', followers:'2.1k', imported:false
+    },
+    {
+      id:'j8', title:'Technical Lead (C++ / Networking)', company:'Intermedia Intelligent', initials:'II',
+      location:'Remote', remote:true, salary:'$53,653 – $100,152 /yr', type:'Full-time',
+      posted:'Jun 03, 2026', category:'engineering', url:'https://to.indeed.com/aafbpmxhfzdx',
+      xHandle:'@Intermedia', followers:'17.6k', imported:false
+    },
+    {
+      id:'j9', title:'Automation Engineer – Support Apps', company:'Ginkgo BioWorks', initials:'GB',
+      location:'Boston, MA', remote:false, salary:'$85,600 – $120,200 /yr', type:'Full-time',
+      posted:'May 07, 2026', category:'engineering', url:'https://to.indeed.com/aa7ly48mcq2j',
+      xHandle:'@GinkgoBioworks', followers:'61.2k', imported:false
+    },
+    {
+      id:'j10', title:'OIC / SOA Developer, Oracle', company:'SIG SAUER, Inc.', initials:'SG',
+      location:'Newington, NH', remote:false, salary:'$79,658 – $117,992 /yr', type:'Full-time',
+      posted:'Jun 01, 2026', category:'engineering', url:'https://to.indeed.com/aas498lykwsw',
+      xHandle:'@SIGSauer', followers:'89.3k', imported:false
+    },
+    {
+      id:'j11', title:'Marketing Manager', company:'KEEPR AI', initials:'KA',
+      location:'Remote', remote:true, salary:'$65,562 – $78,957 /yr', type:'Full-time',
+      posted:'May 28, 2026', category:'marketing', url:'https://to.indeed.com/aa9km6vtwch7',
+      xHandle:'@KeeprAI', followers:'4.8k', imported:false
+    },
+    {
+      id:'j12', title:'Marketing Account Manager', company:'Bend Marketing', initials:'BM',
+      location:'Remote', remote:true, salary:'$30 – $40 /hr', type:'Full-time',
+      posted:'Jun 03, 2026', category:'marketing', url:'https://to.indeed.com/aad7drqmbjx7',
+      xHandle:'@BendMarketing', followers:'6.2k', imported:false
+    },
+    {
+      id:'j13', title:'Client Marketing Manager', company:'Overdryve Inc', initials:'OD',
+      location:'Remote', remote:true, salary:'$45,000 – $65,000 /yr', type:'Full-time',
+      posted:'Jun 05, 2026', category:'marketing', url:'https://to.indeed.com/aawp487px7qp',
+      xHandle:'@Overdryve', followers:'3.1k', imported:false
+    },
+    {
+      id:'j14', title:'Digital Marketing Manager', company:'Jensecom', initials:'JC',
+      location:'Remote', remote:true, salary:'From $12 /hr', type:'Part-time',
+      posted:'May 27, 2026', category:'marketing', url:'https://to.indeed.com/aaq8ttsq224l',
+      xHandle:'@Jensecom', followers:'1.4k', imported:false
+    },
+    {
+      id:'j15', title:'Digital Marketing Manager', company:'ACORN', initials:'AC',
+      location:'Remote', remote:true, salary:'$400 – $2,000 /wk', type:'Full-time',
+      posted:'May 31, 2026', category:'marketing', url:'https://to.indeed.com/aapcqfdhckgr',
+      xHandle:'@ACORNorg', followers:'22.7k', imported:false
+    },
+    {
+      id:'j16', title:'Product Marketing Manager', company:'CINT', initials:'CI',
+      location:'New York, NY', remote:false, salary:'$100,000 – $120,000 /yr', type:'Full-time',
+      posted:'Apr 09, 2026', category:'marketing', url:'https://to.indeed.com/aapdttxd4nyy',
+      xHandle:'@Cint', followers:'14.3k', imported:false
+    },
+    {
+      id:'j17', title:'Marketing Manager', company:'FEDlogic Group', initials:'FL',
+      location:'Winston-Salem, NC', remote:false, salary:'$65,000 – $80,000 /yr', type:'Full-time',
+      posted:'May 01, 2026', category:'marketing', url:'https://to.indeed.com/aaxffrkb4jxd',
+      xHandle:'@FEDlogic', followers:'2.9k', imported:false
+    },
+    {
+      id:'j18', title:'Marketing and Sales Manager', company:'thinkPARALLAX', initials:'TP',
+      location:'Remote', remote:true, salary:'$80,000 – $105,000 /yr', type:'Full-time',
+      posted:'Jun 03, 2026', category:'sales', url:'https://to.indeed.com/aa8zdfd6npqg',
+      xHandle:'@thinkPARALLAX', followers:'5.5k', imported:false
+    },
+    {
+      id:'j19', title:'Growth Marketing Manager', company:'Textio', initials:'TX',
+      location:'San Francisco, CA', remote:false, salary:'$120,000 – $160,000 /yr', type:'Full-time',
+      posted:'Apr 24, 2026', category:'marketing', url:'https://to.indeed.com/aancg76yrh92',
+      xHandle:'@Textio', followers:'31.8k', imported:false
+    },
+    {
+      id:'j20', title:'Marketing Manager', company:'Nationwide Tax Advisors', initials:'NT',
+      location:'Tampa, FL', remote:false, salary:'$40,000 – $60,000 /yr', type:'Full-time',
+      posted:'May 31, 2026', category:'sales', url:'https://to.indeed.com/aamlm9xf9lg6',
+      xHandle:'@NWTaxAdvisors', followers:'7.1k', imported:false
+    }
+  ];
+
+  let activeJobFilter = 'all';
+  let jobSearchQuery = '';
+  let importedLeads = 0;
+
+  const categoryColors = {
+    engineering: 'bg-brand-50 text-brand-700',
+    marketing:   'bg-purple-50 text-purple-700',
+    sales:       'bg-emerald-50 text-emerald-700',
+    design:      'bg-amber-50 text-amber-700'
+  };
+
+  function filteredJobs() {
+    const q = jobSearchQuery.trim().toLowerCase();
+    const type = document.getElementById('jobTypeFilter').value;
+    const rem = document.getElementById('jobRemoteFilter').value;
+    return JOBS.filter(j => {
+      if (activeJobFilter !== 'all' && j.category !== activeJobFilter) return false;
+      if (type && j.type !== type) return false;
+      if (rem === 'remote' && !j.remote) return false;
+      if (rem === 'onsite' && j.remote) return false;
+      if (q && !`${j.title} ${j.company} ${j.location}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+
+  function renderJobs() {
+    const grid = document.getElementById('jobsGrid');
+    const empty = document.getElementById('jobsEmpty');
+    const rows = filteredJobs();
+    if (rows.length === 0) { grid.innerHTML = ''; empty.style.display = ''; return; }
+    empty.style.display = 'none';
+    grid.innerHTML = rows.map(j => {
+      const catCls = categoryColors[j.category] || 'bg-surface-muted text-ink-700';
+      const importedCls = j.imported
+        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 cursor-default'
+        : 'bg-white text-ink-700 border-surface-border hover:bg-surface-muted';
+      return `
+      <div class="bg-white border border-surface-border rounded-lg p-4 flex flex-col gap-3 hover:shadow-sm transition" data-job="${j.id}">
+        <!-- top row -->
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 shrink-0 rounded-lg bg-ink-700 text-white grid place-items-center text-xs font-bold">${j.initials}</div>
+          <div class="min-w-0 flex-1">
+            <a href="${j.url}" target="_blank" rel="noopener" class="text-sm font-semibold text-ink-900 hover:text-brand-700 hover:underline leading-snug line-clamp-2">${j.title}</a>
+            <div class="text-xs text-ink-500 mt-0.5">${j.company}</div>
+          </div>
+          <span class="shrink-0 text-[11px] font-medium px-2 py-0.5 rounded-full ${catCls} capitalize">${j.category}</span>
+        </div>
+
+        <!-- meta pills -->
+        <div class="flex flex-wrap gap-2 text-xs text-ink-500">
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            ${j.location}
+            ${j.remote ? '<span class="ml-1 bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded-full font-medium">Remote</span>' : ''}
+          </span>
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            ${j.type}
+          </span>
+        </div>
+
+        <!-- salary -->
+        <div class="text-sm font-semibold text-ink-900">${j.salary}</div>
+
+        <!-- X attribution -->
+        <div class="flex items-center gap-2 text-xs text-ink-400 border-t border-surface-border pt-2.5">
+          <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.848L2.018 2.25H8.08l4.258 5.63 5.906-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <span class="font-medium text-ink-600">${j.xHandle}</span>
+          <span class="text-ink-300">·</span>
+          <span>${j.followers} followers</span>
+          <span class="text-ink-300 ml-auto">${j.posted}</span>
+        </div>
+
+        <!-- actions -->
+        <div class="flex items-center gap-2">
+          <button class="import-btn flex-1 h-8 rounded-md border text-xs font-medium ${importedCls} flex items-center justify-center gap-1.5 transition" data-id="${j.id}" ${j.imported ? 'disabled' : ''}>
+            ${j.imported
+              ? '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4L19 7"/></svg> Imported'
+              : '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Import as Lead'}
+          </button>
+          <a href="${j.url}" target="_blank" rel="noopener"
+            class="h-8 px-3 rounded-md bg-brand-600 text-white text-xs font-medium hover:bg-brand-700 flex items-center gap-1.5 shrink-0">
+            Apply
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>`;
+    }).join('');
+
+    // import button handlers
+    grid.querySelectorAll('.import-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const j = JOBS.find(x => x.id === btn.dataset.id);
+        if (!j || j.imported) return;
+        j.imported = true;
+        importedLeads++;
+        document.getElementById('importedCount').textContent = importedLeads;
+
+        // add to LEADS as a hot lead
+        LEADS.push({
+          id: j.id, name: j.company + ' Hiring', initials: j.initials,
+          title: j.title, company: j.company,
+          email: `jobs@${j.company.toLowerCase().replace(/\s+/g,'')}.com`,
+          phone: '—', location: j.location,
+          source: 'X Jobs', owner: 'Vishal R.', lastActivity: 'Just now',
+          temp: 'warm', score: 72,
+          insightWhy: 'warm',
+          summary: `${j.company} is actively hiring for "${j.title}" — a strong signal of growth and budget availability.`,
+          signals: [
+            { label: 'Salary range', value: j.salary.replace(' /yr',''), tone: 'good' },
+            { label: 'Source', value: 'X Jobs', tone: 'good' },
+            { label: 'Remote', value: j.remote ? 'Yes' : 'No', tone: j.remote ? 'good' : 'neutral' },
+            { label: 'ICP fit', value: '74%', tone: 'good' }
+          ],
+          suggested: [
+            { title: 'Send intro email', desc: 'Company is actively growing' },
+            { title: 'Connect on X', desc: j.xHandle }
+          ],
+          scoreReason: '+20 fit · +22 intent · +16 engagement · +14 timing',
+          activity: [
+            { t: 'Just now', type: 'ai', text: `Imported from X Jobs — "${j.title}" posting by ${j.xHandle}` }
+          ]
+        });
+        renderCounts();
+        renderRows();
+        renderJobs();
+
+        // toast
+        showToast(`${j.company} added to leads.`);
+      });
+    });
+  }
+
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.className = 'fixed bottom-5 right-5 bg-ink-900 text-white text-sm px-4 py-2.5 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-pulse';
+    t.innerHTML = `<svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4L19 7"/></svg> ${msg}`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  // job filter tabs
+  document.querySelectorAll('.job-filter-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeJobFilter = btn.dataset.jf;
+      document.querySelectorAll('.job-filter-tab').forEach(b => {
+        b.classList.remove('bg-white', 'shadow-sm', 'font-medium', 'text-ink-900');
+        b.classList.add('text-ink-500');
+      });
+      btn.classList.remove('text-ink-500');
+      btn.classList.add('bg-white', 'shadow-sm', 'font-medium', 'text-ink-900');
+      renderJobs();
+    });
+  });
+
+  document.getElementById('jobSearch').addEventListener('input', e => { jobSearchQuery = e.target.value; renderJobs(); });
+  document.getElementById('jobTypeFilter').addEventListener('change', renderJobs);
+  document.getElementById('jobRemoteFilter').addEventListener('change', renderJobs);
+
+  // sync button animation
+  document.getElementById('syncJobsBtn').addEventListener('click', () => {
+    const icon = document.getElementById('syncIcon');
+    icon.style.animation = 'spin 1s linear infinite';
+    setTimeout(() => {
+      icon.style.animation = '';
+      document.getElementById('jobsLastSync').textContent = 'Synced just now';
+    }, 1200);
+  });
+
+  // export CSV
+  document.getElementById('exportJobsBtn').addEventListener('click', () => {
+    const rows = [['Title','Company','Location','Remote','Salary','Type','Posted','X Handle','URL']];
+    JOBS.forEach(j => rows.push([j.title, j.company, j.location, j.remote, j.salary, j.type, j.posted, j.xHandle, j.url]));
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv' }));
+    a.download = 'x-jobs.csv';
+    a.click();
+  });
+
+  // ---------- nav switching ----------
+  document.querySelectorAll('[data-nav]').forEach(link => {
+    link.addEventListener('click', () => {
+      const target = link.dataset.nav;
+      document.querySelectorAll('.nav-item').forEach(l => {
+        l.classList.remove('bg-brand-50','text-brand-700','font-medium');
+        l.classList.add('text-ink-500');
+      });
+      link.classList.remove('text-ink-500');
+      link.classList.add('bg-brand-50','text-brand-700','font-medium');
+
+      if (target === 'jobs') {
+        switchView('jobs');
+        document.getElementById('pageTitle').textContent = 'X Jobs';
+        document.getElementById('backBtn').classList.add('hidden');
+        document.getElementById('backBtn').classList.remove('flex');
+        renderJobs();
+      } else {
+        switchView('dashboard');
+        document.getElementById('pageTitle').textContent = 'Leads';
+      }
+    });
+  });
+
+  // spin keyframe
+  const style = document.createElement('style');
+  style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+  document.head.appendChild(style);
 </script>
 </body>
 </html>
