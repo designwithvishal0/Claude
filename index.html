@@ -107,12 +107,12 @@
       <div class="p-4 md:p-6 max-w-[1400px] mx-auto">
 
         <!-- Summary cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-5">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-5">
           <div class="bg-white border border-surface-border rounded-lg p-4">
             <div class="text-xs text-ink-500">New leads today</div>
             <div class="mt-1 flex items-end gap-2">
-              <div class="text-2xl font-semibold">24</div>
-              <div class="text-xs text-emerald-600 mb-1">+18%</div>
+              <div class="text-2xl font-semibold">27</div>
+              <div class="text-xs text-emerald-600 mb-1">+24%</div>
             </div>
           </div>
           <div class="bg-white border border-surface-border rounded-lg p-4">
@@ -138,6 +138,16 @@
               <div class="text-xs text-emerald-600 mb-1">+2.1pp</div>
             </div>
           </div>
+          <div class="bg-ink-900 text-white border border-ink-700 rounded-lg p-4 col-span-2 md:col-span-1">
+            <div class="flex items-center gap-1.5 text-xs text-white/60">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.841L1.254 2.25H8.08l4.252 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              X Jobs — new today
+            </div>
+            <div class="mt-1 flex items-end gap-2">
+              <div class="text-2xl font-semibold">3</div>
+              <div class="text-xs text-emerald-400 mb-1">hiring signals</div>
+            </div>
+          </div>
         </div>
 
         <!-- Filter bar -->
@@ -152,12 +162,13 @@
 
             <div class="h-6 w-px bg-surface-border mx-1 hidden md:block"></div>
 
-            <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
-              <option>All sources</option>
-              <option>Website form</option>
-              <option>LinkedIn</option>
-              <option>Cold outbound</option>
-              <option>Referral</option>
+            <select id="sourceFilter" class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
+              <option value="">All sources</option>
+              <option value="Website form">Website form</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Cold outbound">Cold outbound</option>
+              <option value="Referral">Referral</option>
+              <option value="X Jobs">X Jobs</option>
             </select>
             <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
               <option>All owners</option>
@@ -241,6 +252,28 @@
                 <button class="h-9 w-9 rounded-md border border-surface-border bg-white grid place-items-center hover:bg-surface-muted" aria-label="More">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
                 </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- X Jobs card (shown only for X Jobs leads) -->
+          <div id="xJobCard" class="hidden bg-ink-900 text-white rounded-lg p-5">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-md bg-white grid place-items-center shrink-0">
+                  <svg class="w-5 h-5 text-ink-900" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.841L1.254 2.25H8.08l4.252 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </div>
+                <div>
+                  <div class="text-xs text-white/60 mb-0.5">Job posted on X</div>
+                  <div id="xJobRole" class="font-semibold text-sm"></div>
+                  <div id="xJobTags" class="flex flex-wrap gap-1.5 mt-1.5"></div>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <div id="xJobTime" class="text-xs text-white/60 mb-1"></div>
+                <a href="#" class="inline-flex items-center gap-1.5 text-xs font-medium bg-white/10 hover:bg-white/20 px-2.5 py-1 rounded-md transition">
+                  View post
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></a>
               </div>
             </div>
           </div>
@@ -470,6 +503,81 @@
       ]
     },
     {
+      id: 'l8', name: 'Rachel Kim', initials: 'RK', title: 'VP Engineering', company: 'Pulsar AI',
+      email: 'rachel@pulsarai.com', phone: '+1 650 555 0211', location: 'Palo Alto, CA',
+      source: 'X Jobs', owner: 'Unassigned', lastActivity: '18 min ago',
+      temp: 'hot', score: 89,
+      insightWhy: 'hot',
+      summary: "Posted 4 engineering jobs on X this week — actively scaling their team. Series B company with 180 employees and a stated goal of doubling headcount by Q4. High budget signal.",
+      signals: [
+        { label: 'Jobs posted', value: '4 this week', tone: 'good' },
+        { label: 'Funding stage', value: 'Series B', tone: 'good' },
+        { label: 'Headcount goal', value: '2× by Q4', tone: 'good' },
+        { label: 'ICP fit', value: '91%', tone: 'good' }
+      ],
+      suggested: [
+        { title: 'Reach out about hiring ops', desc: 'Scaling fast = lead chaos' },
+        { title: 'Send growth case study', desc: 'Series B teams love ROI data' },
+        { title: 'Book a discovery call', desc: 'High intent signal from X' }
+      ],
+      scoreReason: '+24 fit · +31 intent · +20 engagement · +14 timing',
+      xJob: { role: 'Senior Backend Engineer', posted: '18 min ago', url: '#', tags: ['#hiring', '#AI', '#remote'] },
+      activity: [
+        { t: '18 min ago', type: 'visit',  text: 'X Jobs: Pulsar AI posted "Senior Backend Engineer" — matched ICP.' },
+        { t: '1 h ago',    type: 'ai',     text: 'AI flagged HOT: 4 job posts in 7 days at a Series B startup.' },
+        { t: 'Yesterday',  type: 'visit',  text: 'X Jobs: posted "Staff ML Engineer" and "DevOps Lead".' }
+      ]
+    },
+    {
+      id: 'l9', name: 'Marcus Adeyemi', initials: 'MA', title: 'Head of Sales', company: 'Cartex Commerce',
+      email: 'marcus@cartex.io', phone: '+1 312 555 0377', location: 'Chicago, IL',
+      source: 'X Jobs', owner: 'Vishal R.', lastActivity: '2 h ago',
+      temp: 'warm', score: 71,
+      insightWhy: 'warm',
+      summary: "Cartex posted two sales and RevOps roles on X, signalling a deliberate go-to-market expansion. Mid-market e-commerce SaaS — a solid ICP fit. No prior contact.",
+      signals: [
+        { label: 'Jobs posted', value: '2 roles', tone: 'good' },
+        { label: 'Role type', value: 'Sales/RevOps', tone: 'good' },
+        { label: 'ICP fit', value: '76%', tone: 'good' },
+        { label: 'Prior contact', value: 'None', tone: 'neutral' }
+      ],
+      suggested: [
+        { title: 'Send cold intro email', desc: 'Reference RevOps hiring intent' },
+        { title: 'Connect on LinkedIn', desc: 'Warm before the email' }
+      ],
+      scoreReason: '+21 fit · +22 intent · +16 engagement · +12 timing',
+      xJob: { role: 'Revenue Operations Manager', posted: '2 h ago', url: '#', tags: ['#hiring', '#RevOps', '#SaaS'] },
+      activity: [
+        { t: '2 h ago',    type: 'visit',  text: 'X Jobs: Cartex posted "Revenue Operations Manager".' },
+        { t: '5 h ago',    type: 'ai',     text: 'AI matched company profile to mid-market e-commerce ICP.' },
+        { t: 'Yesterday',  type: 'visit',  text: 'X Jobs: posted "Account Executive — Midwest".' }
+      ]
+    },
+    {
+      id: 'l10', name: 'Tanya Voronova', initials: 'TV', title: 'CEO', company: 'HelixHR',
+      email: 'tanya@helixhr.com', phone: '+44 20 5555 0244', location: 'London, UK',
+      source: 'X Jobs', owner: 'Unassigned', lastActivity: '4 h ago',
+      temp: 'warm', score: 65,
+      insightWhy: 'warm',
+      summary: "HelixHR — an HR-tech startup — posted a Head of Growth role on X. CEO personally tweeted the listing, suggesting early-stage urgency. Needs tooling to manage an expanding team.",
+      signals: [
+        { label: 'Jobs posted', value: '1 this week', tone: 'neutral' },
+        { label: 'Posted by', value: 'CEO', tone: 'good' },
+        { label: 'Stage', value: 'Seed/Series A', tone: 'neutral' },
+        { label: 'ICP fit', value: '70%', tone: 'good' }
+      ],
+      suggested: [
+        { title: 'DM CEO on X', desc: 'Personal tweet = personal touch' },
+        { title: 'Send short pitch email', desc: 'Lead gen for their new Growth hire' }
+      ],
+      scoreReason: '+18 fit · +19 intent · +14 engagement · +14 timing',
+      xJob: { role: 'Head of Growth', posted: '4 h ago', url: '#', tags: ['#hiring', '#HRtech', '#startup'] },
+      activity: [
+        { t: '4 h ago', type: 'visit',  text: 'X Jobs: HelixHR CEO tweeted "Head of Growth" opening.' },
+        { t: '6 h ago', type: 'ai',     text: 'AI detected CEO-authored post — flagged as high-value signal.' }
+      ]
+    },
+    {
       id: 'l6', name: 'Jonas Weber', initials: 'JW', title: 'Ops Director', company: 'Ridgeline Logistics',
       email: 'jonas@ridgeline.co', phone: '+49 30 5555 0157', location: 'Berlin, DE',
       source: 'Cold outbound', owner: 'Unassigned', lastActivity: '2 d ago',
@@ -538,19 +646,22 @@
   // ---------- dashboard rendering ----------
   let activeFilter = 'all';
   let searchQuery = '';
+  let activeSource = '';
 
   function filteredLeads() {
     const q = searchQuery.trim().toLowerCase();
     return LEADS.filter(l => {
       if (activeFilter !== 'all' && l.temp !== activeFilter) return false;
+      if (activeSource && l.source !== activeSource) return false;
       if (!q) return true;
       return [l.name, l.company, l.email, l.title].some(v => v.toLowerCase().includes(q));
     });
   }
 
   function renderCounts() {
-    const counts = { all: LEADS.length, hot: 0, warm: 0, cold: 0 };
-    LEADS.forEach(l => counts[l.temp]++);
+    const visible = filteredLeads();
+    const counts = { all: visible.length, hot: 0, warm: 0, cold: 0 };
+    visible.forEach(l => counts[l.temp]++);
     document.querySelectorAll('[data-count]').forEach(el => {
       el.textContent = counts[el.dataset.count];
     });
@@ -604,7 +715,9 @@
             </div>
           </div>
         </td>
-        <td class="px-2 py-3 text-ink-500">${l.source}</td>
+        <td class="px-2 py-3 text-ink-500">
+          ${l.source === 'X Jobs' ? `<span class="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full bg-ink-900 text-white"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.841L1.254 2.25H8.08l4.252 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Jobs</span>` : l.source}
+        </td>
         <td class="px-2 py-3 text-ink-500">${l.lastActivity}</td>
         <td class="px-2 py-3 pr-4">
           <div class="flex items-center gap-1 justify-end" onclick="event.stopPropagation()">
@@ -644,6 +757,19 @@
       <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92V21a1 1 0 0 1-1.1 1A19.86 19.86 0 0 1 2 3.1 1 1 0 0 1 3 2h4.09a1 1 0 0 1 1 .75l1 4a1 1 0 0 1-.27 1L7.21 9.21a16 16 0 0 0 7.58 7.58l1.46-1.61a1 1 0 0 1 1-.27l4 1a1 1 0 0 1 .75 1z"/></svg>${l.phone}</span>
       <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${l.location}</span>
     `;
+
+    // X Jobs card
+    const xJobCard = document.getElementById('xJobCard');
+    if (l.xJob) {
+      xJobCard.classList.remove('hidden');
+      document.getElementById('xJobRole').textContent = l.xJob.role;
+      document.getElementById('xJobTime').textContent = l.xJob.posted;
+      document.getElementById('xJobTags').innerHTML = (l.xJob.tags || []).map(tag =>
+        `<span class="text-[11px] bg-white/10 text-white/80 px-1.5 py-0.5 rounded">${tag}</span>`
+      ).join('');
+    } else {
+      xJobCard.classList.add('hidden');
+    }
 
     document.getElementById('insightWhy').textContent = l.insightWhy;
     document.getElementById('insightSummary').textContent = l.summary;
@@ -729,6 +855,13 @@
       btn.classList.add('bg-white', 'shadow-sm', 'font-medium', 'text-ink-900');
       renderRows();
     });
+  });
+
+  // ---------- source filter ----------
+  document.getElementById('sourceFilter').addEventListener('change', (e) => {
+    activeSource = e.target.value;
+    renderCounts();
+    renderRows();
   });
 
   // ---------- search ----------
