@@ -37,6 +37,60 @@
 </head>
 <body class="bg-surface-muted text-ink-900 antialiased">
 
+<!-- X Jobs Scraper Modal -->
+<div id="xJobsModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+  <div class="absolute inset-0 bg-ink-900/40 backdrop-blur-sm" id="xJobsOverlay"></div>
+  <div class="relative bg-white w-full sm:max-w-2xl sm:rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
+    <!-- Header -->
+    <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-border shrink-0">
+      <div class="w-8 h-8 rounded-lg bg-ink-900 text-white grid place-items-center">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.402 6.231H2.742l7.742-8.859L1.064 2.25H8.08l4.256 5.626L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+      </div>
+      <div>
+        <div class="text-sm font-semibold">Scrape Jobs from X</div>
+        <div class="text-xs text-ink-500">Companies hiring on X — auto-scored as leads</div>
+      </div>
+      <div class="ml-auto flex items-center gap-2">
+        <span id="xScrapeStatus" class="text-xs text-ink-300"></span>
+        <button id="xRefreshBtn" class="h-8 px-3 rounded-md border border-surface-border text-sm hover:bg-surface-muted flex items-center gap-2">
+          <svg id="xRefreshIcon" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+          Refresh
+        </button>
+        <button id="xJobsClose" class="h-8 w-8 grid place-items-center rounded-md hover:bg-surface-muted text-ink-500">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap items-center gap-2 px-5 py-3 border-b border-surface-border shrink-0 text-sm">
+      <input id="xJobsSearch" type="text" placeholder="Filter by role or company…" class="flex-1 min-w-[180px] h-8 px-3 rounded-md border border-surface-border bg-white text-sm placeholder:text-ink-300 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500" />
+      <select id="xJobsFilter" class="h-8 px-2 rounded-md border border-surface-border bg-white text-sm">
+        <option value="all">All roles</option>
+        <option value="engineering">Engineering</option>
+        <option value="marketing">Marketing</option>
+        <option value="sales">Sales</option>
+        <option value="product">Product</option>
+      </select>
+      <div class="text-xs text-ink-300 ml-auto" id="xJobsCount">12 posts found</div>
+    </div>
+
+    <!-- Job list -->
+    <div class="overflow-y-auto flex-1 divide-y divide-surface-border" id="xJobsList"></div>
+
+    <!-- Footer -->
+    <div class="px-5 py-3 border-t border-surface-border flex items-center justify-between shrink-0">
+      <div class="text-xs text-ink-500"><span id="xSelectedCount">0</span> selected</div>
+      <div class="flex items-center gap-2">
+        <button id="xImportBtn" disabled class="h-8 px-4 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Import as leads
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- App shell -->
 <div class="min-h-screen flex">
   <!-- Sidebar -->
@@ -95,6 +149,10 @@
           <input id="searchInput" placeholder="Search leads, companies…" class="bg-transparent text-sm w-full outline-none placeholder:text-ink-300" />
           <span class="kbd">/</span>
         </div>
+        <button id="scrapeXBtn" class="h-9 px-3 rounded-md border border-surface-border bg-white text-sm font-medium hover:bg-surface-muted flex items-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.402 6.231H2.742l7.742-8.859L1.064 2.25H8.08l4.256 5.626L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+          Scrape Jobs
+        </button>
         <button class="h-9 px-3 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 flex items-center gap-2">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           Add lead
@@ -158,6 +216,7 @@
               <option>LinkedIn</option>
               <option>Cold outbound</option>
               <option>Referral</option>
+              <option>X Jobs</option>
             </select>
             <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
               <option>All owners</option>
@@ -788,6 +847,257 @@
   // ---------- init ----------
   renderCounts();
   renderRows();
+
+  // ---------- X Jobs scraper ----------
+  const X_JOBS = [
+    {
+      id: 'xj1', handle: '@VerveAnalytics', company: 'Verve Analytics', avatar: 'VA',
+      role: 'Head of Marketing', category: 'marketing',
+      posted: '14 min ago', employees: '80–200',
+      post: '🚀 We\'re hiring a Head of Marketing to lead our go-to-market strategy. If you\'re passionate about data-driven growth, we want you! #hiring #marketing',
+      score: 78, temp: 'hot',
+      why: 'Marketing hire at a growth-stage B2B company — budget unlocked, decision-maker engaged.',
+    },
+    {
+      id: 'xj2', handle: '@TerraformCloud', company: 'Terraform Cloud', avatar: 'TC',
+      role: 'Senior Sales Engineer', category: 'sales',
+      posted: '32 min ago', employees: '500–1k',
+      post: 'Hiring: Senior Sales Engineer to join our expanding revenue team. You\'ll work closely with enterprise prospects. Remote-first. Apply now! 👇 #jobs #saas',
+      score: 85, temp: 'hot',
+      why: 'Sales Engineering hire signals active enterprise pipeline expansion — strong ICP fit.',
+    },
+    {
+      id: 'xj3', handle: '@NovaBiotech', company: 'Nova Biotech', avatar: 'NB',
+      role: 'VP of Growth', category: 'marketing',
+      posted: '1 h ago', employees: '50–150',
+      post: 'We are looking for a VP of Growth to scale our user acquisition. Seed-funded startup, equity-rich package. DM or apply at the link. #hiringnow',
+      score: 81, temp: 'hot',
+      why: 'VP-level hire post-seed funding — budget available and urgency to grow.',
+    },
+    {
+      id: 'xj4', handle: '@PeakOpsHQ', company: 'PeakOps', avatar: 'PO',
+      role: 'Full-Stack Engineer', category: 'engineering',
+      posted: '2 h ago', employees: '20–80',
+      post: 'Looking for a full-stack engineer to join our platform team. Must be comfortable with React + Node. Fast-paced startup environment. #hiring',
+      score: 55, temp: 'warm',
+      why: 'Engineering hire at early-stage startup — may be evaluating tooling.',
+    },
+    {
+      id: 'xj5', handle: '@FluxRetail', company: 'Flux Retail', avatar: 'FR',
+      role: 'Product Manager', category: 'product',
+      posted: '2 h ago', employees: '200–500',
+      post: 'PM role open! You\'ll own the roadmap for our merchant analytics product. Looking for 3+ yrs PM experience in e-commerce or retail. #productmanager',
+      score: 62, temp: 'warm',
+      why: 'Analytics product PM hire — evaluating tools to support new initiative.',
+    },
+    {
+      id: 'xj6', handle: '@OceanFreight', company: 'OceanFreight Inc', avatar: 'OF',
+      role: 'DevOps Lead', category: 'engineering',
+      posted: '3 h ago', employees: '300–800',
+      post: 'We\'re hiring a DevOps Lead to modernize our infrastructure. Kubernetes, CI/CD, cloud migrations. Competitive pay + benefits. #devops #hiring',
+      score: 48, temp: 'warm',
+      why: 'Infrastructure modernization hire — likely evaluating SaaS tooling.',
+    },
+    {
+      id: 'xj7', handle: '@ClarityLegal', company: 'Clarity Legal Tech', avatar: 'CL',
+      role: 'Director of Sales', category: 'sales',
+      posted: '4 h ago', employees: '100–250',
+      post: 'Director of Sales position open at Clarity Legal Tech. We\'re Series A, growing 3× YoY. Lead a team of 5 AEs. #legaltech #sales #hiring',
+      score: 88, temp: 'hot',
+      why: 'Series A + 3× YoY growth + Director-level sales hire = prime ICP.',
+    },
+    {
+      id: 'xj8', handle: '@SpineSoftware', company: 'Spine Software', avatar: 'SS',
+      role: 'Marketing Analyst', category: 'marketing',
+      posted: '5 h ago', employees: '40–100',
+      post: 'Marketing Analyst needed. Help us understand our funnel, run attribution, and drive demand gen programs. Tools: HubSpot, Mixpanel. #analytics',
+      score: 58, temp: 'warm',
+      why: 'Demand gen hire at SMB — could benefit from lead intelligence tooling.',
+    },
+    {
+      id: 'xj9', handle: '@CrestCapital', company: 'Crest Capital', avatar: 'CC',
+      role: 'Head of Product', category: 'product',
+      posted: '6 h ago', employees: '150–400',
+      post: 'Exciting opportunity: Head of Product at Crest Capital. Shape the roadmap for our fintech platform. Series B company. Remote. #productleadership',
+      score: 72, temp: 'warm',
+      why: 'Series B fintech expanding product leadership — budget and initiative signal.',
+    },
+    {
+      id: 'xj10', handle: '@DawnRobotic', company: 'Dawn Robotics', avatar: 'DR',
+      role: 'Sales Development Rep', category: 'sales',
+      posted: '7 h ago', employees: '30–80',
+      post: 'We\'re building out our sales team! Looking for hungry SDRs to join our early-stage startup. Great base + commission. Equity available. #sdr',
+      score: 41, temp: 'cold',
+      why: 'Early team, SDR hire — low budget signal, longer sales cycle likely.',
+    },
+    {
+      id: 'xj11', handle: '@GlidePath', company: 'GlidePath AI', avatar: 'GA',
+      role: 'Growth Engineer', category: 'engineering',
+      posted: '9 h ago', employees: '60–180',
+      post: 'Growth Engineer role at GlidePath AI. Work at the intersection of product + data to drive user activation. Backed by top-tier VCs. #growthhacking',
+      score: 76, temp: 'hot',
+      why: 'VC-backed AI co hiring growth engineering — scaling aggressively.',
+    },
+    {
+      id: 'xj12', handle: '@MosaicHealth', company: 'Mosaic Health', avatar: 'MH',
+      role: 'VP of Marketing', category: 'marketing',
+      posted: '11 h ago', employees: '200–600',
+      post: 'VP Marketing role open at Mosaic Health. Own demand gen, brand, and comms. Prior healthtech experience a +. Series C, great culture. #marketing',
+      score: 83, temp: 'hot',
+      why: 'Series C healthtech with strong ICP — VP hire unlocks new budget.',
+    },
+  ];
+
+  let xSelectedIds = new Set();
+  let xJobsFilter = 'all';
+  let xJobsSearch = '';
+
+  function xFilteredJobs() {
+    const q = xJobsSearch.trim().toLowerCase();
+    return X_JOBS.filter(j => {
+      if (xJobsFilter !== 'all' && j.category !== xJobsFilter) return false;
+      if (!q) return true;
+      return [j.company, j.role, j.handle, j.post].some(v => v.toLowerCase().includes(q));
+    });
+  }
+
+  function renderXJobs() {
+    const jobs = xFilteredJobs();
+    document.getElementById('xJobsCount').textContent = `${jobs.length} post${jobs.length !== 1 ? 's' : ''} found`;
+    const list = document.getElementById('xJobsList');
+    if (jobs.length === 0) {
+      list.innerHTML = `<div class="px-5 py-12 text-center text-sm text-ink-500">No posts match your filter.</div>`;
+      return;
+    }
+    list.innerHTML = jobs.map(j => {
+      const t = tempStyles[j.temp];
+      const checked = xSelectedIds.has(j.id);
+      return `
+      <label class="flex items-start gap-3 px-5 py-4 cursor-pointer hover:bg-surface-muted/60 transition select-none ${checked ? 'bg-brand-50' : ''}">
+        <input type="checkbox" class="xjob-check mt-0.5 shrink-0" data-id="${j.id}" ${checked ? 'checked' : ''} />
+        <div class="w-9 h-9 shrink-0 rounded-full bg-ink-900 text-white grid place-items-center text-xs font-semibold">${j.avatar}</div>
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-sm font-semibold">${j.company}</span>
+            <span class="text-xs text-ink-400">${j.handle}</span>
+            <span class="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded-full ${t.pill}">
+              <span class="w-1.5 h-1.5 rounded-full ${t.dot}"></span>${j.score}
+            </span>
+            <span class="text-xs text-ink-300 ml-auto shrink-0">${j.posted}</span>
+          </div>
+          <div class="text-xs font-medium text-brand-700 mt-0.5">Hiring: ${j.role}</div>
+          <div class="text-xs text-ink-700 mt-1 leading-relaxed line-clamp-2">${j.post}</div>
+          <div class="text-xs text-ink-400 mt-1.5 flex items-center gap-3">
+            <span>${j.employees} employees</span>
+            <span class="text-ink-200">·</span>
+            <span class="italic">${j.why}</span>
+          </div>
+        </div>
+      </label>`;
+    }).join('');
+
+    list.querySelectorAll('.xjob-check').forEach(cb => {
+      cb.addEventListener('change', () => {
+        if (cb.checked) xSelectedIds.add(cb.dataset.id);
+        else xSelectedIds.delete(cb.dataset.id);
+        updateXFooter();
+        renderXJobs();
+      });
+    });
+  }
+
+  function updateXFooter() {
+    const n = xSelectedIds.size;
+    document.getElementById('xSelectedCount').textContent = n;
+    document.getElementById('xImportBtn').disabled = n === 0;
+  }
+
+  function openXModal() {
+    xSelectedIds.clear();
+    updateXFooter();
+    renderXJobs();
+    document.getElementById('xJobsModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeXModal() {
+    document.getElementById('xJobsModal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  function simulateScrape() {
+    const btn = document.getElementById('xRefreshBtn');
+    const icon = document.getElementById('xRefreshIcon');
+    const status = document.getElementById('xScrapeStatus');
+    btn.disabled = true;
+    icon.classList.add('animate-spin');
+    status.textContent = 'Scraping X…';
+    setTimeout(() => {
+      icon.classList.remove('animate-spin');
+      btn.disabled = false;
+      const now = new Date();
+      status.textContent = `Updated ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+      renderXJobs();
+    }, 1800);
+  }
+
+  document.getElementById('scrapeXBtn').addEventListener('click', openXModal);
+  document.getElementById('xJobsClose').addEventListener('click', closeXModal);
+  document.getElementById('xJobsOverlay').addEventListener('click', closeXModal);
+  document.getElementById('xRefreshBtn').addEventListener('click', simulateScrape);
+
+  document.getElementById('xJobsSearch').addEventListener('input', e => {
+    xJobsSearch = e.target.value;
+    renderXJobs();
+  });
+  document.getElementById('xJobsFilter').addEventListener('change', e => {
+    xJobsFilter = e.target.value;
+    renderXJobs();
+  });
+
+  document.getElementById('xImportBtn').addEventListener('click', () => {
+    const toImport = X_JOBS.filter(j => xSelectedIds.has(j.id));
+    toImport.forEach(j => {
+      if (LEADS.find(l => l.id === j.id)) return;
+      LEADS.push({
+        id: j.id,
+        name: j.company,
+        initials: j.avatar,
+        title: j.role + ' (open role)',
+        company: j.company,
+        email: `jobs@${j.company.toLowerCase().replace(/\s+/g, '')}.com`,
+        phone: '—',
+        location: 'X Post',
+        source: 'X Jobs',
+        owner: 'Unassigned',
+        lastActivity: j.posted,
+        temp: j.temp,
+        score: j.score,
+        insightWhy: j.temp,
+        summary: `Sourced from X: ${j.company} is hiring a ${j.role}. ${j.why}`,
+        signals: [
+          { label: 'Signal', value: 'Hiring post', tone: 'good' },
+          { label: 'Role', value: j.role, tone: 'neutral' },
+          { label: 'Size', value: j.employees, tone: 'neutral' },
+          { label: 'Source', value: 'X / Twitter', tone: 'neutral' }
+        ],
+        suggested: [
+          { title: `Reach out to ${j.company}`, desc: 'Congratulate on growth + offer value' },
+          { title: 'Find hiring manager', desc: 'Search LinkedIn for DM' }
+        ],
+        scoreReason: `AI score ${j.score} — hiring signal + ICP analysis`,
+        activity: [
+          { t: j.posted, type: 'visit', text: `${j.handle} posted: "${j.post.slice(0, 80)}…"` },
+          { t: 'Just now', type: 'ai',   text: `AI scored as ${j.temp.toUpperCase()} lead (${j.score}/100) from X job signal.` }
+        ]
+      });
+    });
+    renderCounts();
+    renderRows();
+    closeXModal();
+    xSelectedIds.clear();
+    updateXFooter();
+  });
 </script>
 </body>
 </html>
