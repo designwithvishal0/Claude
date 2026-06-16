@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Leadflow — X Job Scraper</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+        colors: {
+          ink:     { 900:'#0B1220', 700:'#1F2937', 500:'#4B5563', 300:'#9CA3AF' },
+          surface: { DEFAULT:'#FFFFFF', muted:'#F7F8FA', border:'#E5E7EB' },
+          brand:   { 50:'#EEF2FF', 100:'#E0E7FF', 500:'#6366F1', 600:'#4F46E5', 700:'#4338CA' },
+          x:       { DEFAULT:'#000000', muted:'#1D1D1D' },
+          hot:     { 50:'#FEF2F2', 500:'#EF4444', 700:'#B91C1C' },
+          warm:    { 50:'#FFFBEB', 500:'#F59E0B', 700:'#B45309' },
+          cold:    { 50:'#EFF6FF', 500:'#3B82F6', 700:'#1D4ED8' }
+        }
+      }
+    }
+  };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 8px; }
+  .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; padding: 1px 6px; border: 1px solid #E5E7EB; border-bottom-width: 2px; border-radius: 4px; color: #4B5563; background: #fff; }
+  .job-card { transition: box-shadow .15s ease, transform .15s ease; }
+  .job-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); transform: translateY(-1px); }
+  .pulse-dot { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.35 } }
+  .scraper-bar { background: linear-gradient(90deg, #4F46E5 0%, #6366F1 40%, #4F46E5 100%); background-size: 200% 100%; animation: shimmer 1.8s linear infinite; }
+  @keyframes shimmer { 0% { background-position: 200% 0 } 100% { background-position: -200% 0 } }
+  .tag-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; }
+  .filter-btn.active { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.08); font-weight: 600; color: #0B1220; }
+  .toast { position: fixed; bottom: 24px; right: 24px; z-index: 99; background: #0B1220; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.22); transform: translateY(80px); opacity: 0; transition: all .25s cubic-bezier(.34,1.56,.64,1); }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  #detailPanel { transition: transform .22s ease, opacity .22s ease; }
+  #detailPanel.hidden-panel { transform: translateX(40px); opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body class="bg-surface-muted text-ink-900 antialiased">
+
+<!-- Toast notification -->
+<div id="toast" class="toast">
+  <svg class="w-4 h-4 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+  <span id="toastMsg">Lead added.</span>
+</div>
+
+<!-- Detail side panel overlay -->
+<div id="panelOverlay" class="fixed inset-0 z-40 bg-black/30 hidden" onclick="closePanel()"></div>
+<aside id="detailPanel" class="hidden-panel fixed top-0 right-0 h-full w-full max-w-md bg-white border-l border-surface-border z-50 flex flex-col overflow-y-auto scrollbar-thin">
+  <div class="flex items-center justify-between p-5 border-b border-surface-border">
+    <div class="flex items-center gap-3">
+      <div id="panelAvatar" class="w-10 h-10 rounded-xl bg-brand-100 text-brand-700 grid place-items-center font-semibold text-sm">–</div>
+      <div>
+        <div id="panelCompany" class="font-semibold text-sm">–</div>
+        <div id="panelHandle" class="text-xs text-ink-500">–</div>
+      </div>
+    </div>
+    <button onclick="closePanel()" class="w-8 h-8 rounded-md border border-surface-border grid place-items-center hover:bg-surface-muted">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="p-5 space-y-5">
+    <!-- X post preview -->
+    <div class="bg-surface-muted border border-surface-border rounded-xl p-4">
+      <div class="flex gap-3">
+        <div id="panelPostAvatar" class="w-9 h-9 rounded-full bg-brand-100 text-brand-700 shrink-0 grid place-items-center font-semibold text-xs">–</div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span id="panelPostName" class="text-sm font-semibold">–</span>
+            <span id="panelPostHandle" class="text-xs text-ink-500">–</span>
+            <span class="text-ink-300 text-xs">·</span>
+            <span id="panelPostDate" class="text-xs text-ink-500">–</span>
+          </div>
+          <p id="panelPostText" class="text-sm mt-1.5 leading-relaxed text-ink-700">–</p>
+          <div class="flex items-center gap-4 mt-3 text-xs text-ink-500">
+            <span id="panelLikes" class="flex items-center gap-1"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>–</span>
+            <span id="panelRetweets" class="flex items-center gap-1"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>–</span>
+            <span id="panelComments" class="flex items-center gap-1"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>–</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job details -->
+    <div>
+      <div class="text-xs font-semibold text-ink-500 uppercase tracking-wide mb-3">Job Details</div>
+      <dl class="space-y-2 text-sm">
+        <div class="flex gap-2"><dt class="w-28 text-ink-500 shrink-0">Role</dt><dd id="panelRole" class="font-medium">–</dd></div>
+        <div class="flex gap-2"><dt class="w-28 text-ink-500 shrink-0">Department</dt><dd id="panelDept" class="font-medium">–</dd></div>
+        <div class="flex gap-2"><dt class="w-28 text-ink-500 shrink-0">Location</dt><dd id="panelLocation" class="font-medium">–</dd></div>
+        <div class="flex gap-2"><dt class="w-28 text-ink-500 shrink-0">Salary range</dt><dd id="panelSalary" class="font-medium">–</dd></div>
+        <div class="flex gap-2"><dt class="w-28 text-ink-500 shrink-0">Company size</dt><dd id="panelSize" class="font-medium">–</dd></div>
+        <div class="flex gap-2"><dt class="w-28 text-ink-500 shrink-0">Industry</dt><dd id="panelIndustry" class="font-medium">–</dd></div>
+      </dl>
+    </div>
+
+    <!-- AI score -->
+    <div class="bg-brand-50 border border-brand-100 rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-semibold text-brand-700 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2 5 5 1-3.5 3.5L17 17l-5-3-5 3 1.5-5.5L5 8l5-1z"/></svg>
+          AI Lead Score
+        </span>
+        <span id="panelScore" class="text-lg font-bold text-brand-700">–</span>
+      </div>
+      <p id="panelAiReason" class="text-xs text-brand-600 leading-relaxed">–</p>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-col gap-2.5 pt-1">
+      <button id="panelAddBtn" onclick="addToLeadsFromPanel()" class="w-full h-10 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Add to Leads
+      </button>
+      <button class="w-full h-10 rounded-lg border border-surface-border bg-white text-sm font-medium hover:bg-surface-muted flex items-center justify-center gap-2 text-ink-700">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View post on X
+      </button>
+    </div>
+  </div>
+</aside>
+
+<!-- App shell -->
+<div class="min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="w-60 shrink-0 bg-white border-r border-surface-border hidden md:flex md:flex-col">
+    <div class="h-14 flex items-center gap-2 px-5 border-b border-surface-border">
+      <div class="w-7 h-7 rounded-md bg-brand-600 text-white grid place-items-center font-bold">L</div>
+      <span class="font-semibold">Leadflow</span>
+    </div>
+    <nav class="p-3 text-sm">
+      <a href="index.html" class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+        Leads
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        Pipeline
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
+        Inbox
+      </a>
+      <a href="jobs.html" class="flex items-center gap-3 px-3 py-2 rounded-md bg-brand-50 text-brand-700 font-medium">
+        <!-- X/Twitter icon -->
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X Job Scraper
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+        Insights
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1A2 2 0 1 1 4.4 17l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1A2 2 0 1 1 7 4.4l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1A2 2 0 1 1 19.6 7l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        Settings
+      </a>
+    </nav>
+    <div class="mt-auto p-3 border-t border-surface-border">
+      <div class="flex items-center gap-3 px-2 py-2">
+        <div class="w-8 h-8 rounded-full bg-ink-700 text-white grid place-items-center text-xs font-semibold">VR</div>
+        <div class="text-sm">
+          <div class="font-medium">Vishal R.</div>
+          <div class="text-ink-300 text-xs">Acme · Free trial</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 min-w-0 flex flex-col">
+
+    <!-- Top bar -->
+    <header class="h-14 bg-white border-b border-surface-border flex items-center gap-3 px-4 md:px-6">
+      <div class="flex items-center gap-2">
+        <!-- X logo -->
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        <h1 class="text-base font-semibold">X Job Scraper</h1>
+      </div>
+
+      <div class="ml-auto flex items-center gap-2">
+        <div class="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 h-7 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span>
+          Live
+        </div>
+        <button onclick="runScraper()" class="h-9 px-3 rounded-md bg-black text-white text-sm font-medium hover:bg-zinc-800 flex items-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2H3v16h5v4l4-4h5l4-4V2zM11 11V7M16 11V7"/></svg>
+          Scrape X
+        </button>
+      </div>
+    </header>
+
+    <!-- Search + filter bar -->
+    <div class="bg-white border-b border-surface-border px-4 md:px-6 py-3 flex flex-wrap items-center gap-3">
+      <!-- Search -->
+      <div class="flex items-center gap-2 px-3 h-9 rounded-md border border-surface-border bg-surface-muted w-full sm:w-80">
+        <svg class="w-4 h-4 text-ink-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="searchBox" oninput="applyFilters()" placeholder="Search role, company, keyword…" class="bg-transparent text-sm w-full outline-none placeholder:text-ink-300" />
+      </div>
+
+      <!-- Category filter -->
+      <div class="flex items-center gap-1 bg-surface-muted p-1 rounded-md text-sm" id="categoryTabs">
+        <button data-cat="all"   class="filter-btn active px-3 py-1.5 rounded-md text-ink-500 text-sm">All</button>
+        <button data-cat="eng"   class="filter-btn px-3 py-1.5 rounded-md text-ink-500 text-sm">Engineering</button>
+        <button data-cat="design" class="filter-btn px-3 py-1.5 rounded-md text-ink-500 text-sm">Design</button>
+        <button data-cat="sales" class="filter-btn px-3 py-1.5 rounded-md text-ink-500 text-sm">Sales</button>
+        <button data-cat="mktg"  class="filter-btn px-3 py-1.5 rounded-md text-ink-500 text-sm">Marketing</button>
+        <button data-cat="ops"   class="filter-btn px-3 py-1.5 rounded-md text-ink-500 text-sm">Operations</button>
+      </div>
+
+      <!-- Work type -->
+      <select id="workTypeFilter" onchange="applyFilters()" class="text-sm border border-surface-border rounded-md h-9 px-2 bg-white">
+        <option value="">All work types</option>
+        <option value="Remote">Remote</option>
+        <option value="Hybrid">Hybrid</option>
+        <option value="On-site">On-site</option>
+      </select>
+
+      <!-- Sort -->
+      <select id="sortBy" onchange="applyFilters()" class="text-sm border border-surface-border rounded-md h-9 px-2 bg-white ml-auto">
+        <option value="score">Best match (AI)</option>
+        <option value="date">Newest first</option>
+        <option value="engagement">Most engagement</option>
+      </select>
+    </div>
+
+    <!-- Scraper progress bar -->
+    <div id="scraperBanner" class="hidden">
+      <div class="bg-brand-50 border-b border-brand-100 px-6 py-2.5 flex items-center gap-3 text-sm text-brand-700">
+        <div class="w-3 h-3 rounded-full border-2 border-brand-600 border-t-transparent animate-spin shrink-0"></div>
+        <span id="scraperStatus">Scanning X for job posts…</span>
+        <div class="ml-auto w-40 h-1.5 rounded-full bg-brand-100 overflow-hidden">
+          <div id="scraperBar" class="h-full scraper-bar rounded-full" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="px-4 md:px-6 pt-4 pb-2 flex flex-wrap items-center gap-3">
+      <div class="text-sm text-ink-500">
+        <span id="resultsCount" class="font-semibold text-ink-900">0</span> jobs found
+        <span class="mx-2 text-ink-300">·</span>
+        <span id="addedCount" class="font-semibold text-ink-900">0</span> added to leads
+      </div>
+      <div class="ml-auto flex items-center gap-2">
+        <button onclick="addAllVisible()" class="text-sm text-brand-600 hover:underline font-medium">Add all to leads</button>
+      </div>
+    </div>
+
+    <!-- Job grid -->
+    <div id="jobGrid" class="flex-1 overflow-y-auto scrollbar-thin px-4 md:px-6 pb-8">
+      <div id="jobCards" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-2"></div>
+      <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-surface-muted border border-surface-border grid place-items-center mb-4">
+          <svg class="w-6 h-6 text-ink-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </div>
+        <div class="font-semibold text-ink-700">No jobs match your filters</div>
+        <div class="text-sm text-ink-500 mt-1">Try a different keyword or category.</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── Data ────────────────────────────────────────────────────────────────
+const JOB_DATA = [
+  {
+    id: 1, company: 'Stripe', handle: '@stripe', initials: 'ST', color: '#635BFF',
+    role: 'Senior Software Engineer', dept: 'eng', location: 'Remote', salary: '$180k–$240k',
+    size: '5,000–10,000', industry: 'Fintech',
+    post: '🚀 We\'re hiring a Senior Software Engineer to work on our payments infrastructure. Help millions of businesses accept money online. Competitive comp, fully remote, incredible team. Apply 👇 stripe.com/jobs #hiring #fintech #remote',
+    date: '2h ago', likes: 342, retweets: 89, comments: 47,
+    score: 94, aiReason: 'High-growth fintech, large engineering org, actively hiring signals strong budget. Remote role widens your addressable market.',
+    added: false,
+  },
+  {
+    id: 2, company: 'Linear', handle: '@linear_app', initials: 'LN', color: '#5E6AD2',
+    role: 'Product Designer', dept: 'design', location: 'Remote',  salary: '$140k–$180k',
+    size: '50–200', industry: 'SaaS / Dev Tools',
+    post: 'We\'re looking for a Product Designer who cares deeply about craft. You\'ll design the future of software development tools. Tiny team, massive impact. 🧵 linear.app/careers #hiring #productdesign',
+    date: '5h ago', likes: 521, retweets: 147, comments: 63,
+    score: 91, aiReason: 'Cult-status developer tool with strong hiring signals. Small team size means decision-makers are accessible.',
+    added: false,
+  },
+  {
+    id: 3, company: 'Vercel', handle: '@vercel', initials: 'VC', color: '#000000',
+    role: 'Developer Advocate', dept: 'mktg', location: 'Remote', salary: '$120k–$160k',
+    size: '200–500', industry: 'Developer Infrastructure',
+    post: 'Join us as a Developer Advocate! 🎙️ Help developers ship faster with Vercel. You\'ll create content, speak at conferences, and work with our open-source community. vercel.com/careers #devrel #hiring',
+    date: '1d ago', likes: 988, retweets: 213, comments: 104,
+    score: 88, aiReason: 'High-velocity growth stage, developer-facing role with outsized influence. Strong community signals buying intent.',
+    added: false,
+  },
+  {
+    id: 4, company: 'Notion', handle: '@NotionHQ', initials: 'NO', color: '#000000',
+    role: 'Account Executive — Enterprise', dept: 'sales', location: 'Hybrid', salary: '$130k–$170k OTE',
+    size: '500–1,000', industry: 'Productivity SaaS',
+    post: 'We\'re expanding our Enterprise Sales team! 💼 Looking for an AE who can navigate complex deals with Fortune 500 companies. Strong quota attainment history required. notion.so/jobs #salesjobs #enterprise #hiring',
+    date: '3h ago', likes: 178, retweets: 44, comments: 28,
+    score: 86, aiReason: 'Enterprise expansion phase — high deal sizes and clear budget authority. Hybrid signals in-office culture fit.',
+    added: false,
+  },
+  {
+    id: 5, company: 'Figma', handle: '@figma', initials: 'FG', color: '#A259FF',
+    role: 'Head of Growth Marketing', dept: 'mktg', location: 'Hybrid', salary: '$200k–$260k',
+    size: '1,000–5,000', industry: 'Design Tools',
+    post: '📣 Big opportunity! We\'re hiring a Head of Growth Marketing to own our PLG motion. You\'ll partner with Product, Sales, and Data to drive activation and expansion. Come build something iconic. figma.com/careers #marketing #growth #hiring',
+    date: '8h ago', likes: 1204, retweets: 331, comments: 158,
+    score: 92, aiReason: 'Senior leader hire signals strategic budget ownership. PLG + enterprise motion means dual outreach angles.',
+    added: false,
+  },
+  {
+    id: 6, company: 'Retool', handle: '@retool', initials: 'RT', color: '#F0664B',
+    role: 'Solutions Engineer', dept: 'sales', location: 'On-site', salary: '$150k–$200k OTE',
+    size: '200–500', industry: 'Low-Code / Internal Tools',
+    post: 'Retool is hiring a Solutions Engineer in SF! 🛠️ Bridge the gap between sales and engineering — demo our platform, run POCs, and help land 6–7 figure deals. retool.com/careers #solutions #se #hiring',
+    date: '6h ago', likes: 89, retweets: 27, comments: 14,
+    score: 79, aiReason: 'Series C with enterprise momentum. SE hire signals active sales pipeline and technical buyers.',
+    added: false,
+  },
+  {
+    id: 7, company: 'Descript', handle: '@DescriptApp', initials: 'DS', color: '#22D3EE',
+    role: 'Senior iOS Engineer', dept: 'eng', location: 'Remote', salary: '$160k–$210k',
+    size: '50–200', industry: 'Media / Creator Tools',
+    post: 'We\'re building the future of video editing and we need an iOS engineer to help us get there. 🎬 If you love crafting buttery-smooth mobile UX, let\'s talk. descript.com/jobs #ios #swift #hiring',
+    date: '12h ago', likes: 267, retweets: 72, comments: 39,
+    score: 76, aiReason: 'Creator economy tailwind, Series C funded. Mobile-first signals product investment prioritisation.',
+    added: false,
+  },
+  {
+    id: 8, company: 'Loom', handle: '@loom', initials: 'LM', color: '#625DF5',
+    role: 'Customer Success Manager', dept: 'ops', location: 'Remote', salary: '$90k–$120k',
+    size: '200–500', industry: 'Video Comms / SaaS',
+    post: 'Join the Loom team as a CSM! 🎥 Help our customers get the most out of async video — onboard, expand, and retain a portfolio of SMB + mid-market accounts. loom.com/careers #customersuccess #csm #hiring',
+    date: '1d ago', likes: 143, retweets: 38, comments: 22,
+    score: 72, aiReason: 'Growing async comms market. CSM hire signals maturation into post-sale investment — good time for enablement tools.',
+    added: false,
+  },
+  {
+    id: 9, company: 'Miro', handle: '@MiroHQ', initials: 'MI', color: '#FFD02F',
+    role: 'Staff Data Engineer', dept: 'eng', location: 'Hybrid', salary: '$170k–$220k',
+    size: '1,000–5,000', industry: 'Collaboration SaaS',
+    post: '📊 We\'re growing our data platform team. Staff Data Engineer — you\'ll architect our lakehouse, build pipelines at scale, and partner with product teams to surface insights. miro.com/jobs #dataengineering #hiring #hybrid',
+    date: '4h ago', likes: 194, retweets: 51, comments: 33,
+    score: 83, aiReason: 'Unicorn SaaS investing in data infrastructure = high-value technical sale. Staff-level hire signals exec sponsorship.',
+    added: false,
+  },
+  {
+    id: 10, company: 'Pitch', handle: '@pitchhq', initials: 'PT', color: '#FF4F64',
+    role: 'Marketing Operations Manager', dept: 'ops', location: 'Remote', salary: '$100k–$130k',
+    size: '50–200', industry: 'Presentation SaaS',
+    post: 'We\'re hiring a Marketing Ops Manager to own our MarTech stack, attribution, and campaign operations 🔧 You\'ll be the glue between growth and revenue. pitch.com/jobs #marketingops #mops #hiring',
+    date: '2d ago', likes: 76, retweets: 19, comments: 11,
+    score: 68, aiReason: 'MarTech buyer persona with direct budget. Ops hire during growth = openness to new tooling.',
+    added: false,
+  },
+  {
+    id: 11, company: 'Webflow', handle: '@webflow', initials: 'WF', color: '#4353FF',
+    role: 'Principal Product Manager', dept: 'ops', location: 'Remote', salary: '$190k–$240k',
+    size: '500–1,000', industry: 'No-Code / Web Platform',
+    post: 'Help shape the future of the web. We\'re hiring a Principal PM to own our enterprise features roadmap. You\'ll partner with our biggest customers and define what no-code looks like for large orgs. webflow.com/careers #product #pm #hiring',
+    date: '7h ago', likes: 612, retweets: 162, comments: 87,
+    score: 85, aiReason: 'Enterprise expansion with a PLG base. Principal PM = strategic access. No-code market growing 30%+ YoY.',
+    added: false,
+  },
+  {
+    id: 12, company: 'Airtable', handle: '@airtable', initials: 'AT', color: '#FCB400',
+    role: 'Enterprise Account Manager', dept: 'sales', location: 'On-site', salary: '$160k–$220k OTE',
+    size: '500–1,000', industry: 'Work Management SaaS',
+    post: 'We\'re scaling our enterprise team 💼 Looking for an experienced Account Manager to grow and expand F500 accounts. SF or NYC preferred. airtable.com/jobs #accountmanagement #enterprise #salesjobs',
+    date: '10h ago', likes: 234, retweets: 63, comments: 41,
+    score: 81, aiReason: 'F500 focus = large deal sizes. On-site signals strong team culture. Active sales expansion is a buying signal.',
+    added: false,
+  },
+];
+
+let currentJobId = null;
+let addedLeads = 0;
+let activeCategory = 'all';
+let visibleJobs = [...JOB_DATA];
+
+// ── Category tabs ────────────────────────────────────────────────────────
+document.getElementById('categoryTabs').addEventListener('click', e => {
+  const btn = e.target.closest('[data-cat]');
+  if (!btn) return;
+  activeCategory = btn.dataset.cat;
+  document.querySelectorAll('#categoryTabs .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+});
+
+// ── Filters + render ─────────────────────────────────────────────────────
+function applyFilters() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  const workType = document.getElementById('workTypeFilter').value;
+  const sort = document.getElementById('sortBy').value;
+
+  visibleJobs = JOB_DATA.filter(j => {
+    if (activeCategory !== 'all' && j.dept !== activeCategory) return false;
+    if (workType && j.location !== workType) return false;
+    if (q && !`${j.company} ${j.role} ${j.post} ${j.industry}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  if (sort === 'score')      visibleJobs.sort((a,b) => b.score - a.score);
+  else if (sort === 'date')  visibleJobs.sort((a,b) => a.id - b.id);
+  else if (sort === 'engagement') visibleJobs.sort((a,b) => (b.likes+b.retweets) - (a.likes+a.retweets));
+
+  renderCards();
+}
+
+function renderCards() {
+  const grid = document.getElementById('jobCards');
+  const empty = document.getElementById('emptyState');
+  document.getElementById('resultsCount').textContent = visibleJobs.length;
+
+  if (!visibleJobs.length) {
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    empty.classList.add('flex');
+    return;
+  }
+  empty.classList.add('hidden');
+  empty.classList.remove('flex');
+
+  grid.innerHTML = visibleJobs.map(j => {
+    const tempColor = j.score >= 90 ? 'text-hot-700 bg-hot-50' : j.score >= 80 ? 'text-warm-700 bg-warm-50' : 'text-cold-700 bg-cold-50';
+    const scoreLabel = j.score >= 90 ? 'Hot' : j.score >= 80 ? 'Warm' : 'Cold';
+    const workBadge = j.location === 'Remote' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : j.location === 'Hybrid' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-surface-muted text-ink-700 border border-surface-border';
+    const addedStyle = j.added ? 'opacity-50 cursor-not-allowed' : 'hover:bg-brand-700 cursor-pointer';
+    const addedLabel = j.added ? 'Added ✓' : 'Add to Leads';
+
+    return `
+    <div class="job-card bg-white border border-surface-border rounded-xl overflow-hidden flex flex-col" data-id="${j.id}">
+      <div class="p-4 flex-1">
+        <!-- Company + score badge -->
+        <div class="flex items-start justify-between gap-2 mb-3">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 rounded-lg shrink-0 grid place-items-center font-bold text-white text-xs" style="background:${j.color}">${j.initials}</div>
+            <div class="min-w-0">
+              <div class="font-semibold text-sm leading-tight truncate">${j.company}</div>
+              <div class="text-xs text-ink-500">${j.handle}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="tag-chip ${tempColor}">${scoreLabel} · ${j.score}</span>
+          </div>
+        </div>
+
+        <!-- Role -->
+        <div class="font-semibold text-sm mb-1">${j.role}</div>
+        <div class="flex items-center gap-1.5 mb-3">
+          <span class="tag-chip ${workBadge}">${j.location}</span>
+          <span class="tag-chip bg-surface-muted text-ink-500 border border-surface-border">${j.industry}</span>
+        </div>
+
+        <!-- Post preview -->
+        <div class="bg-surface-muted border border-surface-border rounded-lg p-3 mb-3">
+          <p class="text-xs text-ink-700 leading-relaxed line-clamp-3">${j.post}</p>
+        </div>
+
+        <!-- Engagement -->
+        <div class="flex items-center gap-3 text-xs text-ink-500">
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            ${j.likes.toLocaleString()}
+          </span>
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            ${j.retweets}
+          </span>
+          <span class="ml-auto text-ink-300">${j.date}</span>
+        </div>
+      </div>
+
+      <!-- Card actions -->
+      <div class="border-t border-surface-border flex">
+        <button onclick="openPanel(${j.id})" class="flex-1 py-2.5 text-xs font-medium text-ink-700 hover:bg-surface-muted transition-colors">View details</button>
+        <div class="w-px bg-surface-border"></div>
+        <button onclick="addToLeads(${j.id}, this)" ${j.added ? 'disabled' : ''} class="flex-1 py-2.5 text-xs font-medium text-brand-600 ${addedStyle} transition-colors">${addedLabel}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Add to leads ─────────────────────────────────────────────────────────
+function addToLeads(id, btn) {
+  const job = JOB_DATA.find(j => j.id === id);
+  if (!job || job.added) return;
+  job.added = true;
+  addedLeads++;
+  document.getElementById('addedCount').textContent = addedLeads;
+  if (btn) {
+    btn.textContent = 'Added ✓';
+    btn.disabled = true;
+    btn.classList.add('opacity-50', 'cursor-not-allowed');
+    btn.classList.remove('text-brand-600');
+  }
+  showToast(`${job.company} · ${job.role} added to leads`);
+  // Update panel button if open
+  if (currentJobId === id) {
+    const panelBtn = document.getElementById('panelAddBtn');
+    panelBtn.textContent = 'Added ✓';
+    panelBtn.disabled = true;
+    panelBtn.classList.add('opacity-50', 'cursor-not-allowed');
+  }
+}
+
+function addToLeadsFromPanel() {
+  if (!currentJobId) return;
+  addToLeads(currentJobId, null);
+  applyFilters();
+}
+
+function addAllVisible() {
+  visibleJobs.forEach(j => {
+    if (!j.added) addToLeads(j.id, null);
+  });
+  applyFilters();
+}
+
+// ── Detail panel ──────────────────────────────────────────────────────────
+function openPanel(id) {
+  const j = JOB_DATA.find(x => x.id === id);
+  if (!j) return;
+  currentJobId = id;
+
+  document.getElementById('panelAvatar').style.background = j.color;
+  document.getElementById('panelAvatar').textContent = j.initials;
+  document.getElementById('panelCompany').textContent = j.company;
+  document.getElementById('panelHandle').textContent = j.handle;
+
+  document.getElementById('panelPostAvatar').style.background = j.color;
+  document.getElementById('panelPostAvatar').textContent = j.initials;
+  document.getElementById('panelPostName').textContent = j.company;
+  document.getElementById('panelPostHandle').textContent = j.handle;
+  document.getElementById('panelPostDate').textContent = j.date;
+  document.getElementById('panelPostText').textContent = j.post;
+  document.getElementById('panelLikes').innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>${j.likes.toLocaleString()}`;
+  document.getElementById('panelRetweets').innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>${j.retweets}`;
+  document.getElementById('panelComments').innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${j.comments}`;
+
+  document.getElementById('panelRole').textContent = j.role;
+  document.getElementById('panelDept').textContent = { eng:'Engineering', design:'Design', sales:'Sales', mktg:'Marketing', ops:'Operations' }[j.dept] || j.dept;
+  document.getElementById('panelLocation').textContent = j.location;
+  document.getElementById('panelSalary').textContent = j.salary;
+  document.getElementById('panelSize').textContent = j.size;
+  document.getElementById('panelIndustry').textContent = j.industry;
+
+  document.getElementById('panelScore').textContent = `${j.score}/100`;
+  document.getElementById('panelAiReason').textContent = j.aiReason;
+
+  const btn = document.getElementById('panelAddBtn');
+  if (j.added) {
+    btn.textContent = 'Added ✓';
+    btn.disabled = true;
+    btn.classList.add('opacity-50', 'cursor-not-allowed');
+  } else {
+    btn.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Add to Leads';
+    btn.disabled = false;
+    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+  }
+
+  document.getElementById('panelOverlay').classList.remove('hidden');
+  const panel = document.getElementById('detailPanel');
+  panel.classList.remove('hidden-panel');
+}
+
+function closePanel() {
+  document.getElementById('panelOverlay').classList.add('hidden');
+  document.getElementById('detailPanel').classList.add('hidden-panel');
+  currentJobId = null;
+}
+
+// ── Scraper animation ─────────────────────────────────────────────────────
+function runScraper() {
+  const banner = document.getElementById('scraperBanner');
+  const bar    = document.getElementById('scraperBar');
+  const status = document.getElementById('scraperStatus');
+
+  const steps = [
+    [10,  'Authenticating with X API…'],
+    [25,  'Searching: "we\'re hiring" + tech keywords…'],
+    [42,  'Filtering verified business accounts…'],
+    [58,  'Extracting job metadata from posts…'],
+    [72,  'Scoring leads with AI model…'],
+    [88,  'Deduplicating results…'],
+    [100, 'Done! 12 jobs found.'],
+  ];
+
+  banner.classList.remove('hidden');
+  let i = 0;
+  const tick = () => {
+    if (i >= steps.length) {
+      setTimeout(() => banner.classList.add('hidden'), 1400);
+      showToast('Scrape complete — 12 jobs ready');
+      return;
+    }
+    const [pct, msg] = steps[i++];
+    bar.style.width = pct + '%';
+    status.textContent = msg;
+    setTimeout(tick, 480);
+  };
+  tick();
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+applyFilters();
+</script>
+</body>
+</html>
