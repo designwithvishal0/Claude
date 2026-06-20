@@ -58,6 +58,11 @@
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
         Inbox
       </a>
+      <a id="navXJobs" class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.389 6.231H2.756l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X Jobs
+        <span class="ml-auto text-[10px] font-semibold bg-brand-600 text-white px-1.5 py-0.5 rounded-full">New</span>
+      </a>
       <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
         Insights
@@ -158,6 +163,7 @@
               <option>LinkedIn</option>
               <option>Cold outbound</option>
               <option>Referral</option>
+              <option>X (Twitter)</option>
             </select>
             <select class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
               <option>All owners</option>
@@ -340,6 +346,122 @@
             </div>
           </div>
         </aside>
+
+      </div>
+    </section>
+
+    <!-- =================== X JOBS VIEW =================== -->
+    <section data-view="xjobs" class="flex-1 overflow-y-auto">
+      <div class="p-4 md:p-6 max-w-[1200px] mx-auto">
+
+        <!-- Header + search bar -->
+        <div class="flex flex-col md:flex-row md:items-end gap-4 mb-6">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.389 6.231H2.756l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <h2 class="text-lg font-semibold">X Job Scraper</h2>
+              <span class="text-xs font-medium bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Live</span>
+            </div>
+            <p class="text-sm text-ink-500">Scrape job postings from X and convert them into leads automatically.</p>
+          </div>
+          <div class="md:ml-auto flex items-center gap-2">
+            <select id="xjobsCategory" class="text-sm border border-surface-border rounded-md h-9 px-3 bg-white">
+              <option value="hiring">Hiring tweets</option>
+              <option value="remote">Remote jobs</option>
+              <option value="saas">SaaS roles</option>
+              <option value="startup">Startup hiring</option>
+              <option value="tech">Tech jobs</option>
+            </select>
+            <button id="xScrapeBtn" onclick="runXScrape()" class="h-9 px-4 rounded-md bg-black text-white text-sm font-medium hover:bg-zinc-800 flex items-center gap-2">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+              Scrape X
+            </button>
+            <button id="xImportBtn" onclick="importSelectedXJobs()" class="h-9 px-4 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 hidden flex items-center gap-2">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Import as Leads
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Posts scraped</div>
+            <div id="xStatScraped" class="mt-1 text-2xl font-semibold">—</div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Decision makers</div>
+            <div id="xStatDM" class="mt-1 text-2xl font-semibold">—</div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">High-intent signals</div>
+            <div id="xStatHot" class="mt-1 text-2xl font-semibold">—</div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Imported to Leads</div>
+            <div id="xStatImported" class="mt-1 text-2xl font-semibold">0</div>
+          </div>
+        </div>
+
+        <!-- Results table -->
+        <div class="bg-white border border-surface-border rounded-lg">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-surface-border">
+            <div class="text-sm font-semibold">Scraped Results</div>
+            <div id="xJobsLastRun" class="text-xs text-ink-300">Not yet run</div>
+          </div>
+
+          <!-- Idle state -->
+          <div id="xIdleState" class="py-16 text-center">
+            <div class="w-12 h-12 rounded-full bg-surface-muted grid place-items-center mx-auto mb-3">
+              <svg class="w-6 h-6 text-ink-300" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.389 6.231H2.756l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </div>
+            <div class="text-sm font-medium text-ink-500">Choose a category and click <strong>Scrape X</strong> to find hiring posts</div>
+            <div class="text-xs text-ink-300 mt-1">Searches recent X posts for job signals and decision-maker profiles</div>
+          </div>
+
+          <!-- Loading state -->
+          <div id="xLoadingState" class="py-16 text-center hidden">
+            <div class="flex items-center justify-center gap-2 mb-3">
+              <div class="w-2 h-2 rounded-full bg-brand-600 animate-bounce" style="animation-delay:0ms"></div>
+              <div class="w-2 h-2 rounded-full bg-brand-600 animate-bounce" style="animation-delay:150ms"></div>
+              <div class="w-2 h-2 rounded-full bg-brand-600 animate-bounce" style="animation-delay:300ms"></div>
+            </div>
+            <div id="xLoadingMsg" class="text-sm text-ink-500">Searching X for hiring posts…</div>
+          </div>
+
+          <!-- Results -->
+          <div id="xResultsState" class="hidden">
+            <div class="overflow-x-auto scrollbar-thin">
+              <table class="min-w-full text-sm">
+                <thead class="text-left text-ink-500 bg-surface-muted">
+                  <tr class="border-b border-surface-border">
+                    <th class="font-medium px-4 py-2.5 w-10"><input id="xSelectAll" type="checkbox" class="rounded border-surface-border" onchange="toggleAllXJobs(this.checked)"/></th>
+                    <th class="font-medium px-2 py-2.5">Posted by</th>
+                    <th class="font-medium px-2 py-2.5">Post</th>
+                    <th class="font-medium px-2 py-2.5">Role / Signal</th>
+                    <th class="font-medium px-2 py-2.5">Engagement</th>
+                    <th class="font-medium px-2 py-2.5">Intent</th>
+                    <th class="font-medium px-2 py-2.5 text-right pr-4">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="xJobRows"></tbody>
+              </table>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3 border-t border-surface-border text-xs text-ink-500">
+              <div><span id="xVisibleCount">0</span> results</div>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="xHotOnly" class="rounded border-surface-border" onchange="filterXJobs()"/>
+                Show high-intent only
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Import success toast -->
+        <div id="xToast" class="hidden fixed bottom-6 right-6 bg-ink-900 text-white text-sm px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50">
+          <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4L19 7"/></svg>
+          <span id="xToastMsg"></span>
+        </div>
 
       </div>
     </section>
@@ -784,6 +906,272 @@
     const list = variants[tone];
     return list[regen ? 1 : 0];
   }
+
+  // ---------- X Jobs scraper ----------
+  const X_JOB_POOL = {
+    hiring: [
+      { id:'x1', handle:'@SarahCTOVibes', name:'Sarah Lin', title:'CTO', company:'Stackflow AI', avatar:'SL',
+        post:'We\'re hiring! Looking for a senior fullstack engineer to join our AI infra team. Remote-first, competitive equity. DM me or drop your CV below 👇 #hiring #remotework',
+        role:'Senior Fullstack Engineer', followers:'12.4k', likes:84, reposts:41, posted:'2h ago', intent:'hot', selected:false },
+      { id:'x2', handle:'@MarkVPE', name:'Mark Osei', title:'VP Engineering', company:'NovaPay',
+        avatar:'MO', post:'NovaPay is growing fast and we need a Head of Product to help us scale. B2B fintech. Series B. Incredible team. Reach out! #jobs #productmanagement',
+        role:'Head of Product', followers:'8.9k', likes:132, reposts:67, posted:'5h ago', intent:'hot', selected:false },
+      { id:'x3', handle:'@JennaFounder', name:'Jenna Park', title:'Founder & CEO', company:'Clearpath SaaS',
+        avatar:'JP', post:'Quietly hiring a growth marketer who ❤️ data. Early stage, big opportunity. Must love experimentation. Salary range $90-120k + equity. #growthhacking #startup',
+        role:'Growth Marketer', followers:'5.2k', likes:56, reposts:22, posted:'8h ago', intent:'warm', selected:false },
+      { id:'x4', handle:'@TechRecruiterLou', name:'Louis Tran', title:'Head of Talent', company:'Axiom Cloud',
+        avatar:'LT', post:'URGENT: Axiom Cloud is looking for 2 senior DevOps engineers to join immediately. Strong k8s skills needed. DM me directly! #devops #kubernetes #hiring',
+        role:'Senior DevOps x2', followers:'31k', likes:209, reposts:118, posted:'1h ago', intent:'hot', selected:false },
+      { id:'x5', handle:'@DanielCPO', name:'Daniel Krause', title:'CPO', company:'Revel Analytics',
+        avatar:'DK', post:'Searching for a lead product designer to shape our B2B dashboard. Figma pro, user research chops, startup hunger. Remote, $130k–$160k. #ux #hiring',
+        role:'Lead Product Designer', followers:'7.1k', likes:73, reposts:29, posted:'3h ago', intent:'warm', selected:false },
+    ],
+    remote: [
+      { id:'x6', handle:'@RemoteRachel', name:'Rachel Ng', title:'Head of People', company:'Driftwork',
+        avatar:'RN', post:'100% remote engineering team at Driftwork needs a backend Rust dev. Async-first culture, great comp. Apply here or just DM! #remote #rustlang',
+        role:'Backend Rust Engineer', followers:'4.4k', likes:48, reposts:19, posted:'6h ago', intent:'warm', selected:false },
+      { id:'x7', handle:'@OpenRolesNow', name:'Sam Torres', title:'Recruiting Lead', company:'Luma Health',
+        avatar:'ST', post:'Luma Health is fully remote and hiring a senior data engineer. dbt + Snowflake experience a must. Comp $140-170k. Ping me! #remotejobs #dataengineering',
+        role:'Senior Data Engineer', followers:'18k', likes:97, reposts:53, posted:'4h ago', intent:'hot', selected:false },
+      { id:'x8', handle:'@AndreiEngineer', name:'Andrei Popov', title:'Engineering Manager', company:'Bluestream',
+        avatar:'AP', post:'Bluestream is scaling its remote team — we need a mobile (Flutter) dev. Fully async, EU timezone. €80-110k + options. DM for JD. #flutter #remotework',
+        role:'Mobile Flutter Dev', followers:'2.9k', likes:34, reposts:11, posted:'9h ago', intent:'cold', selected:false },
+    ],
+    saas: [
+      { id:'x9', handle:'@NinaVPSales', name:'Nina Johal', title:'VP Sales', company:'Meridian SaaS',
+        avatar:'NJ', post:'Looking for 3 AE\'s who have closed $1M+ ARR in B2B SaaS. We\'re at $8M ARR and growing fast. Huge commission opportunity! #b2bsales #saas',
+        role:'Account Executive x3', followers:'9.8k', likes:165, reposts:81, posted:'30m ago', intent:'hot', selected:false },
+      { id:'x10', handle:'@ChiefRev', name:'Carlos Rivera', title:'CRO', company:'Orbis SaaS',
+        avatar:'CR', post:'Orbis is hiring a RevOps Manager to own HubSpot, Salesforce, and our entire GTM stack. Remote OK. $110-140k. Game-changer role. #revops #saas',
+        role:'RevOps Manager', followers:'14.2k', likes:122, reposts:59, posted:'2h ago', intent:'hot', selected:false },
+    ],
+    startup: [
+      { id:'x11', handle:'@YCFounder2024', name:'Priyanka Iyer', title:'Co-founder', company:'Fern AI (YC W25)',
+        avatar:'PI', post:'YC W25 startup hiring employee #6 — a fullstack generalist who wants to build AI infra from scratch. Meaningful equity. SF preferred. DM! #ycombinator',
+        role:'Fullstack Generalist #6', followers:'3.1k', likes:211, reposts:94, posted:'1h ago', intent:'hot', selected:false },
+      { id:'x12', handle:'@Seed2Scale', name:'Ben Okafor', title:'CEO', company:'Clairo',
+        avatar:'BO', post:'We just closed our seed round and are now hiring a founding designer and a founding PM. This is the 0-1 opportunity. Reach out! #startup #seedfunded',
+        role:'Founding Designer / PM', followers:'6.3k', likes:88, reposts:44, posted:'3h ago', intent:'warm', selected:false },
+    ],
+    tech: [
+      { id:'x13', handle:'@TalentAtAtlas', name:'Kim Watanabe', title:'Tech Recruiter', company:'Atlas Labs',
+        avatar:'KW', post:'Hiring: ML Engineer with production LLM experience. Atlas Labs — B2B AI company. Hybrid NYC. $180-220k + generous equity. Send your GitHub! #machinelearning',
+        role:'ML Engineer', followers:'22k', likes:187, reposts:96, posted:'45m ago', intent:'hot', selected:false },
+      { id:'x14', handle:'@OpsLeadMike', name:'Mike Larson', title:'Head of Ops', company:'Pinnacle Ops',
+        avatar:'ML', post:'Hiring a cloud infra lead to build our AWS architecture from scratch. We\'re a 50-person SaaS company, series A. Remote US only. DM or email linked in bio.',
+        role:'Cloud Infra Lead', followers:'1.8k', likes:29, reposts:8, posted:'12h ago', intent:'cold', selected:false },
+    ]
+  };
+
+  let xCurrentJobs = [];
+  let xImportedCount = 0;
+
+  function runXScrape() {
+    const category = document.getElementById('xjobsCategory').value;
+    const btn = document.getElementById('xScrapeBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg> Scraping…';
+
+    document.getElementById('xIdleState').classList.add('hidden');
+    document.getElementById('xResultsState').classList.add('hidden');
+    document.getElementById('xLoadingState').classList.remove('hidden');
+    document.getElementById('xImportBtn').classList.add('hidden');
+
+    const msgs = [
+      'Connecting to X API…',
+      'Searching recent posts…',
+      'Filtering for hiring signals…',
+      'Enriching profiles…',
+      'Scoring intent…',
+    ];
+    let step = 0;
+    const msgEl = document.getElementById('xLoadingMsg');
+    const interval = setInterval(() => {
+      if (step < msgs.length) { msgEl.textContent = msgs[step++]; }
+    }, 400);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      btn.disabled = false;
+      btn.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg> Re-scrape';
+      document.getElementById('xLoadingState').classList.add('hidden');
+      document.getElementById('xResultsState').classList.remove('hidden');
+
+      xCurrentJobs = (X_JOB_POOL[category] || []).map(j => ({ ...j, selected: false }));
+      const now = new Date();
+      document.getElementById('xJobsLastRun').textContent = 'Last run: ' + now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      const hot = xCurrentJobs.filter(j => j.intent === 'hot').length;
+      const dm = xCurrentJobs.filter(j => ['CTO','CPO','CRO','VP Sales','VP Engineering','Founder','CEO','Co-founder'].some(t => j.title.includes(t))).length;
+      document.getElementById('xStatScraped').textContent = xCurrentJobs.length;
+      document.getElementById('xStatDM').textContent = dm;
+      document.getElementById('xStatHot').textContent = hot;
+      document.getElementById('xSelectAll').checked = false;
+      document.getElementById('xHotOnly').checked = false;
+      renderXJobRows(xCurrentJobs);
+    }, 2200);
+  }
+
+  function renderXJobRows(jobs) {
+    const intentStyles = {
+      hot:  { pill: 'bg-hot-50 text-hot-700', dot: 'bg-hot-500', label: 'Hot' },
+      warm: { pill: 'bg-warm-50 text-warm-700', dot: 'bg-warm-500', label: 'Warm' },
+      cold: { pill: 'bg-cold-50 text-cold-700', dot: 'bg-cold-500', label: 'Cold' },
+    };
+    const tbody = document.getElementById('xJobRows');
+    document.getElementById('xVisibleCount').textContent = jobs.length;
+    if (jobs.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-10 text-center text-ink-500 text-sm">No results for this filter.</td></tr>`;
+      document.getElementById('xImportBtn').classList.add('hidden');
+      return;
+    }
+    tbody.innerHTML = jobs.map(j => {
+      const s = intentStyles[j.intent];
+      return `
+      <tr class="row-hover border-b border-surface-border" data-xid="${j.id}">
+        <td class="px-4 py-3"><input type="checkbox" class="xjob-check rounded border-surface-border" data-xid="${j.id}" ${j.selected ? 'checked' : ''} onchange="toggleXJob('${j.id}', this.checked)"/></td>
+        <td class="px-2 py-3">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-8 h-8 shrink-0 rounded-full bg-ink-700 text-white grid place-items-center text-xs font-semibold">${j.avatar}</div>
+            <div class="min-w-0">
+              <div class="font-medium truncate">${j.name}</div>
+              <div class="text-xs text-ink-400 truncate">${j.handle} · ${j.title}</div>
+              <div class="text-xs text-ink-300">${j.company}</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-2 py-3 max-w-xs">
+          <div class="text-xs text-ink-700 leading-relaxed line-clamp-3">${j.post}</div>
+          <div class="text-[10px] text-ink-300 mt-1">${j.posted}</div>
+        </td>
+        <td class="px-2 py-3">
+          <div class="text-xs font-medium text-ink-700">${j.role}</div>
+        </td>
+        <td class="px-2 py-3">
+          <div class="text-xs text-ink-500 space-y-0.5">
+            <div>❤ ${j.likes}</div>
+            <div>🔁 ${j.reposts}</div>
+            <div class="text-ink-300">${j.followers} followers</div>
+          </div>
+        </td>
+        <td class="px-2 py-3">
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full ${s.pill}">
+            <span class="w-1.5 h-1.5 rounded-full ${s.dot}"></span>${s.label}
+          </span>
+        </td>
+        <td class="px-2 py-3 pr-4 text-right">
+          <button onclick="importOneXJob('${j.id}')" class="h-7 px-2.5 rounded-md border border-surface-border text-xs hover:bg-surface-muted text-ink-700 font-medium">+ Lead</button>
+        </td>
+      </tr>`;
+    }).join('');
+    updateXImportBtn();
+  }
+
+  function filterXJobs() {
+    const hotOnly = document.getElementById('xHotOnly').checked;
+    const visible = hotOnly ? xCurrentJobs.filter(j => j.intent === 'hot') : xCurrentJobs;
+    renderXJobRows(visible);
+  }
+
+  function toggleAllXJobs(checked) {
+    xCurrentJobs.forEach(j => j.selected = checked);
+    document.querySelectorAll('.xjob-check').forEach(c => c.checked = checked);
+    updateXImportBtn();
+  }
+
+  function toggleXJob(id, checked) {
+    const j = xCurrentJobs.find(x => x.id === id);
+    if (j) j.selected = checked;
+    updateXImportBtn();
+    const allChecked = xCurrentJobs.every(j => j.selected);
+    document.getElementById('xSelectAll').checked = allChecked;
+  }
+
+  function updateXImportBtn() {
+    const selected = xCurrentJobs.filter(j => j.selected).length;
+    const btn = document.getElementById('xImportBtn');
+    if (selected > 0) {
+      btn.classList.remove('hidden');
+      btn.classList.add('flex');
+      btn.innerHTML = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Import ${selected} as Lead${selected > 1 ? 's' : ''}`;
+    } else {
+      btn.classList.add('hidden');
+      btn.classList.remove('flex');
+    }
+  }
+
+  function importOneXJob(id) {
+    const j = xCurrentJobs.find(x => x.id === id);
+    if (!j) return;
+    addXJobAsLead(j);
+    showXToast(`${j.name} added as a lead`);
+  }
+
+  function importSelectedXJobs() {
+    const selected = xCurrentJobs.filter(j => j.selected);
+    selected.forEach(addXJobAsLead);
+    showXToast(`${selected.length} lead${selected.length > 1 ? 's' : ''} imported from X`);
+    xCurrentJobs.forEach(j => j.selected = false);
+    document.querySelectorAll('.xjob-check').forEach(c => c.checked = false);
+    document.getElementById('xSelectAll').checked = false;
+    updateXImportBtn();
+  }
+
+  function addXJobAsLead(j) {
+    xImportedCount++;
+    document.getElementById('xStatImported').textContent = xImportedCount;
+    const exists = LEADS.find(l => l.name === j.name);
+    if (exists) return;
+    LEADS.unshift({
+      id: 'x_' + j.id,
+      name: j.name,
+      initials: j.avatar,
+      title: j.title,
+      company: j.company,
+      email: j.handle.replace('@','') + '@x-lead.com',
+      phone: '—',
+      location: 'X (Twitter)',
+      source: 'X (Twitter)',
+      owner: 'Vishal R.',
+      lastActivity: j.posted,
+      temp: j.intent === 'hot' ? 'hot' : j.intent === 'warm' ? 'warm' : 'cold',
+      score: j.intent === 'hot' ? Math.floor(Math.random()*15)+80 : j.intent === 'warm' ? Math.floor(Math.random()*15)+55 : Math.floor(Math.random()*20)+25,
+      insightWhy: j.intent,
+      summary: `Found via X post. ${j.name} (${j.title} at ${j.company}) is actively hiring for ${j.role}. High-potential outreach opportunity.`,
+      signals: [
+        { label: 'Source', value: 'X / Twitter', tone: 'good' },
+        { label: 'Role', value: j.role, tone: 'neutral' },
+        { label: 'Followers', value: j.followers, tone: 'good' },
+        { label: 'Engagement', value: j.likes + ' likes', tone: j.intent === 'hot' ? 'good' : 'neutral' },
+      ],
+      suggested: [
+        { title: 'Reply to their X post', desc: 'Engage while intent is high' },
+        { title: 'Send DM on X', desc: 'Reference their ' + j.role + ' post' },
+      ],
+      scoreReason: `Found on X · ${j.likes} likes · ${j.reposts} reposts · ${j.followers} followers`,
+      activity: [
+        { t: j.posted, type: 'visit', text: `X post: "${j.post.slice(0,80)}…"` },
+        { t: 'Just now', type: 'ai',   text: `AI imported from X Job Scraper (${j.intent} intent).` },
+      ]
+    });
+    renderCounts();
+    renderRows();
+  }
+
+  function showXToast(msg) {
+    const toast = document.getElementById('xToast');
+    document.getElementById('xToastMsg').textContent = msg;
+    toast.classList.remove('hidden');
+    toast.classList.add('flex');
+    setTimeout(() => { toast.classList.add('hidden'); toast.classList.remove('flex'); }, 3000);
+  }
+
+  // ---------- nav: X Jobs ----------
+  document.getElementById('navXJobs').addEventListener('click', () => {
+    switchView('xjobs');
+    document.getElementById('pageTitle').textContent = 'X Job Scraper';
+    document.getElementById('backBtn').classList.add('hidden');
+    document.getElementById('backBtn').classList.remove('flex');
+  });
 
   // ---------- init ----------
   renderCounts();
