@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>X Jobs — Scraped Listings</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+        colors: {
+          ink: { 900: '#0B1220', 700: '#1F2937', 500: '#4B5563', 300: '#9CA3AF' },
+          surface: { DEFAULT: '#FFFFFF', muted: '#F7F8FA', border: '#E5E7EB' },
+          brand:  { 50:'#EEF2FF', 100:'#E0E7FF', 500:'#6366F1', 600:'#4F46E5', 700:'#4338CA' },
+          hot:    { 50:'#FEF2F2', 500:'#EF4444', 700:'#B91C1C' },
+          warm:   { 50:'#FFFBEB', 500:'#F59E0B', 700:'#B45309' },
+          cold:   { 50:'#EFF6FF', 500:'#3B82F6', 700:'#1D4ED8' }
+        }
+      }
+    }
+  };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .row-hover:hover { background: #F7F8FA; }
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; }
+</style>
+</head>
+<body class="bg-surface-muted text-ink-900 antialiased">
+
+<div class="min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="w-60 shrink-0 bg-white border-r border-surface-border hidden md:flex md:flex-col">
+    <div class="h-14 flex items-center gap-2 px-5 border-b border-surface-border">
+      <div class="w-7 h-7 rounded-md bg-brand-600 text-white grid place-items-center font-bold text-sm">L</div>
+      <span class="font-semibold">Leadflow</span>
+    </div>
+    <nav class="p-3 text-sm space-y-1">
+      <a href="index.html" class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted font-medium">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+        Dashboard
+      </a>
+      <a href="jobs.html" class="flex items-center gap-3 px-3 py-2 rounded-md bg-brand-50 text-brand-700 font-medium">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        X Jobs
+      </a>
+    </nav>
+    <div class="mt-auto p-4 border-t border-surface-border text-xs text-ink-300">
+      Last scraped: <span class="text-ink-500 font-medium">Jun 22, 2026</span>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- Topbar -->
+    <header class="h-14 bg-white border-b border-surface-border flex items-center justify-between px-6 shrink-0">
+      <div>
+        <h1 class="font-semibold text-sm">X (Twitter) Job Listings</h1>
+        <p class="text-xs text-ink-300">Scraped from Indeed &amp; ZipRecruiter · Jun 22, 2026</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Source filter -->
+        <div class="flex rounded-md border border-surface-border overflow-hidden text-xs font-medium">
+          <button onclick="filterSource('all')" id="btn-all" class="px-3 py-1.5 bg-brand-600 text-white">All</button>
+          <button onclick="filterSource('indeed')" id="btn-indeed" class="px-3 py-1.5 text-ink-500 hover:bg-surface-muted">Indeed</button>
+          <button onclick="filterSource('ziprecruiter')" id="btn-ziprecruiter" class="px-3 py-1.5 text-ink-500 hover:bg-surface-muted">ZipRecruiter</button>
+        </div>
+        <span class="text-xs text-ink-300" id="count-label">15 jobs</span>
+      </div>
+    </header>
+
+    <!-- Job grid -->
+    <main class="flex-1 p-6">
+      <div id="job-grid" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </main>
+  </div>
+</div>
+
+<script>
+const JOBS = [
+  // --- Indeed ---
+  {
+    source: "indeed",
+    title: "Marketing Manager",
+    company: "Sprouter Tech Labs",
+    location: "Remote",
+    type: "Part-time",
+    salary: "$82,000 – $104,000 / yr",
+    posted: "Jun 19, 2026",
+    url: "https://to.indeed.com/aaxyxb67sx76"
+  },
+  {
+    source: "indeed",
+    title: "Senior Backend Rust Engineer – Twitter/X Style Infrastructure",
+    company: "travoom",
+    location: "Austin, TX",
+    type: "Full-time",
+    salary: "$108,552 – $202,630 / yr",
+    posted: "May 17, 2026",
+    url: "https://to.indeed.com/aalfyd48n826"
+  },
+  {
+    source: "indeed",
+    title: "Business Analyst",
+    company: "PAR Technology",
+    location: "Philadelphia, PA",
+    type: "Full-time",
+    salary: "$70,000 – $80,000 / yr",
+    posted: "May 21, 2026",
+    url: "https://to.indeed.com/aaj99js4xkbb"
+  },
+  {
+    source: "indeed",
+    title: "Social Media Manager / Growth Strategist",
+    company: "Art Of Ascension",
+    location: "Remote",
+    type: "Part-time",
+    salary: "$20,000 – $60,000 / yr",
+    posted: "May 31, 2026",
+    url: "https://to.indeed.com/aazjg2dlqqzh"
+  },
+  {
+    source: "indeed",
+    title: "Social Media Manager",
+    company: "Pavago",
+    location: "Atlanta, GA",
+    type: "Full-time",
+    salary: "$46,204 – $71,670 / yr",
+    posted: "May 17, 2026",
+    url: "https://to.indeed.com/aaycz4wx6pld"
+  },
+  {
+    source: "indeed",
+    title: "IT Support Engineer – Helpdesk (Remote)",
+    company: "EasyITGuys",
+    location: "Saint Croix Falls, WI",
+    type: "Full-time",
+    salary: "$47,235 – $73,193 / yr",
+    posted: "Jun 07, 2026",
+    url: "https://to.indeed.com/aagb7sgy7mh2"
+  },
+  {
+    source: "indeed",
+    title: "Social Media Community Manager",
+    company: "B Squared Media",
+    location: "Remote",
+    type: "Part-time",
+    salary: "$17 – $20 / hr",
+    posted: "Jun 15, 2026",
+    url: "https://to.indeed.com/aarwr2pqwx4r"
+  },
+  {
+    source: "indeed",
+    title: "Social Media Assistant",
+    company: "DaBrian Marketing Group",
+    location: "Reading, PA",
+    type: "Part-time",
+    salary: "$14 – $18 / hr",
+    posted: "Jun 10, 2026",
+    url: "https://to.indeed.com/aa4vyw8hghpv"
+  },
+  {
+    source: "indeed",
+    title: "Social Media Community Manager",
+    company: "Ylopo",
+    location: "Phoenix, AZ",
+    type: "Full-time",
+    salary: "$50,164 – $72,877 / yr",
+    posted: "Jun 11, 2026",
+    url: "https://to.indeed.com/aacc44t798js"
+  },
+  {
+    source: "indeed",
+    title: "Strategic Sourcing Analyst IV (Remote)",
+    company: "TE Connectivity",
+    location: "Berwyn, IL",
+    type: "Full-time",
+    salary: "$113,000 – $142,000 / yr",
+    posted: "Feb 19, 2026",
+    url: "https://to.indeed.com/aawylc77ktj4"
+  },
+  // --- ZipRecruiter ---
+  {
+    source: "ziprecruiter",
+    title: "Corporate Fulfillment Specialist",
+    company: "Capitol Services",
+    location: "Carson City, NV (Remote)",
+    type: "Full-time",
+    salary: "$40,000+ / yr",
+    posted: "4 days ago",
+    benefits: "Vision, Dental, PTO, Retirement",
+    url: "https://www.ziprecruiter.com/job-redirect?match_token=CosBChZXclNxVXBINHFqWjE4Ti1iRVZDRDhBEiQwMTllZWQ2Mi01MmJhLTc4MmEtYTg3OC0wMjQ3Y2E3ODAxZGUaR0FBRlZzRlB5aHVuMmRDU09fMWtiSndPOGFOOThQWnZfWnJGTHYxRkVfLU0tdlk1d2hEQkR1WXN6am9XdHJKM0xkSVFoWGRZIMmtBRABGMmtBQ%3D%3D&tsid=100000502"
+  },
+  {
+    source: "ziprecruiter",
+    title: "Social Media Associate – X",
+    company: "Corporate Tools",
+    location: "Post Falls, ID (Remote)",
+    type: "Full-time",
+    salary: "$50,000+ / yr",
+    posted: "12 days ago",
+    benefits: "Medical, Vision, Dental, PTO, Retirement",
+    url: "https://www.ziprecruiter.com/job-redirect?match_token=CowBChZWVXVIZ1BVeFpCZ1hLeTgwbWRtUXJ3EiQwMTllZWQ2Mi01MmJhLTc4MGEtYjVmOS0zZDkyNjVlMmViMTMaSEFBRnQxR3QxU2IzSDNaVVNkb2xPNzNoNmk1SW1aa0tfbkdVam5KZVdEZVYxd1JIcDdyX0xLeFBCRnVPM3NBSFIxQ3B0Z1RLMCDJrQUQARjJrQU%3D&tsid=100000502"
+  },
+  {
+    source: "ziprecruiter",
+    title: "Intern – National Corporate Relations (Remote)",
+    company: "American Heart Association",
+    location: "Dallas, TX (Remote)",
+    type: "Part-time",
+    salary: "$46,000+ / yr",
+    posted: "2 days ago",
+    url: "https://www.ziprecruiter.com/job-redirect?match_token=CosBChZxU296cFNOOW90OTk5SXJJOFEzNlNnEiQwMTllZWQ2Mi01MmJhLTc4MmMtYmZmZi02MzgwMjc0MzhkM2MaR0FBR2JzVGZDcjZMOUU0WWkyNGZqY0stZG05OTFKN1NEWUJ2alNiVkZCX2dnRjJma2NtanFHbE1lcFhDSEg3T1FPR3lkRXNnIMmtBRABGMmtBQ%3D%3D&tsid=100000502"
+  },
+  {
+    source: "ziprecruiter",
+    title: "Sitecore Engineer – Lead Consultant (Remote)",
+    company: "Allstate",
+    location: "Chicago, IL (Remote)",
+    type: "Full-time",
+    salary: "$84,000 – $126,800 / yr",
+    posted: "11 days ago",
+    url: "https://www.ziprecruiter.com/job-redirect?match_token=CpcBChZ0aWRiVm9FTW8taXZpXzJ0dEJ0RjFREiQwMTllZWQ2Mi01MmM2LTdjZTMtODYxMy1kNzM4MzkyOTdjY2MaU0FBR3JaTmtwazZPWUkyTDNRamhXaFdqTjZJVERXazl3ZG5BZWN2TU40LUlfRW1LZGdqNERBWWZXTG9oMjBZRnlZMjRka19CYzg2R0VXMzJDT0l5SG8gya0FEAEZ0a0FE&tsid=100000502"
+  },
+  {
+    source: "ziprecruiter",
+    title: "AI Product Manager – BCG X",
+    company: "Boston Consulting Group",
+    location: "Boston, MA (Remote)",
+    type: "Full-time",
+    salary: "$53,000 – $86,000 / yr",
+    posted: "18 days ago",
+    benefits: "Medical, Vision, Dental, PTO, Retirement",
+    url: "https://www.ziprecruiter.com/job-redirect?match_token=CowBChZjbjU0LWNpSGk4U1JsM1VrQnlPNE5BEiQwMTllZWQ2Mi01MmJhLTc4NDEtYTVlNy05YzA1YWY2ZjQ5YjUaSEFBSENWd2E1cWh0WmxzSWpHLXZlZ3kxQnc0VHl6MmlKdUw0b0pTdkJicFhBSjZScGZVUjdZMmdoWmNkNzVPelViUENtYlNxRyDJrQUQARjJrQU%3D&tsid=100000502"
+  }
+];
+
+let activeSource = 'all';
+
+function sourceBadge(source) {
+  if (source === 'indeed') return '<span class="badge bg-blue-50 text-blue-700">Indeed</span>';
+  return '<span class="badge bg-green-50 text-green-700">ZipRecruiter</span>';
+}
+
+function typeBadge(type) {
+  if (!type) return '';
+  const isRemote = type.toLowerCase().includes('remote');
+  const color = isRemote ? 'bg-brand-50 text-brand-700' : 'bg-surface-muted text-ink-500';
+  return `<span class="badge ${color}">${type}</span>`;
+}
+
+function renderCards(jobs) {
+  const grid = document.getElementById('job-grid');
+  document.getElementById('count-label').textContent = `${jobs.length} job${jobs.length !== 1 ? 's' : ''}`;
+  if (jobs.length === 0) {
+    grid.innerHTML = `<div class="col-span-3 text-center py-16 text-ink-300 text-sm">No jobs found for this filter.</div>`;
+    return;
+  }
+  grid.innerHTML = jobs.map(j => `
+    <div class="bg-white rounded-xl border border-surface-border p-5 flex flex-col gap-3 hover:shadow-sm transition-shadow">
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex-1 min-w-0">
+          <a href="${j.url}" target="_blank" rel="noopener noreferrer"
+             class="text-sm font-semibold text-ink-900 hover:text-brand-600 leading-snug block">
+            ${j.title}
+          </a>
+          <p class="text-xs text-ink-500 mt-0.5">${j.company}</p>
+        </div>
+        ${sourceBadge(j.source)}
+      </div>
+
+      <div class="flex flex-wrap gap-1.5">
+        ${j.type ? typeBadge(j.type) : ''}
+        <span class="badge bg-surface-muted text-ink-500">
+          <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${j.location}
+        </span>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-surface-border">
+        <span class="text-xs font-semibold text-ink-700">${j.salary || '—'}</span>
+        <div class="flex items-center gap-2">
+          ${j.posted ? `<span class="text-xs text-ink-300">${j.posted}</span>` : ''}
+          <a href="${j.url}" target="_blank" rel="noopener noreferrer"
+             class="text-xs font-medium text-brand-600 hover:text-brand-700">
+            Apply →
+          </a>
+        </div>
+      </div>
+      ${j.benefits ? `<p class="text-xs text-ink-300 -mt-1">Benefits: ${j.benefits}</p>` : ''}
+    </div>
+  `).join('');
+}
+
+function filterSource(src) {
+  activeSource = src;
+  ['all','indeed','ziprecruiter'].forEach(s => {
+    const btn = document.getElementById(`btn-${s}`);
+    if (s === src) {
+      btn.className = 'px-3 py-1.5 bg-brand-600 text-white';
+    } else {
+      btn.className = 'px-3 py-1.5 text-ink-500 hover:bg-surface-muted';
+    }
+  });
+  const filtered = src === 'all' ? JOBS : JOBS.filter(j => j.source === src);
+  renderCards(filtered);
+}
+
+renderCards(JOBS);
+</script>
+</body>
+</html>
