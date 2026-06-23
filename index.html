@@ -46,23 +46,28 @@
       <span class="font-semibold">Leadflow</span>
     </div>
     <nav class="p-3 text-sm">
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md bg-brand-50 text-brand-700 font-medium">
+      <a data-nav-view="dashboard" onclick="switchView('dashboard')" class="flex items-center gap-3 px-3 py-2 rounded-md bg-brand-50 text-brand-700 font-medium cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
         Leads
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
         Pipeline
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
         Inbox
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
         Insights
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a data-nav-view="jobs" onclick="switchView('jobs')" class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+        Jobs
+        <span class="ml-auto text-xs bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded-full font-medium">15</span>
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1A2 2 0 1 1 4.4 17l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1A2 2 0 1 1 7 4.4l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1A2 2 0 1 1 19.6 7l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
         Settings
       </a>
@@ -341,6 +346,75 @@
           </div>
         </aside>
 
+      </div>
+    </section>
+
+    <!-- =================== JOBS VIEW =================== -->
+    <section data-view="jobs" class="flex-1 overflow-y-auto">
+      <div class="p-4 md:p-6 max-w-[1400px] mx-auto">
+
+        <!-- Summary cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-5">
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Total jobs scraped</div>
+            <div class="mt-1 flex items-end gap-2">
+              <div class="text-2xl font-semibold" id="jobsTotalCount">15</div>
+              <div class="text-xs text-emerald-600 mb-1">live</div>
+            </div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Remote positions</div>
+            <div class="mt-1 flex items-end gap-2">
+              <div class="text-2xl font-semibold" id="jobsRemoteCount">11</div>
+              <div class="text-xs text-ink-300 mb-1">available</div>
+            </div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500 flex items-center gap-1.5">Sources</div>
+            <div class="mt-1 flex items-end gap-2">
+              <div class="text-2xl font-semibold">2</div>
+              <div class="text-xs text-ink-300 mb-1">Indeed · ZipRecruiter</div>
+            </div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Top salary (max)</div>
+            <div class="mt-1 flex items-end gap-2">
+              <div class="text-2xl font-semibold">$180k</div>
+              <div class="text-xs text-emerald-600 mb-1">TypeScript Eng</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="bg-white border border-surface-border rounded-lg mb-4">
+          <div class="flex flex-wrap items-center gap-2 p-3">
+            <div class="flex items-center gap-1 bg-surface-muted p-1 rounded-md text-sm" role="tablist">
+              <button data-job-source="all" class="job-source-tab px-3 py-1.5 rounded-md bg-white shadow-sm font-medium">All</button>
+              <button data-job-source="indeed" class="job-source-tab px-3 py-1.5 rounded-md text-ink-500">Indeed</button>
+              <button data-job-source="ziprecruiter" class="job-source-tab px-3 py-1.5 rounded-md text-ink-500">ZipRecruiter</button>
+            </div>
+            <div class="h-6 w-px bg-surface-border mx-1 hidden md:block"></div>
+            <select id="jobTypeFilter" class="text-sm border border-surface-border rounded-md h-8 px-2 bg-white">
+              <option value="">All types</option>
+              <option value="remote">Remote only</option>
+              <option value="full-time">Full-time</option>
+              <option value="contract">Contract</option>
+              <option value="internship">Internship</option>
+            </select>
+            <div class="ml-auto flex items-center gap-2">
+              <div class="hidden md:flex items-center gap-2 px-3 h-9 rounded-md border border-surface-border bg-white w-60">
+                <svg class="w-4 h-4 text-ink-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input id="jobSearchInput" placeholder="Search jobs, companies…" class="bg-transparent text-sm w-full outline-none placeholder:text-ink-300" />
+              </div>
+              <div class="text-xs text-ink-300">Updated <span id="jobsLastUpdated">just now</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jobs grid -->
+        <div id="jobsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+
+        <p class="text-xs text-ink-300 mt-5">Jobs scraped from Indeed and ZipRecruiter · To scrape X (Twitter) run <code class="kbd">python job_scraper_x.py</code></p>
       </div>
     </section>
 
@@ -709,9 +783,18 @@
   // ---------- view switching ----------
   function switchView(view) {
     document.querySelectorAll('[data-view]').forEach(el => el.classList.toggle('is-active', el.dataset.view === view));
-    document.getElementById('backBtn').classList.toggle('hidden', view === 'dashboard');
-    document.getElementById('backBtn').classList.toggle('flex', view === 'detail');
-    if (view === 'dashboard') document.getElementById('pageTitle').textContent = 'Leads';
+    const isDetail = view === 'detail';
+    document.getElementById('backBtn').classList.toggle('hidden', !isDetail);
+    document.getElementById('backBtn').classList.toggle('flex', isDetail);
+    const titles = { dashboard: 'Leads', jobs: 'Jobs Board', detail: '' };
+    if (titles[view] !== undefined) document.getElementById('pageTitle').textContent = titles[view];
+    document.querySelectorAll('[data-nav-view]').forEach(el => {
+      const active = el.dataset.navView === (isDetail ? 'dashboard' : view);
+      el.classList.toggle('bg-brand-50', active);
+      el.classList.toggle('text-brand-700', active);
+      el.classList.toggle('font-medium', active);
+      el.classList.toggle('text-ink-500', !active);
+    });
     window.scrollTo({ top: 0 });
   }
 
@@ -785,9 +868,131 @@
     return list[regen ? 1 : 0];
   }
 
+  // ---------- jobs data (scraped from Indeed + ZipRecruiter) ----------
+  const JOBS = [
+    { id:'j1',  source:'indeed',       title:'Java Developer - AI Trainer',            company:'DataAnnotation',          location:'Remote',            type:'Full-time',  remote:true,  salary:'Up to $100/hr',       url:'https://to.indeed.com/aa94jfqjy6cb',  posted:'May 08, 2026' },
+    { id:'j2',  source:'indeed',       title:'Embedded Software Engineer',             company:'Codan Limited',           location:'New Jersey',        type:'Full-time',  remote:false, salary:'$100k–$125k/yr',      url:'https://to.indeed.com/aadfx6k2kbjs',  posted:'Dec 03, 2025' },
+    { id:'j3',  source:'indeed',       title:'Software Engineer',                      company:'SlickDevs.com',           location:'Remote',            type:'Full-time',  remote:true,  salary:null,                  url:'https://to.indeed.com/aacygx48zgzr',  posted:'May 28, 2026' },
+    { id:'j4',  source:'indeed',       title:'Software Engineer I – Remote',           company:'Vituity',                 location:'Sacramento, CA',    type:'Full-time',  remote:true,  salary:'$69,520–$86,900/yr',  url:'https://to.indeed.com/aak9pxjsxzm6',  posted:'Apr 22, 2026' },
+    { id:'j5',  source:'indeed',       title:'TypeScript Engineer, JS Agent',          company:'Fingerprint',             location:'Remote',            type:'Full-time',  remote:true,  salary:'$130k–$180k/yr',      url:'https://to.indeed.com/aabt2dv6pl4b',  posted:'Apr 02, 2026' },
+    { id:'j6',  source:'indeed',       title:'Software Engineer I',                   company:'AElevora LLC',            location:'Logan, UT',         type:'Part-time',  remote:false, salary:'$25/hr',              url:'https://to.indeed.com/aaczlcqbkf9z',  posted:'Apr 21, 2026' },
+    { id:'j7',  source:'indeed',       title:'Software Engineer',                      company:'Code Plus Technology',    location:'Remote',            type:'Internship', remote:true,  salary:'$1,500/yr',           url:'https://to.indeed.com/aa92dys4dbbg',  posted:'Jun 17, 2026' },
+    { id:'j8',  source:'indeed',       title:'Software Engineer (JavaScript)',         company:'Certificate Hero',        location:'Dedham, MA',        type:'Full-time',  remote:false, salary:null,                  url:'https://to.indeed.com/aab6g2yglxhr',  posted:'May 11, 2026' },
+    { id:'j9',  source:'indeed',       title:'Software Engineer',                      company:'Changeis, Inc.',          location:'Remote',            type:'Full-time',  remote:true,  salary:null,                  url:'https://to.indeed.com/aal8yt64l7dn',  posted:'Mar 31, 2026' },
+    { id:'j10', source:'indeed',       title:'React Front-End Developer',             company:'Intertech, Inc',          location:'Saint Paul, MN',    type:'Contract',   remote:false, salary:'$72k–$113k/yr',       url:'https://to.indeed.com/aa4sytzqs9mr',  posted:'Apr 21, 2026' },
+    { id:'j11', source:'ziprecruiter', title:'Product Software Engineer',             company:'Omnitryx',                location:'San Francisco, CA', type:'Contract',   remote:true,  salary:'$12k–$48k/yr',        url:'https://www.ziprecruiter.com/job-redirect?match_token=CpQBChZELUVaeXI5dWE0UzdzcEVZLUJHTnBBEiQwMTllZjI4YS0wZDlhLTcyOTctYmRmYy00NWNlZDQ0ZTRkODgaUEFBRklZM1JiYzFRc3FwVzFDTFd5bHJLVWRnOW5qUVFwYnRRSG9fTy00Z1ZEd203Nk8wQ1RxUWhveW1wbGo1YXZ4VnRHekZ4SXdqODVBblZmIMmtBRABGMmtBQ%3D%3D&tsid=100000502', posted:'1 day ago' },
+    { id:'j12', source:'ziprecruiter', title:'Software Engineer',                      company:'Alpha Omega Integration', location:'Asheville, NC',     type:'Full-time',  remote:true,  salary:'$64k–$70k/yr',        url:'https://www.ziprecruiter.com/job-redirect?match_token=CpcBChZHaDNOQVBUTW93NkQ3YWFZaWNhdXpREiQwMTllZjI4YS0wZDNiLTc5MmItYmYxZi05NjcwZWUwZGQ2ZjYaU0FBR1VfMUxVZzNILV9LLWsybm1ReHdYWUJqajVMM0M5NVE1X2t1YVlhTnBSaS1mbWRtOUdSZ0d3M25sV3plQVR5SkQ3bDJjM1VoczFDVFZ3SGZNIMmtBRABGMmtBQ%3D%3D&tsid=100000502', posted:'8 days ago' },
+    { id:'j13', source:'ziprecruiter', title:'Software Engineer w/ Security Clearance',company:'Alpha Omega',             location:'Asheville, NC',     type:'Full-time',  remote:true,  salary:'$64k–$70k/yr',        url:'https://www.ziprecruiter.com/job-redirect?match_token=CpcBChYzSXIzaDlKYURIWVc4MHUyS2dlQ2RnEiQwMTllZjI4YS0wZDNiLTdhZmEtODUyNi0zNDM5ZjFjN2NkN2EaU0FBRkptWm9TdlJNMDlYRk05bUh4b2VQczZPRkpiOU80RUgxTElLelFKdlhVRGhSOG1PdFFvdFB2SkVXNWZPbm9VY2otQUJ5NGRZdWdodFdJS1JZIMmtBRABGMmtBQ%3D%3D&tsid=100000502', posted:'8 days ago' },
+    { id:'j14', source:'ziprecruiter', title:'Software Engineer III (AI/ML)',          company:'BC Forward',              location:'Indianapolis, IN',  type:'Full-time',  remote:true,  salary:'$114k–$124k/yr',      url:'https://www.ziprecruiter.com/job-redirect?match_token=CpcBChZrMlIxcHA2XzJXNHFueU8ybUVHUXpBEiQwMTllZjI4YS0wZDNiLTc5ZjItOTZkNi1mOTBkYTVlMmFmYzcaU0FBRmVyNEZCQ0ZPbTM3NmJfX1ZtMG05dlp5NkprYWdhSW5YXzlQYzFWTFBMMHpZOXpoeExoeUthb3pRUlJfUmVGWVI3bGxDclZrSTRGZTlEZmtjIMmtBRABGMmtBQ%3D%3D&tsid=100000502', posted:'6 days ago' },
+    { id:'j15', source:'ziprecruiter', title:'Software Engineer Intern',               company:'CUBRC Inc.',              location:'Buffalo, NY',       type:'Internship', remote:true,  salary:'$48k–$70k/yr',        url:'https://www.ziprecruiter.com/job-redirect?match_token=CpcBChZyQmE4bzFHNEJwV2N0SFp3Tm5qOFR3EiQwMTllZjI4YS0wZDlhLTcyOWUtOWJlYy02ZDgzODlmN2VmYmQaU0FBRmdicndyTVVKV21laV9oRWxQaW9IdXpSd3ZpNFpXSkYtdkV1U05kSHlsMkhGV1ZxNkxOQWxLcVZNUkduekdWdlRjWmItLTlPS2dBTGQ3RlhrIMmtBRABGMmtBQ%3D%3D&tsid=100000502', posted:'15 days ago' }
+  ];
+
+  let activeJobSource = 'all';
+  let jobTypeQuery = '';
+  let jobSearchQuery = '';
+
+  const sourceColors = {
+    indeed:       { bg: 'bg-blue-50',   text: 'text-blue-700',  label: 'Indeed' },
+    ziprecruiter: { bg: 'bg-purple-50', text: 'text-purple-700', label: 'ZipRecruiter' }
+  };
+
+  function filteredJobs() {
+    return JOBS.filter(j => {
+      if (activeJobSource !== 'all' && j.source !== activeJobSource) return false;
+      if (jobTypeQuery === 'remote' && !j.remote) return false;
+      if (jobTypeQuery === 'full-time' && j.type.toLowerCase() !== 'full-time') return false;
+      if (jobTypeQuery === 'contract' && j.type.toLowerCase() !== 'contract') return false;
+      if (jobTypeQuery === 'internship' && j.type.toLowerCase() !== 'internship') return false;
+      if (jobSearchQuery) {
+        const q = jobSearchQuery.toLowerCase();
+        if (![j.title, j.company, j.location].some(v => v.toLowerCase().includes(q))) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderJobs() {
+    const grid = document.getElementById('jobsGrid');
+    const jobs = filteredJobs();
+    document.getElementById('jobsTotalCount').textContent = jobs.length;
+    document.getElementById('jobsRemoteCount').textContent = jobs.filter(j => j.remote).length;
+
+    if (jobs.length === 0) {
+      grid.innerHTML = `<div class="col-span-3 py-16 text-center text-ink-500">
+        <div class="font-medium mb-1">No jobs match your filters</div>
+        <div class="text-xs">Try clearing search or switching the source.</div>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = jobs.map(j => {
+      const s = sourceColors[j.source];
+      return `
+      <div class="bg-white border border-surface-border rounded-lg p-4 flex flex-col gap-3 hover:shadow-sm transition-shadow">
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <a href="${j.url}" target="_blank" rel="noopener noreferrer"
+               class="text-sm font-semibold text-ink-900 hover:text-brand-600 hover:underline line-clamp-2 block">${j.title}</a>
+            <div class="text-xs text-ink-500 mt-0.5">${j.company}</div>
+          </div>
+          <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${s.bg} ${s.text}">${s.label}</span>
+        </div>
+
+        <div class="flex flex-wrap gap-2 text-xs text-ink-500">
+          <span class="inline-flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            ${j.location}${j.remote && j.location !== 'Remote' ? ' · Remote' : ''}
+          </span>
+          <span class="inline-flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            ${j.type}
+          </span>
+          ${j.salary ? `<span class="inline-flex items-center gap-1 text-emerald-700 font-medium">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            ${j.salary}
+          </span>` : ''}
+        </div>
+
+        <div class="flex items-center justify-between pt-1 border-t border-surface-border">
+          <span class="text-xs text-ink-300">Posted ${j.posted}</span>
+          <a href="${j.url}" target="_blank" rel="noopener noreferrer"
+             class="h-7 px-3 rounded-md bg-brand-600 text-white text-xs font-medium hover:bg-brand-700 inline-flex items-center gap-1.5">
+            Apply
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // jobs filters
+  document.querySelectorAll('.job-source-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeJobSource = btn.dataset.jobSource;
+      document.querySelectorAll('.job-source-tab').forEach(b => {
+        b.classList.remove('bg-white', 'shadow-sm', 'font-medium', 'text-ink-900');
+        b.classList.add('text-ink-500');
+      });
+      btn.classList.remove('text-ink-500');
+      btn.classList.add('bg-white', 'shadow-sm', 'font-medium', 'text-ink-900');
+      renderJobs();
+    });
+  });
+
+  document.getElementById('jobTypeFilter').addEventListener('change', e => {
+    jobTypeQuery = e.target.value;
+    renderJobs();
+  });
+
+  document.getElementById('jobSearchInput').addEventListener('input', e => {
+    jobSearchQuery = e.target.value;
+    renderJobs();
+  });
+
   // ---------- init ----------
   renderCounts();
   renderRows();
+  renderJobs();
 </script>
 </body>
 </html>
