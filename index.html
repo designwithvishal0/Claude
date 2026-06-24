@@ -58,6 +58,10 @@
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
         Inbox
       </a>
+      <a id="navJobs" class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.743l7.733-8.835L1.254 2.25H8.08l4.257 5.626L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+        X Jobs
+      </a>
       <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
         Insights
@@ -206,6 +210,89 @@
         </div>
 
         <p class="text-xs text-ink-300 mt-4">Tip: press <span class="kbd">/</span> to search, click any row to open the lead.</p>
+      </div>
+    </section>
+
+    <!-- =================== X JOBS VIEW =================== -->
+    <section data-view="xjobs" class="flex-1 overflow-y-auto">
+      <div class="p-4 md:p-6 max-w-[900px] mx-auto">
+
+        <!-- Header -->
+        <div class="flex flex-wrap items-center gap-3 mb-5">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-black text-white grid place-items-center">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.743l7.733-8.835L1.254 2.25H8.08l4.257 5.626L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+            </div>
+            <h2 class="text-lg font-semibold">X Job Posts</h2>
+          </div>
+          <span class="text-xs text-ink-300">Live scrape · updated just now</span>
+          <div class="ml-auto flex items-center gap-2">
+            <button id="scrapeBtn" class="h-9 px-4 rounded-md bg-black text-white text-sm font-medium hover:bg-ink-700 flex items-center gap-2">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+              Scrape X now
+            </button>
+            <button class="h-9 px-3 rounded-md border border-surface-border text-sm hover:bg-surface-muted">Export CSV</button>
+          </div>
+        </div>
+
+        <!-- Search + filters -->
+        <div class="bg-white border border-surface-border rounded-lg p-3 mb-4 flex flex-wrap gap-2 items-center">
+          <div class="flex items-center gap-2 px-3 h-9 rounded-md border border-surface-border bg-white flex-1 min-w-[200px]">
+            <svg class="w-4 h-4 text-ink-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="jobSearch" placeholder='Search keyword e.g. "Head of Growth"…' class="bg-transparent text-sm w-full outline-none placeholder:text-ink-300" />
+          </div>
+          <select id="jobRole" class="text-sm border border-surface-border rounded-md h-9 px-2 bg-white">
+            <option value="">All roles</option>
+            <option>Head of Growth</option>
+            <option>VP Sales</option>
+            <option>Marketing Lead</option>
+            <option>CTO / VP Eng</option>
+            <option>Founder / CEO</option>
+            <option>Product Manager</option>
+            <option>Data / AI</option>
+          </select>
+          <select id="jobLoc" class="text-sm border border-surface-border rounded-md h-9 px-2 bg-white">
+            <option value="">All locations</option>
+            <option>Remote</option>
+            <option>San Francisco</option>
+            <option>New York</option>
+            <option>London</option>
+            <option>Berlin</option>
+          </select>
+          <select id="jobCompanySize" class="text-sm border border-surface-border rounded-md h-9 px-2 bg-white">
+            <option value="">Any company size</option>
+            <option>Seed / Early</option>
+            <option>Series A–B</option>
+            <option>Growth (200+)</option>
+            <option>Enterprise</option>
+          </select>
+        </div>
+
+        <!-- Stats bar -->
+        <div class="grid grid-cols-3 gap-3 mb-4">
+          <div class="bg-white border border-surface-border rounded-lg p-3 text-center">
+            <div class="text-xl font-semibold" id="jobStatTotal">0</div>
+            <div class="text-xs text-ink-500 mt-0.5">Posts scraped</div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-3 text-center">
+            <div class="text-xl font-semibold text-emerald-600" id="jobStatIcp">0</div>
+            <div class="text-xs text-ink-500 mt-0.5">ICP matches</div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-3 text-center">
+            <div class="text-xl font-semibold text-brand-600" id="jobStatAdded">0</div>
+            <div class="text-xs text-ink-500 mt-0.5">Added to Leads</div>
+          </div>
+        </div>
+
+        <!-- Job feed -->
+        <div id="jobFeed" class="space-y-3"></div>
+
+        <div id="jobEmpty" class="hidden text-center py-16 text-ink-500">
+          <svg class="w-8 h-8 mx-auto mb-3 text-ink-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <div class="font-medium">No posts match your filters</div>
+          <div class="text-xs mt-1">Try different keywords or role type.</div>
+        </div>
+
       </div>
     </section>
 
@@ -709,8 +796,9 @@
   // ---------- view switching ----------
   function switchView(view) {
     document.querySelectorAll('[data-view]').forEach(el => el.classList.toggle('is-active', el.dataset.view === view));
-    document.getElementById('backBtn').classList.toggle('hidden', view === 'dashboard');
-    document.getElementById('backBtn').classList.toggle('flex', view === 'detail');
+    const isDetail = view === 'detail';
+    document.getElementById('backBtn').classList.toggle('hidden', !isDetail);
+    document.getElementById('backBtn').classList.toggle('flex', isDetail);
     if (view === 'dashboard') document.getElementById('pageTitle').textContent = 'Leads';
     window.scrollTo({ top: 0 });
   }
@@ -788,6 +876,358 @@
   // ---------- init ----------
   renderCounts();
   renderRows();
+
+  // ---------- X JOBS ----------
+  const X_JOBS = [
+    {
+      id: 'xj1',
+      handle: '@LinearHQ',
+      avatar: 'LH',
+      avatarBg: 'bg-purple-700',
+      company: 'Linear',
+      companySize: 'Series A–B',
+      verified: true,
+      time: '12m',
+      role: 'Head of Growth',
+      location: 'Remote',
+      body: 'We\'re hiring a Head of Growth 🚀\n\nLooking for someone obsessed with PLG loops, activation metrics, and turning trials into champions.\n\nRemote · $160–$200k · Series B\n\nApply → linear.app/careers\n\n#hiring #growth #saas #remotejobs',
+      tags: ['#hiring', '#growth', '#saas', '#remotejobs'],
+      likes: 312, reposts: 87, replies: 44,
+      icpMatch: 95,
+      icpReason: 'Head of Growth at Series B SaaS — perfect ICP',
+      addedToLeads: false
+    },
+    {
+      id: 'xj2',
+      handle: '@vercel',
+      avatar: 'VR',
+      avatarBg: 'bg-black',
+      company: 'Vercel',
+      companySize: 'Growth (200+)',
+      verified: true,
+      time: '34m',
+      role: 'VP Sales',
+      location: 'San Francisco',
+      body: 'We\'re looking for a VP of Sales to lead our Enterprise motion.\n\nYou\'ll own pipeline, build the team, and close the biggest deals in frontend infrastructure.\n\nSF preferred · relocation available · equity-heavy\n\nDMs open or apply at vercel.com/careers\n\n#hiring #enterprise #sales #startup',
+      tags: ['#hiring', '#enterprise', '#sales', '#startup'],
+      likes: 528, reposts: 143, replies: 76,
+      icpMatch: 88,
+      icpReason: 'VP Sales at high-growth infra company',
+      addedToLeads: false
+    },
+    {
+      id: 'xj3',
+      handle: '@figma',
+      avatar: 'FG',
+      avatarBg: 'bg-rose-600',
+      company: 'Figma',
+      companySize: 'Growth (200+)',
+      verified: true,
+      time: '1h',
+      role: 'Marketing Lead',
+      location: 'San Francisco',
+      body: 'Join Figma as our Head of Product Marketing!\n\nWe need a storyteller who can make developers fall in love with design tools.\n\n📍 SF hybrid · competitive comp + RSUs\n\nfigma.com/careers\n\n#productmarketing #hiring #design',
+      tags: ['#productmarketing', '#hiring', '#design'],
+      likes: 217, reposts: 59, replies: 31,
+      icpMatch: 72,
+      icpReason: 'Product Marketing at established design tool',
+      addedToLeads: false
+    },
+    {
+      id: 'xj4',
+      handle: '@AnthropicAI',
+      avatar: 'AN',
+      avatarBg: 'bg-orange-600',
+      company: 'Anthropic',
+      companySize: 'Growth (200+)',
+      verified: true,
+      time: '2h',
+      role: 'Data / AI',
+      location: 'San Francisco',
+      body: '🤖 Hiring: Head of GTM Data & Analytics\n\nWe\'re looking for someone to own our data infrastructure for go-to-market — pipelines, attribution, forecasting, the works.\n\nAI-native team · Series C · SF\n\nanthropicai.com/careers\n\n#data #analytics #ai #hiring',
+      tags: ['#data', '#analytics', '#ai', '#hiring'],
+      likes: 894, reposts: 241, replies: 112,
+      icpMatch: 91,
+      icpReason: 'GTM data role at fast-growing AI co',
+      addedToLeads: false
+    },
+    {
+      id: 'xj5',
+      handle: '@NotionHQ',
+      avatar: 'NT',
+      avatarBg: 'bg-stone-800',
+      company: 'Notion',
+      companySize: 'Growth (200+)',
+      verified: true,
+      time: '3h',
+      role: 'Product Manager',
+      location: 'New York',
+      body: 'Notion is hiring a Product Manager for our AI features team.\n\nYou\'ll work on the hardest product problems: how do you make an AI assistant feel like a collaborator, not a chatbot?\n\nNYC or remote · $170–$210k\n\nnotion.so/careers\n\n#pm #productmanager #ai #hiring',
+      tags: ['#pm', '#productmanager', '#ai', '#hiring'],
+      likes: 441, reposts: 98, replies: 52,
+      icpMatch: 65,
+      icpReason: 'PM at Notion — indirect ICP, monitor',
+      addedToLeads: false
+    },
+    {
+      id: 'xj6',
+      handle: '@ramp_fi',
+      avatar: 'RP',
+      avatarBg: 'bg-yellow-600',
+      company: 'Ramp',
+      companySize: 'Series A–B',
+      verified: false,
+      time: '4h',
+      role: 'Founder / CEO',
+      location: 'New York',
+      body: 'We\'re hiring a founding Growth PM at Ramp.\n\nIf you\'ve built 0→1 growth loops, love fintech, and want to work with world-class operators — DM me.\n\nNYC · pre-IPO equity\n\n#fintech #growth #hiring #nyc',
+      tags: ['#fintech', '#growth', '#hiring', '#nyc'],
+      likes: 189, reposts: 43, replies: 29,
+      icpMatch: 83,
+      icpReason: 'Founding PM role — likely budget authority',
+      addedToLeads: false
+    },
+    {
+      id: 'xj7',
+      handle: '@retool',
+      avatar: 'RT',
+      avatarBg: 'bg-blue-700',
+      company: 'Retool',
+      companySize: 'Series A–B',
+      verified: true,
+      time: '5h',
+      role: 'VP Sales',
+      location: 'Remote',
+      body: 'Retool is growing its sales team 🎯\n\nLooking for an experienced enterprise AE who\'s closed $1M+ deals and loves technical buyers.\n\nFully remote · OTE $280k+\n\nretool.com/jobs\n\n#sales #enterprise #remote #hiring',
+      tags: ['#sales', '#enterprise', '#remote', '#hiring'],
+      likes: 267, reposts: 71, replies: 38,
+      icpMatch: 77,
+      icpReason: 'Enterprise AE at dev-tools company',
+      addedToLeads: false
+    },
+    {
+      id: 'xj8',
+      handle: '@posthog',
+      avatar: 'PH',
+      avatarBg: 'bg-teal-700',
+      company: 'PostHog',
+      companySize: 'Seed / Early',
+      verified: false,
+      time: '6h',
+      role: 'CTO / VP Eng',
+      location: 'Remote',
+      body: 'PostHog is hiring a VP of Engineering!\n\nWe\'re fully remote, open source, and profitable. You\'ll lead a 30-person eng team and help us scale to the next 10× of users.\n\nAny timezone · top-of-market comp\n\nposthog.com/careers\n\n#engineering #vpe #remote #hiring #opensource',
+      tags: ['#engineering', '#vpe', '#remote', '#hiring'],
+      likes: 503, reposts: 129, replies: 61,
+      icpMatch: 58,
+      icpReason: 'VP Eng — budget holder but lower ICP fit',
+      addedToLeads: false
+    }
+  ];
+
+  let addedLeadsCount = 0;
+
+  function icpColor(score) {
+    if (score >= 85) return 'text-emerald-700 bg-emerald-50';
+    if (score >= 65) return 'text-amber-700 bg-amber-50';
+    return 'text-ink-500 bg-surface-muted';
+  }
+
+  function formatJobBody(body) {
+    return body.replace(/(#\w+)/g, '<span class="text-brand-600 hover:underline cursor-pointer">$1</span>').replace(/\n/g, '<br>');
+  }
+
+  function renderJobCard(j) {
+    const icp = icpColor(j.icpMatch);
+    const addBtn = j.addedToLeads
+      ? `<button disabled class="h-8 px-3 rounded-md bg-emerald-50 text-emerald-700 text-xs font-medium flex items-center gap-1.5 cursor-default">
+           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4L19 7"/></svg> Added to Leads
+         </button>`
+      : `<button onclick="addJobAsLead('${j.id}')" class="h-8 px-3 rounded-md bg-brand-600 text-white text-xs font-medium hover:bg-brand-700 flex items-center gap-1.5">
+           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Add to Leads
+         </button>`;
+
+    return `
+    <div class="bg-white border border-surface-border rounded-xl p-5 hover:border-ink-300 transition" data-jobid="${j.id}">
+      <div class="flex gap-3">
+        <!-- Avatar -->
+        <div class="w-10 h-10 shrink-0 rounded-full ${j.avatarBg} text-white grid place-items-center text-sm font-bold">${j.avatar}</div>
+
+        <div class="min-w-0 flex-1">
+          <!-- Header -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-semibold text-sm">${j.company}</span>
+            ${j.verified ? '<svg class="w-4 h-4 text-brand-600 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m5.6-3.8A10 10 0 1 1 2 12a10 10 0 0 1 19.6-3.8z"/></svg>' : ''}
+            <span class="text-ink-300 text-sm">${j.handle}</span>
+            <span class="text-ink-300 text-xs">· ${j.time}</span>
+
+            <!-- ICP badge -->
+            <span class="ml-auto inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${icp}">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2 5 5 1-3.5 3.5L17 17l-5-3-5 3 1.5-5.5L5 8l5-1z"/></svg>
+              ICP ${j.icpMatch}%
+            </span>
+          </div>
+
+          <!-- Role + location chips -->
+          <div class="flex flex-wrap gap-1.5 mt-2">
+            <span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 font-medium">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              ${j.role}
+            </span>
+            <span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-surface-muted text-ink-500">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${j.location}
+            </span>
+            <span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-surface-muted text-ink-500">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              ${j.companySize}
+            </span>
+          </div>
+
+          <!-- Body -->
+          <p class="text-sm text-ink-700 mt-3 leading-relaxed">${formatJobBody(j.body)}</p>
+
+          <!-- AI insight -->
+          <div class="mt-3 flex items-start gap-2 text-xs text-ink-500 bg-brand-50 rounded-md px-3 py-2">
+            <svg class="w-3.5 h-3.5 text-brand-600 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2 5 5 1-3.5 3.5L17 17l-5-3-5 3 1.5-5.5L5 8l5-1z"/></svg>
+            <span><span class="font-medium text-brand-700">AI:</span> ${j.icpReason}</span>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-4 mt-4">
+            <div class="flex items-center gap-3 text-xs text-ink-300">
+              <span class="flex items-center gap-1 hover:text-ink-500 cursor-pointer">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                ${j.replies}
+              </span>
+              <span class="flex items-center gap-1 hover:text-ink-500 cursor-pointer">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                ${j.reposts}
+              </span>
+              <span class="flex items-center gap-1 hover:text-ink-500 cursor-pointer">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                ${j.likes}
+              </span>
+            </div>
+            <div class="ml-auto">${addBtn}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function filteredJobs() {
+    const q = (document.getElementById('jobSearch')?.value || '').toLowerCase().trim();
+    const role = document.getElementById('jobRole')?.value || '';
+    const loc = document.getElementById('jobLoc')?.value || '';
+    const size = document.getElementById('jobCompanySize')?.value || '';
+    return X_JOBS.filter(j => {
+      if (q && !j.body.toLowerCase().includes(q) && !j.company.toLowerCase().includes(q) && !j.role.toLowerCase().includes(q)) return false;
+      if (role && j.role !== role) return false;
+      if (loc && loc !== 'Remote' && !j.location.includes(loc)) return false;
+      if (loc === 'Remote' && j.location !== 'Remote') return false;
+      if (size && j.companySize !== size) return false;
+      return true;
+    });
+  }
+
+  function renderJobFeed() {
+    const jobs = filteredJobs();
+    const feed = document.getElementById('jobFeed');
+    const empty = document.getElementById('jobEmpty');
+    document.getElementById('jobStatTotal').textContent = X_JOBS.length;
+    document.getElementById('jobStatIcp').textContent = X_JOBS.filter(j => j.icpMatch >= 75).length;
+    document.getElementById('jobStatAdded').textContent = addedLeadsCount;
+
+    if (jobs.length === 0) {
+      feed.innerHTML = '';
+      empty.classList.remove('hidden');
+    } else {
+      empty.classList.add('hidden');
+      feed.innerHTML = jobs.map(renderJobCard).join('');
+    }
+  }
+
+  function addJobAsLead(id) {
+    const j = X_JOBS.find(x => x.id === id);
+    if (!j || j.addedToLeads) return;
+    j.addedToLeads = true;
+    addedLeadsCount++;
+
+    // Add to LEADS array as a new lead
+    LEADS.push({
+      id: 'xl' + id,
+      name: j.company + ' (X Jobs)',
+      initials: j.avatar,
+      title: j.role + ' · Open role',
+      company: j.company,
+      email: j.handle.replace('@', '') + '@company.com',
+      phone: 'N/A',
+      location: j.location,
+      source: 'X',
+      owner: 'Vishal R.',
+      lastActivity: 'Just now',
+      temp: j.icpMatch >= 85 ? 'hot' : j.icpMatch >= 65 ? 'warm' : 'cold',
+      score: j.icpMatch,
+      insightWhy: j.icpMatch >= 85 ? 'hot' : j.icpMatch >= 65 ? 'warm' : 'cold',
+      summary: 'Scraped from X: ' + j.body.split('\n')[0] + ' — ' + j.icpReason,
+      signals: [
+        { label: 'Source', value: 'X Post', tone: 'good' },
+        { label: 'ICP fit', value: j.icpMatch + '%', tone: j.icpMatch >= 85 ? 'good' : j.icpMatch >= 65 ? 'neutral' : 'bad' },
+        { label: 'Company size', value: j.companySize, tone: 'neutral' },
+        { label: 'Location', value: j.location, tone: 'neutral' }
+      ],
+      suggested: [
+        { title: 'Connect on X', desc: 'Reply to the job post' },
+        { title: 'Reach out via LinkedIn', desc: 'Find the hiring manager' }
+      ],
+      scoreReason: '+' + Math.round(j.icpMatch * 0.3) + ' fit · +' + Math.round(j.icpMatch * 0.25) + ' intent · +' + Math.round(j.icpMatch * 0.25) + ' engagement · +' + Math.round(j.icpMatch * 0.2) + ' timing',
+      activity: [
+        { t: 'Just now', type: 'ai', text: 'Added from X job post · AI ICP score: ' + j.icpMatch + '%' }
+      ]
+    });
+
+    renderCounts();
+    renderRows();
+    renderJobFeed();
+
+    // Flash feedback
+    const card = document.querySelector(`[data-jobid="${id}"]`);
+    if (card) {
+      card.classList.add('border-emerald-400');
+      setTimeout(() => card.classList.remove('border-emerald-400'), 1500);
+    }
+  }
+
+  // Scrape animation (mock)
+  document.getElementById('scrapeBtn')?.addEventListener('click', () => {
+    const btn = document.getElementById('scrapeBtn');
+    btn.disabled = true;
+    btn.innerHTML = `<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg> Scraping X…`;
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg> Scrape X now`;
+      renderJobFeed();
+    }, 1800);
+  });
+
+  // Job filters
+  ['jobSearch', 'jobRole', 'jobLoc', 'jobCompanySize'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', renderJobFeed);
+    document.getElementById(id)?.addEventListener('change', renderJobFeed);
+  });
+
+  // Nav to X Jobs
+  document.getElementById('navJobs')?.addEventListener('click', () => {
+    switchView('xjobs');
+    document.getElementById('pageTitle').textContent = 'X Jobs';
+    renderJobFeed();
+  });
+
+  // Tailwind spin animation
+  const style = document.createElement('style');
+  style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}.animate-spin{animation:spin 1s linear infinite}';
+  document.head.appendChild(style);
 </script>
 </body>
 </html>
