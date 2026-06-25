@@ -95,12 +95,67 @@
           <input id="searchInput" placeholder="Search leads, companies…" class="bg-transparent text-sm w-full outline-none placeholder:text-ink-300" />
           <span class="kbd">/</span>
         </div>
+        <button id="scrapeXBtn" class="h-9 px-3 rounded-md border border-surface-border bg-white text-sm font-medium hover:bg-surface-muted flex items-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Scrape from X
+        </button>
         <button class="h-9 px-3 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 flex items-center gap-2">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           Add lead
         </button>
       </div>
     </header>
+
+    <!-- =================== X SCRAPE MODAL =================== -->
+    <div id="xModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" id="xModalBackdrop"></div>
+      <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+
+        <!-- Modal header -->
+        <div class="flex items-center gap-3 px-6 py-4 border-b border-surface-border">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <div>
+            <h2 class="font-semibold text-base">Scrape jobs from X</h2>
+            <p class="text-xs text-ink-500">Hiring posts detected · 24 h window · AI-scored</p>
+          </div>
+          <div class="ml-auto flex items-center gap-3">
+            <div id="xScrapeStatus" class="hidden items-center gap-2 text-xs text-ink-500">
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Scanning…
+            </div>
+            <button id="xModalClose" class="h-8 w-8 rounded-md hover:bg-surface-muted grid place-items-center text-ink-500">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search bar -->
+        <div class="px-6 py-3 border-b border-surface-border flex items-center gap-3">
+          <div class="flex-1 flex items-center gap-2 px-3 h-9 rounded-md border border-surface-border bg-surface-muted">
+            <svg class="w-4 h-4 text-ink-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="xSearchInput" value="hiring OR we're hiring OR job opening" class="bg-transparent text-sm w-full outline-none text-ink-700" />
+          </div>
+          <button id="xRunScrape" class="h-9 px-4 rounded-md bg-ink-900 text-white text-sm font-medium hover:bg-ink-700 flex items-center gap-2 shrink-0">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Run scrape
+          </button>
+        </div>
+
+        <!-- Results list -->
+        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-3" id="xResults"></div>
+
+        <!-- Footer -->
+        <div class="flex items-center justify-between px-6 py-4 border-t border-surface-border bg-surface-muted rounded-b-xl">
+          <div class="text-xs text-ink-500"><span id="xSelectedCount">0</span> selected · <span id="xTotalFound">0</span> found</div>
+          <div class="flex items-center gap-2">
+            <button id="xSelectAll" class="h-8 px-3 rounded-md border border-surface-border bg-white text-sm hover:bg-surface-muted">Select all</button>
+            <button id="xImportBtn" class="h-8 px-4 rounded-md bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+              Import leads
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- =================== DASHBOARD VIEW =================== -->
     <section data-view="dashboard" class="is-active flex-1 overflow-y-auto">
@@ -156,6 +211,7 @@
               <option>All sources</option>
               <option>Website form</option>
               <option>LinkedIn</option>
+              <option>X (Twitter)</option>
               <option>Cold outbound</option>
               <option>Referral</option>
             </select>
@@ -788,6 +844,219 @@
   // ---------- init ----------
   renderCounts();
   renderRows();
+
+  // ---------- X scrape modal ----------
+  const X_JOBS = [
+    {
+      id: 'x1', handle: '@stripe', company: 'Stripe', avatar: 'ST',
+      avatarBg: 'bg-violet-100 text-violet-700',
+      role: 'Head of Growth', dept: 'Growth & Marketing',
+      post: "We're hiring a Head of Growth to lead our PLG motion. Remote-friendly. Comp: $220k–$280k + equity. DMs open or apply via stripe.com/jobs 🚀",
+      time: '14 min ago', followers: '182K', score: 88,
+      email: 'growth-hiring@stripe.com', location: 'Remote (US/EU)'
+    },
+    {
+      id: 'x2', handle: '@linearapp', company: 'Linear', avatar: 'LN',
+      avatarBg: 'bg-indigo-100 text-indigo-700',
+      role: 'VP of Sales', dept: 'Sales',
+      post: "Linear is looking for our first VP of Sales. You'll build the team from scratch. We're at $30M ARR and growing fast. Reach out — link in bio.",
+      time: '42 min ago', followers: '94K', score: 91,
+      email: 'careers@linear.app', location: 'San Francisco, CA'
+    },
+    {
+      id: 'x3', handle: '@vercel', company: 'Vercel', avatar: 'VC',
+      avatarBg: 'bg-zinc-100 text-zinc-700',
+      role: 'Director of Demand Gen', dept: 'Marketing',
+      post: "Job opening: Director of Demand Gen at Vercel. Own pipeline strategy for our Enterprise motion. $180k–$230k. Join us → vercel.com/careers",
+      time: '1 h ago', followers: '210K', score: 76,
+      email: 'hiring@vercel.com', location: 'New York, NY'
+    },
+    {
+      id: 'x4', handle: '@retool', company: 'Retool', avatar: 'RT',
+      avatarBg: 'bg-orange-100 text-orange-700',
+      role: 'Senior AE — Enterprise', dept: 'Sales',
+      post: "Hiring: Senior AE (Enterprise) at Retool. Close 6-figure deals with engineering teams. OTE $280–320k. DM me or see retool.com/jobs 🎯",
+      time: '2 h ago', followers: '67K', score: 82,
+      email: 'sales-hiring@retool.com', location: 'San Francisco, CA'
+    },
+    {
+      id: 'x5', handle: '@notion', company: 'Notion', avatar: 'NT',
+      avatarBg: 'bg-stone-100 text-stone-700',
+      role: 'Product Marketing Manager', dept: 'Product Marketing',
+      post: "We're expanding the PMM team at Notion! Looking for someone who's obsessed with storytelling & positioning. $160–200k. Apply → notion.so/careers",
+      time: '3 h ago', followers: '305K', score: 65,
+      email: 'pmm-hiring@notion.so', location: 'New York, NY (Hybrid)'
+    },
+    {
+      id: 'x6', handle: '@figma', company: 'Figma', avatar: 'FG',
+      avatarBg: 'bg-pink-100 text-pink-700',
+      role: 'Head of Partnerships', dept: 'Business Development',
+      post: "Figma is hiring a Head of Partnerships. You'll build and scale our ecosystem of tech + agency partners globally. figma.com/jobs — excited to see who applies!",
+      time: '5 h ago', followers: '412K', score: 79,
+      email: 'partnerships-hiring@figma.com', location: 'San Francisco, CA'
+    }
+  ];
+
+  const xModal    = document.getElementById('xModal');
+  const xResults  = document.getElementById('xResults');
+  const xImport   = document.getElementById('xImportBtn');
+  const xSelCount = document.getElementById('xSelectedCount');
+  const xTotalFnd = document.getElementById('xTotalFound');
+  let xSelected   = new Set();
+  let xLoaded     = false;
+
+  function xScoreColor(s) {
+    if (s >= 85) return 'bg-hot-50 text-hot-700';
+    if (s >= 70) return 'bg-warm-50 text-warm-700';
+    return 'bg-cold-50 text-cold-700';
+  }
+
+  function renderXResults(jobs) {
+    xTotalFnd.textContent = jobs.length;
+    xResults.innerHTML = jobs.map(j => `
+      <label class="flex gap-4 p-4 rounded-lg border border-surface-border hover:border-brand-500 hover:bg-brand-50 cursor-pointer transition group has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50" data-xid="${j.id}">
+        <input type="checkbox" class="mt-1 rounded border-surface-border accent-brand-600 shrink-0 x-check" data-xid="${j.id}" />
+        <div class="w-9 h-9 rounded-full ${j.avatarBg} grid place-items-center text-xs font-bold shrink-0">${j.avatar}</div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-semibold text-sm">${j.company}</span>
+            <span class="text-ink-300 text-xs">${j.handle}</span>
+            <span class="text-xs text-ink-300">·</span>
+            <span class="text-xs text-ink-300">${j.time}</span>
+            <span class="ml-auto inline-flex text-xs font-medium px-2 py-0.5 rounded-full ${xScoreColor(j.score)}">${j.score}</span>
+          </div>
+          <div class="mt-0.5 text-xs font-medium text-brand-700">${j.role} · ${j.dept}</div>
+          <p class="mt-1 text-sm text-ink-700 leading-relaxed">${j.post}</p>
+          <div class="mt-1.5 flex items-center gap-3 text-xs text-ink-300">
+            <span>${j.location}</span>
+            <span>·</span>
+            <span>${j.followers} followers</span>
+          </div>
+        </div>
+      </label>
+    `).join('');
+
+    document.querySelectorAll('.x-check').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const id = cb.dataset.xid;
+        if (cb.checked) xSelected.add(id); else xSelected.delete(id);
+        xSelCount.textContent = xSelected.size;
+        xImport.disabled = xSelected.size === 0;
+      });
+    });
+  }
+
+  function openXModal() {
+    xModal.classList.remove('hidden');
+    xSelected.clear();
+    xSelCount.textContent = 0;
+    xImport.disabled = true;
+    if (!xLoaded) {
+      const status = document.getElementById('xScrapeStatus');
+      status.classList.remove('hidden');
+      status.classList.add('flex');
+      xResults.innerHTML = `<div class="py-12 text-center text-ink-300 text-sm">Scanning X for hiring posts…</div>`;
+      xTotalFnd.textContent = 0;
+      setTimeout(() => {
+        renderXResults(X_JOBS);
+        status.classList.add('hidden');
+        status.classList.remove('flex');
+        xLoaded = true;
+      }, 1400);
+    }
+  }
+
+  document.getElementById('scrapeXBtn').addEventListener('click', openXModal);
+  document.getElementById('xModalClose').addEventListener('click', () => xModal.classList.add('hidden'));
+  document.getElementById('xModalBackdrop').addEventListener('click', () => xModal.classList.add('hidden'));
+
+  document.getElementById('xRunScrape').addEventListener('click', () => {
+    xLoaded = false;
+    xSelected.clear();
+    xSelCount.textContent = 0;
+    xImport.disabled = true;
+    const status = document.getElementById('xScrapeStatus');
+    status.classList.remove('hidden');
+    status.classList.add('flex');
+    xResults.innerHTML = `<div class="py-12 text-center text-ink-300 text-sm">Scanning X for hiring posts…</div>`;
+    xTotalFnd.textContent = 0;
+    const query = document.getElementById('xSearchInput').value.trim();
+    const filtered = query ? X_JOBS.filter(j =>
+      j.post.toLowerCase().includes(query.toLowerCase()) ||
+      j.role.toLowerCase().includes(query.toLowerCase()) ||
+      j.company.toLowerCase().includes(query.toLowerCase())
+    ) : X_JOBS;
+    setTimeout(() => {
+      renderXResults(filtered.length ? filtered : X_JOBS);
+      status.classList.add('hidden');
+      status.classList.remove('flex');
+      xLoaded = true;
+    }, 1100);
+  });
+
+  document.getElementById('xSelectAll').addEventListener('click', () => {
+    const checks = document.querySelectorAll('.x-check');
+    const allChecked = [...checks].every(c => c.checked);
+    checks.forEach(c => {
+      c.checked = !allChecked;
+      const id = c.dataset.xid;
+      if (!allChecked) xSelected.add(id); else xSelected.delete(id);
+    });
+    xSelCount.textContent = xSelected.size;
+    xImport.disabled = xSelected.size === 0;
+  });
+
+  document.getElementById('xImportBtn').addEventListener('click', () => {
+    const toImport = X_JOBS.filter(j => xSelected.has(j.id));
+    toImport.forEach(j => {
+      const existing = LEADS.find(l => l.id === j.id);
+      if (existing) return;
+      const score = j.score;
+      const temp = score >= 85 ? 'hot' : score >= 68 ? 'warm' : 'cold';
+      LEADS.unshift({
+        id: j.id,
+        name: j.company + ' Hiring',
+        initials: j.avatar,
+        title: j.role,
+        company: j.company,
+        email: j.email,
+        phone: '—',
+        location: j.location,
+        source: 'X (Twitter)',
+        owner: 'Vishal R.',
+        lastActivity: j.time,
+        temp,
+        score,
+        insightWhy: temp,
+        summary: `Detected via X post: "${j.post.slice(0, 120)}…" — active hiring signal for ${j.role} at ${j.company}.`,
+        signals: [
+          { label: 'Source', value: 'X post', tone: 'good' },
+          { label: 'Followers', value: j.followers, tone: 'good' },
+          { label: 'Role seniority', value: j.dept, tone: 'neutral' },
+          { label: 'AI score', value: String(score), tone: score >= 80 ? 'good' : 'neutral' }
+        ],
+        suggested: [
+          { title: 'Reach out via DM', desc: `Reply to ${j.handle} on X` },
+          { title: 'Apply via company site', desc: 'Direct application link in post' }
+        ],
+        scoreReason: `+${Math.round(score * 0.3)} fit · +${Math.round(score * 0.25)} intent · +${Math.round(score * 0.25)} engagement · +${Math.round(score * 0.2)} timing`,
+        activity: [
+          { t: j.time, type: 'visit', text: `X post detected: "${j.role}" hiring at ${j.company} via ${j.handle}` }
+        ]
+      });
+    });
+
+    renderCounts();
+    renderRows();
+    xModal.classList.add('hidden');
+
+    // brief toast
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-5 right-5 z-50 bg-ink-900 text-white text-sm px-4 py-3 rounded-lg shadow-lg flex items-center gap-2';
+    toast.innerHTML = `<svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> ${toImport.length} lead${toImport.length !== 1 ? 's' : ''} imported from X`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3200);
+  });
 </script>
 </body>
 </html>
