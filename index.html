@@ -62,6 +62,11 @@
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
         Insights
       </a>
+      <a id="navXJobs" class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.726-8.843L1.846 2.25H8.27l4.259 5.631 5.715-5.631Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"/></svg>
+        X Jobs
+        <span class="ml-auto text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-brand-100 text-brand-700">8</span>
+      </a>
       <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1A2 2 0 1 1 4.4 17l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1A2 2 0 1 1 7 4.4l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1A2 2 0 1 1 19.6 7l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
         Settings
@@ -206,6 +211,53 @@
         </div>
 
         <p class="text-xs text-ink-300 mt-4">Tip: press <span class="kbd">/</span> to search, click any row to open the lead.</p>
+      </div>
+    </section>
+
+    <!-- =================== X JOBS VIEW =================== -->
+    <section data-view="xjobs" class="flex-1 overflow-y-auto">
+      <div class="p-4 md:p-6 max-w-[1400px] mx-auto">
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-5">
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Jobs scraped</div>
+            <div class="mt-1 text-2xl font-semibold" id="xj-total">0</div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Companies hiring</div>
+            <div class="mt-1 text-2xl font-semibold" id="xj-companies">0</div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Remote roles</div>
+            <div class="mt-1 text-2xl font-semibold" id="xj-remote">0</div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Added as leads</div>
+            <div class="mt-1 text-2xl font-semibold" id="xj-added">0</div>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="bg-white border border-surface-border rounded-lg mb-5 p-3 flex flex-wrap items-center gap-2">
+          <div class="flex items-center gap-2 px-3 h-9 rounded-md border border-surface-border bg-white w-60">
+            <svg class="w-4 h-4 text-ink-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="xj-search" placeholder="Search jobs, companies…" class="bg-transparent text-sm w-full outline-none placeholder:text-ink-300" />
+          </div>
+          <div id="xj-tag-filters" class="flex flex-wrap gap-1.5"></div>
+          <button onclick="refreshXJobs()" class="ml-auto h-9 px-3 rounded-md border border-surface-border bg-white text-sm font-medium hover:bg-surface-muted flex items-center gap-2 text-ink-700">
+            <svg class="w-4 h-4 text-ink-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+            Refresh
+          </button>
+        </div>
+
+        <!-- Job cards -->
+        <div id="xj-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+
+        <p class="text-xs text-ink-300 mt-4">
+          Showing scraped X posts matching job-related hashtags.
+          Run <code class="font-mono bg-surface-muted px-1 rounded">python scrape_x_jobs.py</code> to pull fresh data.
+        </p>
       </div>
     </section>
 
@@ -709,9 +761,14 @@
   // ---------- view switching ----------
   function switchView(view) {
     document.querySelectorAll('[data-view]').forEach(el => el.classList.toggle('is-active', el.dataset.view === view));
-    document.getElementById('backBtn').classList.toggle('hidden', view === 'dashboard');
-    document.getElementById('backBtn').classList.toggle('flex', view === 'detail');
-    if (view === 'dashboard') document.getElementById('pageTitle').textContent = 'Leads';
+    const isDetail = view === 'detail';
+    document.getElementById('backBtn').classList.toggle('hidden', !isDetail);
+    document.getElementById('backBtn').classList.toggle('flex', isDetail);
+    if (view === 'dashboard') {
+      document.getElementById('pageTitle').textContent = 'Leads';
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('bg-brand-50', 'text-brand-700', 'font-medium'));
+      document.querySelector('nav a:first-child').classList.add('bg-brand-50', 'text-brand-700', 'font-medium');
+    }
     window.scrollTo({ top: 0 });
   }
 
@@ -784,6 +841,282 @@
     const list = variants[tone];
     return list[regen ? 1 : 0];
   }
+
+  // ---------- X Jobs data ----------
+  const X_JOBS = [
+    {
+      id: 'xj1', company: 'Acme Corp', handle: '@AcmeCorpHQ', initials: 'AC', avatarColor: '#6366F1',
+      verified: true, followers: 24800,
+      title: 'Senior Software Engineer',
+      text: "We're hiring a Senior Software Engineer (Remote)!\n\nLooking for someone who loves distributed systems and can work across the full stack. 5+ yrs experience, competitive salary + equity.\n\nApply: careers.acme.io/swe",
+      hashtags: ['hiring', 'remote', 'SoftwareEngineer', 'TechJobs'],
+      location: 'Remote', likes: 312, retweets: 87, replies: 23,
+      url: 'https://x.com/AcmeCorpHQ', postedAt: '2h ago',
+    },
+    {
+      id: 'xj2', company: 'NovaTech', handle: '@NovaTechAI', initials: 'NT', avatarColor: '#8B5CF6',
+      verified: false, followers: 8300,
+      title: 'Product Designer',
+      text: "NovaTech is looking for a Product Designer to join our team!\n\nYou'll shape the UX of our AI analytics platform. Hybrid — Austin, TX.\n\nSalary: $120k–$150k + options",
+      hashtags: ['ProductDesign', 'NowHiring', 'Austin', 'DesignJobs'],
+      location: 'Austin, TX (Hybrid)', likes: 201, retweets: 55, replies: 14,
+      url: 'https://x.com/NovaTechAI', postedAt: '4h ago',
+    },
+    {
+      id: 'xj3', company: 'Vertex Speech', handle: '@VertexSpeechAI', initials: 'VS', avatarColor: '#10B981',
+      verified: false, followers: 3100,
+      title: 'ML Engineer',
+      text: "Open role: ML Engineer @ Vertex Speech (Series B)\n\nBuilding next-gen speech models. Looking for someone fluent in PyTorch + familiar with ASR research.\n\nFull remote · $160k–$200k.",
+      hashtags: ['MLEngineer', 'MachineLearning', 'hiring', 'StartupJobs'],
+      location: 'Remote', likes: 445, retweets: 134, replies: 38,
+      url: 'https://x.com/VertexSpeechAI', postedAt: '6h ago',
+    },
+    {
+      id: 'xj4', company: 'CloudShift', handle: '@CloudShiftHQ', initials: 'CS', avatarColor: '#3B82F6',
+      verified: false, followers: 1240,
+      title: 'Founding Engineer',
+      text: "Founding Engineer position open at CloudShift!\n\nYou'll be employee #7, shaping architecture from day one. React + Go stack, Kubernetes. Seed funded.\n\nSan Francisco or Remote.",
+      hashtags: ['hiring', 'FoundingEngineer', 'startup', 'TechJobs'],
+      location: 'San Francisco / Remote', likes: 677, retweets: 189, replies: 62,
+      url: 'https://x.com/CloudShiftHQ', postedAt: '9h ago',
+    },
+    {
+      id: 'xj5', company: 'PulseDB', handle: '@PulseDBio', initials: 'PD', avatarColor: '#EC4899',
+      verified: false, followers: 6700,
+      title: 'DevRel Engineer',
+      text: "DevRel Engineer wanted! Join our open-source-first team at PulseDB.\n\nYou'll write docs, build demos, speak at conferences, and be the bridge between community and engineering.\n\nFully remote · $110k–$140k",
+      hashtags: ['DevRel', 'hiring', 'OpenSource', 'remote'],
+      location: 'Remote', likes: 388, retweets: 101, replies: 29,
+      url: 'https://x.com/PulseDBio', postedAt: '12h ago',
+    },
+    {
+      id: 'xj6', company: 'ScaleUp', handle: '@ScaleUpHQ', initials: 'SU', avatarColor: '#F59E0B',
+      verified: true, followers: 18900,
+      title: 'Growth Marketing Manager',
+      text: "We're hiring a Growth Marketing Manager at ScaleUp!\n\nOwn demand-gen: paid, SEO, email, partnerships. 3+ yrs B2B SaaS experience needed.\n\nNew York, NY (Hybrid)",
+      hashtags: ['MarketingJobs', 'NowHiring', 'GrowthMarketing', 'B2BSaaS'],
+      location: 'New York, NY (Hybrid)', likes: 156, retweets: 42, replies: 11,
+      url: 'https://x.com/ScaleUpHQ', postedAt: '1d ago',
+    },
+    {
+      id: 'xj7', company: 'DataStream', handle: '@DataStreamIO', initials: 'DS', avatarColor: '#EF4444',
+      verified: false, followers: 4500,
+      title: 'Backend Engineer (Rust)',
+      text: "Backend Engineer (Rust) — DataStream is hiring!\n\nBuilding high-throughput event streaming infra. You'll write production Rust, design APIs, and care deeply about latency.\n\nRemote-first · Series A · $170k–$210k",
+      hashtags: ['RustLang', 'BackendDev', 'hiring', 'remote'],
+      location: 'Remote', likes: 522, retweets: 143, replies: 47,
+      url: 'https://x.com/DataStreamIO', postedAt: '1d ago',
+    },
+    {
+      id: 'xj8', company: 'BrightPath Health', handle: '@BrightPathHealth', initials: 'BP', avatarColor: '#14B8A6',
+      verified: false, followers: 7200,
+      title: 'Senior Product Manager',
+      text: "Senior Product Manager opening at BrightPath Health!\n\nLead our patient-facing mobile product. Work with doctors, engineers, and designers to ship features that matter.\n\nBoston, MA (On-site)",
+      hashtags: ['ProductManagement', 'HealthTech', 'PM', 'hiring'],
+      location: 'Boston, MA', likes: 234, retweets: 67, replies: 19,
+      url: 'https://x.com/BrightPathHealth', postedAt: '2d ago',
+    },
+  ];
+
+  let xjTagFilter = 'all';
+  let xjSearchQ = '';
+  let xjAddedIds = new Set();
+
+  const XJ_TAGS = ['all', 'remote', 'hiring', 'startup', 'TechJobs', 'NowHiring', 'DevRel', 'MachineLearning'];
+
+  function formatNum(n) {
+    return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+  }
+
+  function renderXJobsTags() {
+    const el = document.getElementById('xj-tag-filters');
+    el.innerHTML = XJ_TAGS.map(tag => {
+      const active = tag === xjTagFilter;
+      return `<button onclick="setXJobsTag('${tag}')" class="text-xs px-2.5 py-1 rounded-full border transition ${
+        active ? 'bg-brand-600 text-white border-brand-600' : 'border-surface-border bg-white text-ink-500 hover:border-brand-400'
+      }">${tag === 'all' ? 'All tags' : '#' + tag}</button>`;
+    }).join('');
+  }
+
+  function setXJobsTag(tag) {
+    xjTagFilter = tag;
+    renderXJobsTags();
+    renderXJobsGrid();
+  }
+
+  function filteredXJobs() {
+    return X_JOBS.filter(j => {
+      const q = xjSearchQ.toLowerCase();
+      const matchesSearch = !q || j.company.toLowerCase().includes(q)
+        || j.title.toLowerCase().includes(q)
+        || j.text.toLowerCase().includes(q)
+        || j.handle.toLowerCase().includes(q);
+      const matchesTag = xjTagFilter === 'all' || j.hashtags.some(h => h.toLowerCase() === xjTagFilter.toLowerCase());
+      return matchesSearch && matchesTag;
+    });
+  }
+
+  function renderXJobsStats() {
+    const jobs = X_JOBS;
+    document.getElementById('xj-total').textContent = jobs.length;
+    document.getElementById('xj-companies').textContent = new Set(jobs.map(j => j.company)).size;
+    document.getElementById('xj-remote').textContent = jobs.filter(j => j.location.toLowerCase().includes('remote')).length;
+    document.getElementById('xj-added').textContent = xjAddedIds.size;
+  }
+
+  function renderXJobsGrid() {
+    const jobs = filteredXJobs();
+    const grid = document.getElementById('xj-grid');
+    if (!jobs.length) {
+      grid.innerHTML = `<div class="col-span-3 py-12 text-center text-ink-300 text-sm">No jobs match your filter.</div>`;
+      return;
+    }
+    grid.innerHTML = jobs.map(j => {
+      const added = xjAddedIds.has(j.id);
+      const checkIcon = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l4 4L19 7"/></svg>`;
+      const plusIcon = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`;
+      return `
+      <div class="bg-white border border-surface-border rounded-lg p-4 flex flex-col gap-3 hover:shadow-sm transition-shadow">
+        <!-- header -->
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 shrink-0 rounded-full grid place-items-center font-semibold text-sm text-white" style="background:${j.avatarColor}">${j.initials}</div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="font-semibold text-sm truncate">${j.company}</span>
+              ${j.verified ? `<svg class="w-3.5 h-3.5 shrink-0 text-brand-500" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>` : ''}
+            </div>
+            <div class="text-xs text-ink-300">${j.handle} · ${formatNum(j.followers)} followers</div>
+          </div>
+          <span class="text-[11px] text-ink-300 shrink-0">${j.postedAt}</span>
+        </div>
+
+        <!-- role badge -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-brand-50 text-brand-700">${j.title}</span>
+          <span class="text-xs text-ink-500 flex items-center gap-1">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            ${j.location}
+          </span>
+        </div>
+
+        <!-- post text -->
+        <p class="text-sm text-ink-700 leading-relaxed line-clamp-4">${j.text.replace(/\n/g, ' ')}</p>
+
+        <!-- hashtags -->
+        <div class="flex flex-wrap gap-1">
+          ${j.hashtags.map(h => `<span class="text-xs text-brand-600 hover:underline cursor-pointer">#${h}</span>`).join('')}
+        </div>
+
+        <!-- engagement -->
+        <div class="flex items-center gap-4 text-xs text-ink-300 border-t border-surface-border pt-2">
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            ${formatNum(j.likes)}
+          </span>
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            ${formatNum(j.retweets)}
+          </span>
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            ${j.replies}
+          </span>
+          <a href="${j.url}" target="_blank" rel="noopener" class="ml-auto flex items-center gap-1 text-ink-400 hover:text-ink-700">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.726-8.843L1.846 2.25H8.27l4.259 5.631 5.715-5.631Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"/></svg>
+            View
+          </a>
+        </div>
+
+        <!-- actions -->
+        <button onclick="addXJobAsLead('${j.id}')" class="w-full h-9 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
+          added ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default' : 'bg-brand-600 text-white hover:bg-brand-700'
+        }">
+          ${added ? checkIcon : plusIcon}
+          ${added ? 'Added to leads' : 'Add to leads'}
+        </button>
+      </div>`;
+    }).join('');
+  }
+
+  function addXJobAsLead(id) {
+    if (xjAddedIds.has(id)) return;
+    const job = X_JOBS.find(j => j.id === id);
+    if (!job) return;
+
+    xjAddedIds.add(id);
+
+    const newLead = {
+      id: 'xj_' + id,
+      name: job.company + ' (Hiring)',
+      initials: job.initials,
+      title: 'Hiring ' + job.title,
+      company: job.company,
+      email: `careers@${job.handle.replace('@','').toLowerCase()}.com`,
+      phone: '—',
+      location: job.location,
+      source: 'X Jobs',
+      owner: 'Vishal R.',
+      lastActivity: 'Just now',
+      temp: 'warm',
+      score: Math.min(60 + Math.round(job.likes / 20), 88),
+      insightWhy: 'warm',
+      summary: `Found on X: "${job.title}" posting with ${job.likes} likes. Active hiring signal — ${job.company} is growing.`,
+      signals: [
+        { label: 'Signal', value: 'Hiring post', tone: 'good' },
+        { label: 'Engagement', value: formatNum(job.likes) + ' likes', tone: 'good' },
+        { label: 'Location', value: job.location, tone: 'neutral' },
+        { label: 'Source', value: 'X scrape', tone: 'neutral' },
+      ],
+      suggested: [
+        { title: 'Reach out to hiring manager', desc: 'Growing companies need tools' },
+        { title: 'Research company on LinkedIn', desc: 'Find the right decision-maker' },
+      ],
+      scoreReason: '+15 hiring signal · +12 engagement · +10 fit',
+      activity: [{ t: 'Just now', type: 'ai', text: `Imported from X: "${job.title}" posting by ${job.handle}` }],
+    };
+
+    LEADS.unshift(newLead);
+    renderCounts();
+    renderXJobsStats();
+    renderXJobsGrid();
+
+    // flash the lead count badge in sidebar
+    const badge = document.querySelector('[data-count="all"]');
+    if (badge) badge.textContent = LEADS.length;
+  }
+
+  function refreshXJobs() {
+    const btn = document.querySelector('[onclick="refreshXJobs()"]');
+    if (btn) {
+      btn.innerHTML = `<svg class="w-4 h-4 text-ink-500 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg> Refreshing…`;
+      setTimeout(() => {
+        btn.innerHTML = `<svg class="w-4 h-4 text-ink-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg> Refresh`;
+        renderXJobsStats();
+        renderXJobsGrid();
+      }, 1200);
+    }
+  }
+
+  // ---------- X Jobs nav wiring ----------
+  document.getElementById('navXJobs').addEventListener('click', () => {
+    switchView('xjobs');
+    renderXJobsTags();
+    renderXJobsStats();
+    renderXJobsGrid();
+    document.querySelectorAll('nav a').forEach(a => {
+      a.classList.remove('bg-brand-50', 'text-brand-700', 'font-medium');
+      a.classList.add('text-ink-500');
+    });
+    const navEl = document.getElementById('navXJobs');
+    navEl.classList.add('bg-brand-50', 'text-brand-700', 'font-medium');
+    navEl.classList.remove('text-ink-500');
+    document.getElementById('pageTitle').textContent = 'X Jobs';
+  });
+
+  document.getElementById('xj-search').addEventListener('input', e => {
+    xjSearchQ = e.target.value;
+    renderXJobsGrid();
+  });
 
   // ---------- init ----------
   renderCounts();
