@@ -33,6 +33,9 @@
   [data-view].is-active { display: block; }
   .row-hover:hover { background: #F7F8FA; }
   .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; padding: 1px 6px; border: 1px solid #E5E7EB; border-bottom-width: 2px; border-radius: 4px; color: #4B5563; background: #fff; }
+  .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 1s linear infinite; }
 </style>
 </head>
 <body class="bg-surface-muted text-ink-900 antialiased">
@@ -46,23 +49,27 @@
       <span class="font-semibold">Leadflow</span>
     </div>
     <nav class="p-3 text-sm">
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md bg-brand-50 text-brand-700 font-medium">
+      <a data-nav="dashboard" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md bg-brand-50 text-brand-700 font-medium cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
         Leads
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a data-nav="jobs" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.264 5.634 5.9-5.634zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Jobs from X
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
         Pipeline
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
         Inbox
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
         Insights
       </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-md text-ink-500 hover:bg-surface-muted cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1A2 2 0 1 1 4.4 17l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1A2 2 0 1 1 7 4.4l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1A2 2 0 1 1 19.6 7l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
         Settings
       </a>
@@ -341,6 +348,113 @@
           </div>
         </aside>
 
+      </div>
+    </section>
+
+    <!-- =================== JOBS FROM X VIEW =================== -->
+    <section data-view="jobs" class="flex-1 overflow-y-auto">
+      <div class="p-4 md:p-6 max-w-[1400px] mx-auto">
+
+        <!-- Scraper banner -->
+        <div class="bg-white border border-surface-border rounded-lg p-4 mb-5 flex flex-wrap items-center gap-4">
+          <div class="w-9 h-9 rounded-lg bg-black text-white grid place-items-center shrink-0">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.264 5.634 5.9-5.634zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-sm font-semibold">Jobs scraped from X</div>
+            <div class="text-xs text-ink-500 mt-0.5">
+              Query: <span class="font-medium text-ink-700">"we're hiring" OR "job opening" OR "#hiring"</span>
+              · Last scraped <span id="lastScraped">2 min ago</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-ink-500 hidden md:block">Auto-refresh · every 30 min</span>
+            <button id="scrapeBtn" class="h-9 px-3 rounded-md bg-black text-white text-sm font-medium hover:bg-gray-900 flex items-center gap-2">
+              <svg id="scrapeIconNormal" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+              <svg id="scrapeIconSpin" class="w-4 h-4 spin" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/></svg>
+              <span id="scrapeBtnText">Scrape now</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-5">
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Jobs scraped</div>
+            <div class="mt-1 flex items-end gap-2">
+              <div id="statTotal" class="text-2xl font-semibold">8</div>
+              <div id="statNew" class="text-xs text-emerald-600 mb-1"></div>
+            </div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Companies hiring</div>
+            <div class="mt-1 flex items-end gap-2">
+              <div id="statCompanies" class="text-2xl font-semibold">8</div>
+            </div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-brand-500"></span> High match (≥80)
+            </div>
+            <div class="mt-1 flex items-end gap-2">
+              <div id="statHighMatch" class="text-2xl font-semibold">4</div>
+              <div id="statHighOf" class="text-xs text-ink-300 mb-1">of 8</div>
+            </div>
+          </div>
+          <div class="bg-white border border-surface-border rounded-lg p-4">
+            <div class="text-xs text-ink-500">Avg. match score</div>
+            <div class="mt-1 flex items-end gap-2">
+              <div id="statAvgScore" class="text-2xl font-semibold">77</div>
+              <div class="text-xs text-ink-300 mb-1">/ 100</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter bar + table -->
+        <div class="bg-white border border-surface-border rounded-lg">
+          <div class="flex flex-wrap items-center gap-2 p-3 border-b border-surface-border">
+            <div class="flex items-center gap-1 bg-surface-muted p-1 rounded-md text-sm" role="tablist">
+              <button data-jfilter="all"         class="job-filter-tab px-3 py-1.5 rounded-md bg-white shadow-sm font-medium">All</button>
+              <button data-jfilter="design"      class="job-filter-tab px-3 py-1.5 rounded-md text-ink-500">Design</button>
+              <button data-jfilter="engineering" class="job-filter-tab px-3 py-1.5 rounded-md text-ink-500">Engineering</button>
+              <button data-jfilter="marketing"   class="job-filter-tab px-3 py-1.5 rounded-md text-ink-500">Marketing</button>
+              <button data-jfilter="product"     class="job-filter-tab px-3 py-1.5 rounded-md text-ink-500">Product</button>
+              <button data-jfilter="sales"       class="job-filter-tab px-3 py-1.5 rounded-md text-ink-500">Sales</button>
+            </div>
+            <div class="ml-auto text-sm text-ink-500">
+              Sorted by <button class="font-medium text-ink-900 hover:underline">AI match ↓</button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto scrollbar-thin">
+            <table class="min-w-full text-sm">
+              <thead class="text-left text-ink-500 bg-surface-muted">
+                <tr class="border-b border-surface-border">
+                  <th class="font-medium px-4 py-2.5 w-10"><input type="checkbox" class="rounded border-surface-border" /></th>
+                  <th class="font-medium px-2 py-2.5">Role</th>
+                  <th class="font-medium px-2 py-2.5">Company</th>
+                  <th class="font-medium px-2 py-2.5">X post snippet</th>
+                  <th class="font-medium px-2 py-2.5">Engagement</th>
+                  <th class="font-medium px-2 py-2.5">AI match</th>
+                  <th class="font-medium px-2 py-2.5">Posted</th>
+                  <th class="font-medium px-2 py-2.5 text-right pr-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="jobRows"></tbody>
+            </table>
+          </div>
+
+          <div class="flex items-center justify-between px-4 py-3 border-t border-surface-border text-xs text-ink-500">
+            <div><span id="jobsVisibleCount">0</span> of <span id="jobsTotalCount">0</span> jobs</div>
+            <div class="flex items-center gap-1">
+              <button class="px-2 py-1 rounded hover:bg-surface-muted">‹</button>
+              <span>Page 1 of 1</span>
+              <button class="px-2 py-1 rounded hover:bg-surface-muted">›</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-ink-300 mt-4">Jobs are scraped from public X posts. Click <span class="font-medium text-ink-500">Save as lead</span> to add a hiring company to your Leads pipeline.</p>
       </div>
     </section>
 
@@ -709,9 +823,21 @@
   // ---------- view switching ----------
   function switchView(view) {
     document.querySelectorAll('[data-view]').forEach(el => el.classList.toggle('is-active', el.dataset.view === view));
-    document.getElementById('backBtn').classList.toggle('hidden', view === 'dashboard');
-    document.getElementById('backBtn').classList.toggle('flex', view === 'detail');
-    if (view === 'dashboard') document.getElementById('pageTitle').textContent = 'Leads';
+    const isDetail = view === 'detail';
+    document.getElementById('backBtn').classList.toggle('hidden', !isDetail);
+    document.getElementById('backBtn').classList.toggle('flex', isDetail);
+    if (!isDetail) {
+      const titles = { dashboard: 'Leads', jobs: 'Jobs from X' };
+      document.getElementById('pageTitle').textContent = titles[view] || '';
+      document.querySelectorAll('[data-nav]').forEach(n => {
+        const active = n.dataset.nav === view;
+        n.classList.toggle('bg-brand-50', active);
+        n.classList.toggle('text-brand-700', active);
+        n.classList.toggle('font-medium', active);
+        n.classList.toggle('text-ink-500', !active);
+        n.classList.toggle('hover:bg-surface-muted', !active);
+      });
+    }
     window.scrollTo({ top: 0 });
   }
 
@@ -785,9 +911,200 @@
     return list[regen ? 1 : 0];
   }
 
+  // ---------- nav click ----------
+  document.querySelectorAll('[data-nav]').forEach(a => {
+    a.addEventListener('click', e => { e.preventDefault(); switchView(a.dataset.nav); });
+  });
+
+  // ---------- jobs mock data ----------
+  const JOBS = [
+    { id:'j1', role:'Senior Product Designer', company:'Stripe', initials:'ST', companySize:'3000+', location:'San Francisco, CA · Remote OK', type:'Full-time', category:'design', xHandle:'@stripe', xAuthor:'Stripe Careers', xPost:"We're hiring a Senior Product Designer to shape the future of payments UX. Strong systems thinking + Figma required. Apply → stripe.com/careers", xLikes:142, xReposts:38, postedAt:'2 h ago', score:91, matchReason:'ICP 94% · Series D+ · Design leader reachable', saved:false },
+    { id:'j2', role:'Head of Growth Marketing', company:'Linear', initials:'LN', companySize:'50–200', location:'Remote', type:'Full-time', category:'marketing', xHandle:'@linear_app', xAuthor:'Linear', xPost:"Hiring a Head of Growth. You'll own all things pipeline — SEO to PLG loops. Linear is growing 3× YoY. DMs open or apply at linear.app/jobs", xLikes:89, xReposts:21, postedAt:'4 h ago', score:85, matchReason:'ICP 88% · High growth · Marketing DM accessible', saved:false },
+    { id:'j3', role:'Staff Software Engineer', company:'Vercel', initials:'VC', companySize:'200–500', location:'Remote', type:'Full-time', category:'engineering', xHandle:'@vercel', xAuthor:'Vercel Jobs', xPost:"Staff SWE for our infrastructure team. Scaling edge compute globally. Experience with Rust + distributed systems a plus. vercel.com/careers", xLikes:203, xReposts:67, postedAt:'5 h ago', score:72, matchReason:'ICP 74% · Technical buyer · Infra-focused', saved:false },
+    { id:'j4', role:'Sales Development Rep', company:'Notion', initials:'NT', companySize:'500–1000', location:'New York, NY', type:'Full-time', category:'sales', xHandle:'@NotionHQ', xAuthor:'Notion', xPost:"Hiring SDRs in NYC. If you love productivity tools and great culture — notion.so/jobs. Come build with us!", xLikes:54, xReposts:14, postedAt:'6 h ago', score:78, matchReason:'ICP 80% · Mid-market · Sales expansion phase', saved:false },
+    { id:'j5', role:'Product Manager — AI', company:'Figma', initials:'FG', companySize:'1000+', location:'San Francisco, CA', type:'Full-time', category:'product', xHandle:'@figma', xAuthor:'Figma', xPost:"Hiring a PM to lead our AI-powered features. Work at the intersection of design + ML + product. figma.com/careers", xLikes:312, xReposts:94, postedAt:'8 h ago', score:88, matchReason:'ICP 91% · AI buyer · Decision-maker accessible', saved:false },
+    { id:'j6', role:'Brand Designer', company:'Arc Browser', initials:'AB', companySize:'50–200', location:'New York, NY', type:'Full-time', category:'design', xHandle:'@arcinternet', xAuthor:'Arc', xPost:"Hiring a Brand Designer who cares deeply about how Arc looks and feels at every touchpoint. arc.net/jobs — let's make something beautiful.", xLikes:441, xReposts:108, postedAt:'10 h ago', score:83, matchReason:'ICP 82% · Design-led · Brand investment', saved:false },
+    { id:'j7', role:'VP of Engineering', company:'Retool', initials:'RT', companySize:'200–500', location:'San Francisco, CA', type:'Full-time', category:'engineering', xHandle:'@retool', xAuthor:'Retool', xPost:"Hiring a VP of Engineering to lead a world-class team building internal tools infrastructure. retool.com/careers", xLikes:78, xReposts:19, postedAt:'12 h ago', score:66, matchReason:'ICP 69% · Eng leadership hire', saved:false },
+    { id:'j8', role:'Content Marketing Manager', company:'Loom', initials:'LM', companySize:'200–500', location:'Remote', type:'Full-time', category:'marketing', xHandle:'@loom', xAuthor:'Loom', xPost:"Content Marketing Manager opening at Loom. Own the blog, SEO, and distribution. loom.com/careers — we'd love to meet you.", xLikes:37, xReposts:9, postedAt:'1 d ago', score:59, matchReason:'ICP 61% · Content investment · Mid-funnel buyer', saved:false }
+  ];
+
+  const NEW_JOBS_POOL = [
+    { id:'j9', role:'Lead UX Researcher', company:'Airbnb', initials:'AY', companySize:'5000+', location:'San Francisco, CA · Hybrid', type:'Full-time', category:'design', xHandle:'@airbnb', xAuthor:'Airbnb Design', xPost:"JUST POSTED: Hiring a Lead UX Researcher to help design the future of belonging. #Hiring → airbnb.design/careers", xLikes:67, xReposts:22, postedAt:'just now', score:86, matchReason:'ICP 89% · Strong design culture · Recently posted', saved:false },
+    { id:'j10', role:'Director of Demand Gen', company:'HubSpot', initials:'HS', companySize:'5000+', location:'Remote', type:'Full-time', category:'marketing', xHandle:'@HubSpot', xAuthor:'HubSpot Jobs', xPost:"Hiring a Director of Demand Generation. Own the entire top-of-funnel strategy. #Marketing #Hiring → hubspot.com/jobs", xLikes:91, xReposts:28, postedAt:'just now', score:79, matchReason:'ICP 81% · Enterprise buyer · Marketing leader', saved:false }
+  ];
+
+  let activeJobFilter = 'all';
+  let scrapeNewCount = 0;
+  let newJobPoolIndex = 0;
+
+  function filteredJobs() {
+    return JOBS.filter(j => activeJobFilter === 'all' || j.category === activeJobFilter);
+  }
+
+  function updateJobStats() {
+    const total = JOBS.length;
+    const companies = new Set(JOBS.map(j => j.company)).size;
+    const highMatch = JOBS.filter(j => j.score >= 80).length;
+    const avg = Math.round(JOBS.reduce((s, j) => s + j.score, 0) / JOBS.length);
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statNew').textContent = scrapeNewCount > 0 ? '+' + scrapeNewCount + ' new' : '';
+    document.getElementById('statCompanies').textContent = companies;
+    document.getElementById('statHighMatch').textContent = highMatch;
+    document.getElementById('statHighOf').textContent = 'of ' + total;
+    document.getElementById('statAvgScore').textContent = avg;
+  }
+
+  function renderJobs() {
+    const tbody = document.getElementById('jobRows');
+    const jobs = filteredJobs();
+    document.getElementById('jobsVisibleCount').textContent = jobs.length;
+    document.getElementById('jobsTotalCount').textContent = JOBS.length;
+
+    if (jobs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-ink-500"><div class="font-medium mb-1">No jobs in this category</div><div class="text-xs">Try switching to "All" or scrape for more.</div></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = jobs.map(j => {
+      const sc = j.score >= 80 ? 'text-emerald-700 bg-emerald-50' : j.score >= 60 ? 'text-warm-700 bg-warm-50' : 'text-ink-500 bg-surface-muted';
+      const isNew = j.postedAt === 'just now';
+      return `<tr class="row-hover border-b border-surface-border">
+        <td class="px-4 py-3"><input type="checkbox" class="rounded border-surface-border" /></td>
+        <td class="px-2 py-3">
+          <div class="font-medium">${j.role}${isNew ? ' <span class="text-xs text-emerald-600 font-medium ml-1">· New</span>' : ''}</div>
+          <div class="text-xs text-ink-500">${j.type} · ${j.location}</div>
+        </td>
+        <td class="px-2 py-3">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 shrink-0 rounded-md bg-ink-900 text-white grid place-items-center text-[10px] font-bold">${j.initials}</div>
+            <div>
+              <div class="font-medium">${j.company}</div>
+              <div class="text-xs text-ink-500">${j.companySize} employees</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-2 py-3" style="max-width:240px">
+          <div class="flex items-start gap-1.5">
+            <svg class="w-3 h-3 mt-0.5 shrink-0 text-ink-300" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.264 5.634 5.9-5.634zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            <div>
+              <span class="text-xs text-ink-500 font-medium">${j.xHandle}</span>
+              <div class="text-xs text-ink-700 mt-0.5 line-clamp-2">${j.xPost}</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-2 py-3">
+          <div class="flex items-center gap-3 text-xs text-ink-500">
+            <span class="flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              ${j.xLikes}
+            </span>
+            <span class="flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+              ${j.xReposts}
+            </span>
+          </div>
+        </td>
+        <td class="px-2 py-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-medium px-2 py-0.5 rounded-full ${sc}">${j.score}</span>
+            <div class="h-1.5 w-14 rounded-full bg-surface-muted overflow-hidden">
+              <div class="h-full bg-brand-600" style="width:${j.score}%"></div>
+            </div>
+          </div>
+          <div class="text-[10px] text-ink-300 mt-1" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${j.matchReason}</div>
+        </td>
+        <td class="px-2 py-3 text-ink-500 whitespace-nowrap">${j.postedAt}</td>
+        <td class="px-2 py-3 pr-4">
+          <div class="flex items-center gap-1 justify-end">
+            <button onclick="saveAsLead('${j.id}')" class="h-8 px-2.5 rounded-md border text-xs font-medium transition ${j.saved ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : 'bg-white border-surface-border text-ink-700 hover:bg-brand-50 hover:border-brand-500 hover:text-brand-700'}">
+              ${j.saved ? '&#10003; Saved' : 'Save as lead'}
+            </button>
+            <button title="View on X" class="h-8 w-8 grid place-items-center rounded-md hover:bg-surface-muted text-ink-500">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.264 5.634 5.9-5.634zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function saveAsLead(id) {
+    const job = JOBS.find(j => j.id === id);
+    if (!job || job.saved) return;
+    job.saved = true;
+    LEADS.unshift({
+      id: 'l_' + id,
+      name: job.xAuthor, initials: job.initials,
+      title: 'Hiring · ' + job.role, company: job.company,
+      email: job.xHandle.replace('@', '') + '@' + job.company.toLowerCase().replace(/\s+/g, '') + '.com',
+      phone: '—', location: job.location,
+      source: 'X Job Post', owner: 'Vishal R.', lastActivity: 'just now',
+      temp: 'warm', score: Math.round(job.score * 0.85),
+      insightWhy: 'warm',
+      summary: job.company + ' is actively hiring for ' + job.role + '. Sourced from ' + job.xHandle + ' on X. ' + job.matchReason + '.',
+      signals: [
+        { label: 'Hiring signal', value: 'Active', tone: 'good' },
+        { label: 'X engagement', value: job.xLikes + ' likes', tone: 'good' },
+        { label: 'ICP fit', value: job.score + '%', tone: job.score >= 80 ? 'good' : 'neutral' },
+        { label: 'Post recency', value: job.postedAt, tone: 'good' }
+      ],
+      suggested: [
+        { title: 'Reach out to hiring manager', desc: 'Company is actively investing' },
+        { title: 'Follow ' + job.xHandle, desc: 'Monitor future hiring signals' }
+      ],
+      scoreReason: job.matchReason,
+      activity: [
+        { t: 'just now', type: 'ai', text: 'AI sourced lead from X job post by ' + job.xHandle + '.' },
+        { t: 'just now', type: 'visit', text: '"' + job.xPost.substring(0, 80) + '…"' }
+      ]
+    });
+    renderJobs();
+    renderRows();
+    renderCounts();
+  }
+
+  function simulateScrape() {
+    const btn = document.getElementById('scrapeBtn');
+    if (btn.disabled) return;
+    btn.disabled = true;
+    document.getElementById('scrapeIconNormal').style.display = 'none';
+    document.getElementById('scrapeIconSpin').style.display = '';
+    document.getElementById('scrapeBtnText').textContent = 'Scraping…';
+    setTimeout(() => {
+      if (newJobPoolIndex < NEW_JOBS_POOL.length) {
+        JOBS.unshift(NEW_JOBS_POOL[newJobPoolIndex++]);
+        scrapeNewCount++;
+      }
+      document.getElementById('lastScraped').textContent = 'just now';
+      updateJobStats();
+      renderJobs();
+      document.getElementById('scrapeIconNormal').style.display = '';
+      document.getElementById('scrapeIconSpin').style.display = 'none';
+      document.getElementById('scrapeBtnText').textContent = 'Scrape now';
+      btn.disabled = false;
+    }, 1800);
+  }
+
+  document.getElementById('scrapeBtn').addEventListener('click', simulateScrape);
+
+  document.querySelectorAll('.job-filter-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeJobFilter = btn.dataset.jfilter;
+      document.querySelectorAll('.job-filter-tab').forEach(b => {
+        b.classList.remove('bg-white', 'shadow-sm', 'font-medium', 'text-ink-900');
+        b.classList.add('text-ink-500');
+      });
+      btn.classList.remove('text-ink-500');
+      btn.classList.add('bg-white', 'shadow-sm', 'font-medium', 'text-ink-900');
+      renderJobs();
+    });
+  });
+
   // ---------- init ----------
   renderCounts();
   renderRows();
+  updateJobStats();
+  renderJobs();
 </script>
 </body>
 </html>
