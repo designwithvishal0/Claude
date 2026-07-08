@@ -1,0 +1,32 @@
+# Daily job digest configuration.
+#
+# keywords: a posting must contain at least one of these (case-insensitive,
+#   matched against title + tags) to be kept. Leave empty ([]) for no filter.
+keywords:
+  - software engineer
+  - frontend
+  - backend
+  - full stack
+  - product manager
+
+# Free-text location filter, only used by sources that support server-side
+# location search (Adzuna, Jooble). Leave blank to search everywhere.
+location: ""
+
+# Country code Adzuna should search (e.g. "in" for India, "us", "gb", "ca").
+# See https://developer.adzuna.com/docs/countries for the full list.
+adzuna_country: "in"
+
+# Only keep postings whose publish date is within this many hours of "now".
+max_age_hours: 24
+
+# Sources that need no API key are always on. These two are skipped
+# automatically unless the matching secret/env var is set:
+#   ADZUNA_APP_ID + ADZUNA_APP_KEY   -> enables Adzuna
+#   JOOBLE_API_KEY                    -> enables Jooble
+sources:
+  remoteok: true
+  remotive: true
+  arbeitnow: true
+  adzuna: true
+  jooble: true

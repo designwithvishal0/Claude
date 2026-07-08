@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-07-08T03:40:46.784108+00:00",
+  "job_count": 7,
+  "errors": [],
+  "skipped_sources": [
+    "adzuna (no API key configured)",
+    "jooble (no API key configured)"
+  ],
+  "jobs": [
+    {
+      "source": "Arbeitnow",
+      "title": "Senior AI Product Manager (f/m/d)",
+      "company": "Predium Technology GmbH",
+      "url": "https://www.arbeitnow.com/jobs/companies/predium-technology-gmbh/senior-ai-product-manager-munich-486949",
+      "location": "Munich",
+      "remote": false,
+      "posted_at": "2026-07-07T21:01:37+00:00",
+      "salary": "",
+      "tags": [
+        "Marketing and Communication",
+        "berufserfahren"
+      ]
+    },
+    {
+      "source": "Arbeitnow",
+      "title": "Senior Backend Engineer",
+      "company": "bits&birds GmbH",
+      "url": "https://www.arbeitnow.com/jobs/companies/bitsbirds-gmbh/senior-backend-engineer-hamburg-261821",
+      "location": "Hamburg",
+      "remote": true,
+      "posted_at": "2026-07-07T21:01:37+00:00",
+      "salary": "",
+      "tags": [
+        "Remote",
+        "IT"
+      ]
+    },
+    {
+      "source": "Arbeitnow",
+      "title": "Front-End Software Engineer Flutter (Full Time), Munich, Germany",
+      "company": "NOXON",
+      "url": "https://www.arbeitnow.com/jobs/companies/noxon/front-end-software-engineer-flutter-full-time-munich-germany-407323",
+      "location": "Munich",
+      "remote": false,
+      "posted_at": "2026-07-07T19:39:31+00:00",
+      "salary": "",
+      "tags": [
+        "Software Development"
+      ]
+    },
+    {
+      "source": "Arbeitnow",
+      "title": "AI Full Stack Software Engineer im E-Commerce Startup (E-Commerce & Data)",
+      "company": "Sayano Deutschland GmbH",
+      "url": "https://www.arbeitnow.com/jobs/companies/sayano-deutschland-gmbh/ai-full-stack-software-engineer-im-e-commerce-startup-e-commerce-data-stuttgart-111639",
+      "location": "Stuttgart",
+      "remote": false,
+      "posted_at": "2026-07-07T19:39:28+00:00",
+      "salary": "",
+      "tags": [
+        "Software Development"
+      ]
+    },
+    {
+      "source": "Arbeitnow",
+      "title": "Product Manager (Frankfurt)",
+      "company": "Privatize",
+      "url": "https://www.arbeitnow.com/jobs/companies/privatize/product-manager-frankfurt-frankfurt-am-main-309210",
+      "location": "Frankfurt am Main",
+      "remote": false,
+      "posted_at": "2026-07-07T19:39:25+00:00",
+      "salary": "",
+      "tags": [
+        "Product Management",
+        "berufserfahren"
+      ]
+    },
+    {
+      "source": "Arbeitnow",
+      "title": "Junior Backend-focused Developer (m/f/d)",
+      "company": "Finanzchef24 GmbH",
+      "url": "https://www.arbeitnow.com/jobs/companies/finanzchef24-gmbh/junior-backend-focused-developer-munich-303565",
+      "location": "Munich",
+      "remote": false,
+      "posted_at": "2026-07-07T19:39:18+00:00",
+      "salary": "",
+      "tags": [
+        "IT",
+        "professional / experienced"
+      ]
+    },
+    {
+      "source": "Arbeitnow",
+      "title": "Senior Backend Entwickler (m/w/d) - Manufacturing",
+      "company": "PartSpace GmbH",
+      "url": "https://www.arbeitnow.com/jobs/companies/partspace-gmbh/senior-backend-entwickler-manufacturing-deggendorf-406258",
+      "location": "Deggendorf",
+      "remote": false,
+      "posted_at": "2026-07-07T19:39:09+00:00",
+      "salary": "",
+      "tags": [
+        "Software Development",
+        "berufserfahren"
+      ]
+    }
+  ]
+}
