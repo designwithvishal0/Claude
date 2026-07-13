@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Job Feed — freshly posted in the last 24h</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+        colors: {
+          ink: { 900: '#0B1220', 700: '#1F2937', 500: '#4B5563', 300: '#9CA3AF' },
+          surface: { DEFAULT: '#FFFFFF', muted: '#F7F8FA', border: '#E5E7EB' },
+          brand:  { 50:'#EEF2FF', 100:'#E0E7FF', 500:'#6366F1', 600:'#4F46E5', 700:'#4338CA' }
+        }
+      }
+    }
+  };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; }
+</style>
+</head>
+<body class="bg-surface-muted text-ink-900 antialiased">
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <header class="mb-6">
+    <h1 class="text-xl font-semibold">Job Feed</h1>
+    <p class="text-sm text-ink-500 mt-1">
+      Jobs posted in the last 24 hours, pulled daily from sources with legitimate API access
+      (<a class="underline" href="https://developer.adzuna.com/" target="_blank" rel="noopener">Adzuna</a>,
+      <a class="underline" href="https://remoteok.com/api" target="_blank" rel="noopener">RemoteOK</a>,
+      optionally X/Twitter). See <a class="underline" href="job-scraper/README.md">job-scraper/README.md</a>
+      for why LinkedIn, Naukri, and Wellfound aren't scraped directly.
+    </p>
+    <div id="meta" class="text-xs text-ink-300 mt-2"></div>
+  </header>
+
+  <div class="flex flex-wrap items-center gap-2 mb-4">
+    <input id="search" type="text" placeholder="Filter by title, company, tag…"
+      class="flex-1 min-w-[200px] px-3 py-2 text-sm rounded-md border border-surface-border bg-white focus:outline-none focus:ring-2 focus:ring-brand-500" />
+    <select id="sourceFilter" class="px-3 py-2 text-sm rounded-md border border-surface-border bg-white">
+      <option value="">All sources</option>
+    </select>
+  </div>
+
+  <div id="list" class="space-y-3"></div>
+  <div id="empty" class="hidden text-sm text-ink-500 border border-dashed border-surface-border rounded-lg p-8 text-center">
+    No jobs posted in the last 24 hours matched your filters. Check back after the next daily run.
+  </div>
+</div>
+
+<script>
+  const state = { jobs: [], search: '', source: '' };
+
+  function timeAgo(iso) {
+    const diffMs = Date.now() - new Date(iso).getTime();
+    const hours = Math.floor(diffMs / 3600000);
+    if (hours < 1) return 'just now';
+    if (hours === 1) return '1 hour ago';
+    return hours + ' hours ago';
+  }
+
+  function render() {
+    const q = state.search.trim().toLowerCase();
+    const filtered = state.jobs.filter((j) => {
+      const matchesSource = !state.source || j.source === state.source;
+      const haystack = `${j.title} ${j.company} ${(j.tags || []).join(' ')}`.toLowerCase();
+      const matchesQuery = !q || haystack.includes(q);
+      return matchesSource && matchesQuery;
+    });
+
+    document.getElementById('list').innerHTML = filtered.map((j) => `
+      <a href="${j.url}" target="_blank" rel="noopener"
+         class="block bg-white border border-surface-border rounded-lg p-4 hover:border-brand-500 transition-colors">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="font-medium text-sm truncate">${escapeHtml(j.title || 'Untitled role')}</div>
+            <div class="text-ink-500 text-sm mt-0.5">${escapeHtml(j.company || 'Unknown company')} · ${escapeHtml(j.location || (j.remote ? 'Remote' : ''))}</div>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-brand-50 text-brand-700">${escapeHtml(j.source)}</span>
+            <div class="text-xs text-ink-300 mt-1">${timeAgo(j.postedAt)}</div>
+          </div>
+        </div>
+      </a>
+    `).join('');
+
+    document.getElementById('empty').classList.toggle('hidden', filtered.length > 0);
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  async function init() {
+    try {
+      const res = await fetch('data/jobs-latest.json', { cache: 'no-store' });
+      const data = await res.json();
+      state.jobs = data.jobs || [];
+      document.getElementById('meta').textContent =
+        `${data.count ?? state.jobs.length} listing(s) · last updated ${new Date(data.generatedAt).toLocaleString()}`;
+
+      const sources = [...new Set(state.jobs.map((j) => j.source))].sort();
+      const sel = document.getElementById('sourceFilter');
+      for (const s of sources) {
+        const opt = document.createElement('option');
+        opt.value = s; opt.textContent = s;
+        sel.appendChild(opt);
+      }
+    } catch (e) {
+      document.getElementById('meta').textContent = 'Could not load data/jobs-latest.json yet — run the scraper first.';
+    }
+    render();
+  }
+
+  document.getElementById('search').addEventListener('input', (e) => { state.search = e.target.value; render(); });
+  document.getElementById('sourceFilter').addEventListener('change', (e) => { state.source = e.target.value; render(); });
+
+  init();
+</script>
+</body>
+</html>
