@@ -1,0 +1,13 @@
+{
+  "name": "job-scraper",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Daily aggregator that pulls freshly-posted jobs from platforms with legitimate API access.",
+  "scripts": {
+    "start": "node src/index.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
