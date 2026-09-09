@@ -1,0 +1,34 @@
+name: Daily job digest
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # 06:00 UTC daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r job-digest/requirements.txt
+
+      - name: Run job digest
+        working-directory: job-digest
+        run: python3 main.py
+
+      - name: Commit digest
+        run: |
+          git config user.name "job-digest-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add job-digest/digests
+          git diff --cached --quiet || git commit -m "Daily job digest: $(date -u +%Y-%m-%d)"
+          git push

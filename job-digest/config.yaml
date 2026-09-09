@@ -1,0 +1,31 @@
+# Job digest configuration
+#
+# Edit `keywords` and `locations` to match what you're looking for.
+# A posting matches if ANY keyword appears in its title (case-insensitive).
+# Leave `locations` empty to accept remote/any location.
+
+keywords:
+  - "product designer"
+  - "ui designer"
+  - "ux designer"
+  - "ui/ux"
+
+locations: []   # e.g. ["Remote", "Bengaluru", "India"]
+
+# Only keep postings first seen within this many hours of the run.
+freshness_hours: 24
+
+# Sources with free, public, ToS-compliant access. Enabled by default.
+enabled_sources:
+  - remoteok
+  - weworkremotely
+  - hn_hiring
+
+# Not enabled by default — each needs official partner API credentials
+# that this project cannot supply for you. Wire them up per
+# job-digest/README.md, then add the name above to turn them on.
+#   - indeed        (Indeed Publisher/partner API)
+#   - ziprecruiter   (ZipRecruiter Jobs API)
+#
+# Platforms intentionally NOT scraped at all: linkedin, naukri, twitter.
+# See job-digest/README.md for why.
